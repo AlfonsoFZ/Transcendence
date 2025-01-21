@@ -23,6 +23,10 @@ services:
       - "5432:5432"
     networks:
       - transcendence
+    env_file:
+      - .env
+    depends_on:
+      - nginx
     restart: always
 # FRONTEND
   frontend:
@@ -43,6 +47,8 @@ services:
       - "8000:8000"
     networks:
       - transcendence
+    env_file:
+      - .env
     depends_on:
       - postgres
     restart: always

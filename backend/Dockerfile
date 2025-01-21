@@ -1,21 +1,22 @@
-FROM buildpack-deps:bullseye
+FROM debian:bookworm
 
-RUN apt update -y && apt install python3-pip -y
+# install python3, libpq dependency for psycopg2, venv and postgres client
+RUN apt update -y && apt install -y -qqy libpq-dev python3-pip python3-venv postgresql-client
 
-RUN pip install django
+# create a virtual env (mandatory with debian:bookworm)
+RUN python3 -m venv /opt/venv
 
-RUN pip install psycopg2
+# env for venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 RUN mkdir /app
 
 COPY . /app/
 
+RUN chmod +x /app/init.sh
+
 WORKDIR /app
 
 EXPOSE 8000
 
-CMD ["tail", "-f", "/dev/null"]
-
-# python3 manage.py migrate
-
-# python3 manage.py runserver 0.0.0.0:8000
+ENTRYPOINT [ "./init.sh" ]

@@ -1,4 +1,4 @@
-FROM nginx:stable
+FROM nginx:latest
 
 RUN mkdir -p /etc/nginx/ssl/private /etc/ssl/certs/
 

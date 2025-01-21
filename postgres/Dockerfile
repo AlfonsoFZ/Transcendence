@@ -1,8 +1,4 @@
-FROM postgres:12.22-bookworm
-
-ENV POSTGRES_USER=mydatabaseuser
-ENV POSTGRES_PASSWORD=mypassword
-ENV POSTGRES_DB=mydatabase 
+FROM postgres:17.2
 
 EXPOSE 5432
 

@@ -1,0 +1,5 @@
+# list of Python dependencies the project needs
+
+django==5.1.5
+# to be able to connect to postgres database
+psycopg2==2.9.10
