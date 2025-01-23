@@ -160,9 +160,5 @@ Frontend se comunica con Backend a través de fetch / websockets?
 
 
 
-Estructura HTML
 
-Transcendence
-
-MENU:
-LOGIN - PLAY GAME - START TOURNAMENT - FRIENDS - CHAT - 
+Implementar ASGI: Solicitudes asincrónicas (Procesa varias solicitudes a la vez de forma no bloqueante a través de hilos etc.)
