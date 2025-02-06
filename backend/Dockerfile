@@ -1,22 +1,14 @@
-FROM debian:bookworm
+FROM node:lts-bookworm
 
-# install python3, libpq dependency for psycopg2, venv and postgres client
-RUN apt update -y && apt install -y -qqy libpq-dev python3-pip python3-venv postgresql-client
+RUN mkdir /app/
 
-# create a virtual env (mandatory with debian:bookworm)
-RUN python3 -m venv /opt/venv
-
-# env for venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-RUN mkdir /app
-
-COPY . /app/
-
-RUN chmod +x /app/init.sh
+COPY . /app
 
 WORKDIR /app
 
+RUN npm install
+
 EXPOSE 8000
 
-ENTRYPOINT [ "./init.sh" ]
+#CMD for development. Use ["npm", "start"] for production
+CMD ["npm", "run", "dev"]
