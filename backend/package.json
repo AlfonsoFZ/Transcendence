@@ -8,8 +8,10 @@
     "start_container": "tail -f /dev/null"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "fastify": "^5.2.1",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
