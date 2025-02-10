@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js | pino-pretty",
+    "start_container": "tail -f /dev/null"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "pino-pretty": "^13.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

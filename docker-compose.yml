@@ -15,19 +15,6 @@ services:
     networks:
       - transcendence
     restart: always
-# POSTGRES
-  postgres:
-    build: ./postgres
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - transcendence
-    env_file:
-      - .env
-    depends_on:
-      - nginx
-    restart: always
 # FRONTEND
   frontend:
     build: ./frontend
@@ -49,8 +36,6 @@ services:
       - transcendence
     env_file:
       - .env
-    depends_on:
-      - postgres
     restart: always
     # volume for development only
     volumes:
