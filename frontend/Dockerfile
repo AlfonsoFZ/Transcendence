@@ -4,9 +4,11 @@ RUN apt update && apt -y install lighttpd
 
 COPY ./conf/lighttpd.conf /etc/lighttpd/lighttpd.conf
 
-RUN mkdir /front/
+RUN mkdir /static/
 
-COPY ./front /front
+COPY ./static/ /static
+
+WORKDIR /static
 
 EXPOSE 3000
 
