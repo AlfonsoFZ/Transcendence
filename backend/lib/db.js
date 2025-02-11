@@ -40,7 +40,8 @@ async function createDb() {
                     return reject(err);
                 resolve({
                     client,
-                    createUser
+                    createUser,
+					getUsers
                 });
             });
         });
@@ -58,6 +59,21 @@ async function createUser(user, pass) {
         stmt.finalize();
     });
 }
+
+// aplica con el each una consulta por cada registro de la tabla u sers
+async function getUsers () {
+	return new Promise((resolve, reject) => {
+		const users = []
+		client.each('SELECT user FROM users', (err, rows) => {
+			if(err) return reject(err)
+			users.push(rows)
+		}, (err, count) => {
+			if(err) return reject(err)
+			resolve({ count, users })
+		})
+	})
+}
+
 
 module.exports = {
     createDb

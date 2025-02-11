@@ -27,6 +27,22 @@ fastify.get('/create_user/', async (request, reply) => {
     return { hello: `about ${user} and ${pass}` };
 });
 
+fastify.get('/get_users/', async (request, reply) => {
+	let results = null;
+	try {
+		results = await db.getUsers()
+		results.users.forEach(u =>{
+			console.log(`- ${u.user}`)
+		})
+		console.log(`Total: ${results.count}`)
+	} catch (err) {
+		console.log(err)
+        fastify.log.error('Cannot list user');
+	}
+	return  {userList: results.users} ;
+});
+
+
 fastify.get('/about/', async (request, reply) => {
     fastify.log.info(request.query.user);
     return { hello: 'about' };
