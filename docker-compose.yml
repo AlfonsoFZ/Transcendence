@@ -26,6 +26,9 @@ services:
     depends_on:
       - backend
     restart: always
+    # ISM: volume for development only
+    volumes:
+      - ./frontend/:/static/ 
 # BACKEND
   backend:
     build: ./backend
@@ -37,6 +40,6 @@ services:
     env_file:
       - .env
     restart: always
-    # volume for development only
+    # ISM: volume for development only
     volumes:
       - ./backend/:/app/

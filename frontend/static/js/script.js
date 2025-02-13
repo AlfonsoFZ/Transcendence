@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         const data = {
-            [keyInput.value]: valueInput.value
+            [keyInput.value]: valueInput.value,
         };
         try {
             const response = yield fetch("https://localhost/back/api/data", {

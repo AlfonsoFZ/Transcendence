@@ -13,11 +13,8 @@ fastify.register(fastifyCors, {
 
 // Define a route to handle POST requests
 fastify.post('/api/data', async (request, reply) => {
-  const { key1, key2 } = request.body;
-
-  console.log('Received data:', { key1, key2 });
-
-  return { receivedKey1: 'data', receivedKey2: 'received' };
+  console.log('Received data:', request.body);
+  return { data_received: request.body };
 });
 
 // Register app to serve static files
