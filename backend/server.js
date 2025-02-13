@@ -1,9 +1,7 @@
 'use strict';
 
 const fastify = require('fastify')({ logger: true });
-const { createDb } = require('./lib/db');
-
-let db = null;
+const { sequelize, User, Stat } = require('./models'); // Importa sequelize y los modelos
 
 const pino = require('pino');
 const logger = pino({
@@ -16,44 +14,44 @@ const logger = pino({
 });
 
 fastify.get('/create_user/', async (request, reply) => {
-    const user = request.query.user;
-    const pass = request.query.pass;
+    const user = request.query.username;
+    const pass  = request.query.password;
     try {
-        await db.createUser(user, pass);
+        const newUser = await User.create({ username: user, password: pass });
         console.log(`User ${user} created`);
+        return { message: `User ${user} created successfully` };
     } catch (err) {
-        fastify.log.info(err);
+        fastify.log.error(err);
+        return { error: 'Error creating user' };
     }
-    return { hello: `about ${user} and ${pass}` };
 });
 
 fastify.get('/get_users/', async (request, reply) => {
-	let results = null;
 	try {
-		results = await db.getUsers()
-		results.users.forEach(u =>{
-			console.log(`- ${u.user}`)
-		})
-		console.log(`Total: ${results.count}`)
+		const users = await User.findAll();
+		return users;
 	} catch (err) {
-		console.log(err)
-        fastify.log.error('Cannot list user');
+		fastify.log.error('Cannot list users', err);
+		return { error: 'Error fetching users' };
 	}
-	return  {userList: results.users} ;
 });
-
 
 fastify.get('/about/', async (request, reply) => {
     fastify.log.info(request.query.user);
     return { hello: 'about' };
 });
 
+fastify.get('/', async (request, reply) => {
+    fastify.log.info(request.query.user);
+    return { hello: 'WTF!' };
+});
+
 // Initialize Server
 const start = async () => {
     try {
-        // Initialize the database
-        db = await createDb();
-        console.log('db:', db); // Verifica que db se está inicializando correctamente
+        // Sync the database
+        await sequelize.sync();
+        console.log('Database synced');
 
         // Listen on port 8000
         await fastify.listen({ port: 8000, host: '0.0.0.0' });
@@ -66,81 +64,3 @@ const start = async () => {
 
 // Call the function to start server
 start();
-
-// const fastify = require('fastify')({ logger: true });
-
-// const { createDb } = require('./lib/db')	
-
-// let db = null;
-
-// const pino = require('pino')
-// const logger = pino({
-// 		transport: {
-// 			target: 'pino-pretty',
-// 		options: {
-// 			colorize: true
-// 			}
-// 		},
-// 	})
-
-
-// fastify.get('/create_user/', async (request, reply) => {
-// 	const user = request.query.user
-// 	const pass = request.query.pass	
-// 	try {
-// 	 	await db.createUser(user, pass)
-// 	 	console.log(`User ${user} created`)
-// 	} catch (err) {
-// 	// 	throw new Error('Error al crear el usuario')
-// 	fastify.log.info(err);
-// 	}
-// 	// fastify.log.info(err);
-// 	return { hello: `about ${user} and ${pass}`};
-// 	});
-
-// fastify.get('/about/', async (request, reply) => {
-// 	fastify.log.info(request.query.user);
-// 	return { hello: 'about' };s
-// 	});
-
-// // Initialize Server
-// const start = async () => {
-// 	db = createDb();
-// 		try {
-// 			// Listenning in port 8000
-// 			await fastify.listen({ port: 8000, host: '0.0.0.0' });
-// 			fastify.log.info(`Server listenning on http://localhost:8000`);
-// 			// console.log('Server listenning on http://localhost:8000');
-// 		} catch (err) {
-// 			fastify.log.error(err);
-// 			// console.log(err);
-// 			process.exit(1);
-// 		}
-// }
-
-// // Call the function to start server
-// start();
-
-
-// // logger.info('hola este log es lo que me gustaría conseguir para todos los logs')
-// // logger.error('hola este log es lo que me gustaría conseguir para todos los logs error')
-// // logger.warn('hola este log es lo que me gustaría conseguir para todos los logs warning')
-// // logger.fatal('hola este log es lo que me gustaría conseguir para todos los logs de fatal')
-
-// //Define a route
-// // fastify.get('/', async (request, reply) => {
-// // 	return { hello: 'world' };
-// // });
-
-// // fastify.route({
-// // 	method: 'GET',
-// // 	url: '/',
-// // 	prehandler: async (request, reply) => {
-// // 	},
-	
-// // 	handler: async (request, reply) => {	
-// // 		logger.info(request.query.name);
-// // 		return { hello: 'trutru', name: 'Juan', nickname: 'pepe' };
-// // 	}
-// // });
-
