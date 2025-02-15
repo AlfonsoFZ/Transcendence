@@ -4,8 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Transcendence</title>
+  <link rel="stylesheet" href="./css/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400..900&display=swap" rel="stylesheet">
+  <!-- ISM = Only for development. -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./js/login.js" defer></script>
+
 </head>
 <body class="bg-gray-900 text-white">
   <header class="p-5 text-left">
@@ -13,15 +17,14 @@
   </header>
   <nav class="bg-gray-800 p-4">
     <ul class="flex space-x-4">
-      <li><a href="https://localhost/back/login" class="text-white hover:text-gray-400">Login</a></li>
+      <li><a href="#" id="loginButton" class="text-white hover:text-gray-400">Login</a></li>
       <li><a href="https://localhost/play" class="text-white hover:text-gray-400">Play Game</a></li>
       <li><a href="https://localhost/tournament" class="text-white hover:text-gray-400">Start Tournament</a></li>
       <li><a href="https://localhost/friends" class="text-white hover:text-gray-400">Friends</a></li>
       <li><a href="https://localhost/chat" class="text-white hover:text-gray-400">Chat</a></li>
     </ul>
   </nav>
-  <div id="login">
-	<!-- Content to display when the user try to login -->
+  <div id="loginContainer">
   </div>
 </body>
 </html>
