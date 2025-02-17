@@ -13,7 +13,8 @@ const start = async () => {
   try {
     await fastify.listen({ port: 8000, host: '0.0.0.0' });
     console.log('Server listenning on http://backend:8000');
-  } catch (err) {
+  }
+  catch (err) {
     console.log(err);
     process.exit(1);
   }
