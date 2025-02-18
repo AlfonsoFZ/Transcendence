@@ -52,7 +52,7 @@ check:
 # @docker volume ls
 # @docker network ls 
 
-re:	clean All
+re:	clean all
 	
 
 .PHONY  : all build run down re clean fclean bashsqlite bashngx bashend stop rm rmi check logend

@@ -1,16 +1,17 @@
 'use strict';
 
-import fs from 'fs';
-import path from 'path';
-import { Sequelize } from 'sequelize';
-import process from 'process';
-import { fileURLToPath } from 'url';
+import fs from 'fs';					// Importa el módulo fs para leer archivos
+import path from 'path';				// Importa el módulo path para manejar rutas de archivos
+import { Sequelize } from 'sequelize';	// Importa la clase Sequelize
+import process from 'process';			// Importa el módulo process para acceder a variables de entorno
+import { fileURLToPath } from 'url';	// Importa la función fileURLToPath para convertir una URL a una ruta de archivo
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const db = {};
+const __filename = fileURLToPath(import.meta.url);	// Obtiene la ruta del archivo actual
+const __dirname = path.dirname(__filename);			// Obtiene el directorio del archivo actual
+const basename = path.basename(__filename);			// Obtiene el nombre del archivo actual
+const env = process.env.NODE_ENV || 'development';	// Obtiene el entorno de ejecución
+const db = {};										// Objeto para almacenar los modelos		
+
 
 // Lee el archivo JSON manualmente
 let config;

@@ -2,11 +2,11 @@
   "development": {
 	"username": "root",
     "password": null,
-	"storage": "./db.sqlito",
+	"storage": "./sqlito.db",
     "dialect": "sqlite"
   },
   "test": {
-	"storage": "./db.sqlito",
+	"storage": "./sqlito.db",
     "dialect": "sqlite"
   },
   "production": {

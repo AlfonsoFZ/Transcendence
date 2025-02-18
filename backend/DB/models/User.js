@@ -14,8 +14,13 @@ export default (sequelize) => {
 		}
 	}
 	User.init({
-		username: DataTypes.STRING,
-		password: DataTypes.STRING
+		username: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			unique: true
+		},
+		password: DataTypes.STRING,
+		allowNull: false
 	}, {
 		sequelize,
 		modelName: 'User',
