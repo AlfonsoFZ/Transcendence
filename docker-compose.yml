@@ -28,7 +28,7 @@ services:
     restart: always
     # ISM: volume for development only
     volumes:
-      - ./frontend/:/static/ 
+      - ./frontend/:/src/ 
 # BACKEND
   backend:
     build: ./backend

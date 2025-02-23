@@ -1,4 +1,4 @@
-import { createUser, getUsers, deleteUserById, getUserByName } from '../DB/crud.js';
+import { createUser, getUsers, deleteUserById, getUserByName } from '../db/crud.js';
 
 export default async function routes(fastify, options) {
   fastify.post('/create_user', async (request, reply) => {

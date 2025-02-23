@@ -25,6 +25,7 @@ export default function configureRoutes(fastify) {
 		}
 	);
 
+	
 	// Define a route to handle google logout (It doesn't work check case logout and then re-login with google. It automatically logs in and shows the user name again. Maybe it's ok.)
 	fastify.get('/auth/google/logout', async (request, reply) => {
 		request.logout();
