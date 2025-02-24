@@ -5,7 +5,7 @@ import { sequelize } from './db/models/index.js';
 import pino from 'pino';
 import routes from './routes/index.js';
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ logger: false });
 
 configureServer(fastify);
 configureGoogleAuth(fastify);
