@@ -40,6 +40,7 @@ async function handleSubmit(event: SubmitEvent) {
             throw new Error("Failed to send data");
         const result = await response.json();
         console.log("Data sent successfully:", result);
+        window.location.href = "https://localhost:8443";
     }
     catch (error) {
         console.error(error);

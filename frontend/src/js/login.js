@@ -1,12 +1,6 @@
 "use strict";
 const loginButton = document.getElementById("loginButton");
 const loginContainer = document.getElementById("loginContainer");
-function appendGoogleScriptDom() {
-    const script = document.createElement('script');
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    document.body.appendChild(script);
-}
 async function loadLoginHtml() {
     if (loginContainer === null || loginContainer === void 0 ? void 0 : loginContainer.querySelector("form"))
         return;
@@ -17,7 +11,6 @@ async function loadLoginHtml() {
         const htmlContent = await response.text();
         if (loginContainer) {
             loginContainer.innerHTML = htmlContent;
-            appendGoogleScriptDom();
             const form = loginContainer.querySelector("form");
             if (form)
                 form.addEventListener("submit", handleSubmit);
@@ -44,6 +37,7 @@ async function handleSubmit(event) {
             throw new Error("Failed to send data");
         const result = await response.json();
         console.log("Data sent successfully:", result);
+        window.location.href = "https://localhost:8443";
     }
     catch (error) {
         console.error(error);
