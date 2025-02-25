@@ -1,12 +1,6 @@
 const loginButton = document.getElementById("loginButton");
 const loginContainer = document.getElementById("loginContainer");
 
-function appendGoogleScriptDom() {
-    const script = document.createElement('script');
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    document.body.appendChild(script);
-}
 
 async function loadLoginHtml() {
     if (loginContainer?.querySelector("form"))
@@ -18,7 +12,6 @@ async function loadLoginHtml() {
         const htmlContent = await response.text();
         if (loginContainer) {
             loginContainer.innerHTML = htmlContent;
-		appendGoogleScriptDom();
 		const form = loginContainer.querySelector("form");
         if (form)
                 form.addEventListener("submit", handleSubmit);

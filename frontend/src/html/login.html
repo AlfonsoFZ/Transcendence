@@ -25,28 +25,18 @@
                         </div>
                         <a href="#" class="text-sm font-medium hover:underline text-sky-500">Forgot password?</a>
                     </div>
-                    <button type="submit" class="w-full focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-sky-600 hover:bg-sky-700 focus:ring-sky-800 mb-3">Sign in</button>
-
-                    <div class="flex justify-center">
-                        <div id="g_id_onload"
-                            data-client_id="882460456768-6o81p8qqq1m8a4gajmp8ps4h70mghcbj.apps.googleusercontent.com"
-                            data-login_uri="https://localhost:8443/back/auth/google/login"
-                            data-auto_prompt="false">
-					    </div>
-					    <div class="g_id_signin"
-                            data-type="standard"
-                            data-size="large"
-                            data-theme="outline"
-                            data-text="continue_with"
-                            data-shape="rectangular"
-                            data-logo_alignment="left"
-                            data-locale="en">
-					    </div>
-                    </div>
-                    <p class="text-sm font-light text-gray-400">
-                        Don’t have an account yet? <a href="#" class="font-medium hover:underline text-emerald-500">Sign up</a>
-                    </p>
+                    <button type="submit" class="w-full focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-sky-600 hover:bg-sky-700 focus:ring-sky-800 mb-0">Sign in</button>
                 </form>
+                <button onclick="location.assign('https://localhost:8443/back/auth/google/login')"
+                    class="w-full flex items-center justify-center focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-white text-black hover:bg-gray-200 focus:ring-gray-300 mb-5">
+                    <img src="../img/google-logo.png"
+                        alt="Google Logo" class="w-5 h-5 mr-2">
+                    Continue with Google
+                </button>
+                <p class="text-sm font-light text-gray-400">
+                    Don’t have an account yet?
+                    <a href="https://localhost:8443/register" class="font-medium hover:underline text-emerald-500">Sign up</a>
+                </p>
             </div>
         </div>
     </div>

@@ -3,4 +3,8 @@
 /* ISM: Use the following command to compile tailwind for dev:
 	npx @tailwindcss/cli -i ./css/input.css -o ./css/output.css --watch
 Use this command for production:
-	npx @tailwindcss/cli -i ./css/input.css -o ./css/output.css --minify */
+	npx @tailwindcss/cli -i ./css/input.css -o ./css/output.css --minify
+
+	If there is a volume with Docker, execute "npm install" command again if you do not have the node_modules folder.
+*/
+
