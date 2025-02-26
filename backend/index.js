@@ -3,7 +3,6 @@ import { configureServer, configureGoogleAuth } from './config/config.js';
 import configureRoutes from './routes/routes.js';
 import { sequelize } from './db/models/index.js';
 import pino from 'pino';
-import routes from './routes/index.js';
 
 const fastify = Fastify({ logger: false });
 
@@ -20,9 +19,6 @@ const logger = pino({
         }
     }
 });
-
-fastify.register(routes);
-
 
 // Initialize Server
 const start = async () => {
