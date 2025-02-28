@@ -7,7 +7,7 @@ services:
     build: ./nginx/
     container_name: nginx
     ports:
-      - "443:443"
+      - "8443:8443"
     volumes:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./nginx/ssl_certs/private:/etc/nginx/ssl/private
@@ -26,6 +26,9 @@ services:
     depends_on:
       - backend
     restart: always
+    # ISM: volume for development only
+    volumes:
+      - ./frontend/:/src/ 
 # BACKEND
   backend:
     build: ./backend
@@ -37,6 +40,6 @@ services:
     env_file:
       - .env
     restart: always
-    # volume for development only
+    # ISM: volume for development only
     volumes:
       - ./backend/:/app/

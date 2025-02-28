@@ -1,12 +1,16 @@
-FROM debian:bookworm
+FROM node:lts-bookworm
 
 RUN apt update && apt -y install lighttpd
 
 COPY ./conf/lighttpd.conf /etc/lighttpd/lighttpd.conf
 
-RUN mkdir /front/
+RUN mkdir /src/
 
-COPY ./front /front
+COPY ./src/ /src
+
+WORKDIR /src/src
+
+RUN npm install
 
 EXPOSE 3000
 

@@ -11,6 +11,6 @@ clean:
 
 fclean: down clean
 
-re: down all
+re: fclean all
 
 PHONY: all down clean fclean re

@@ -1,18 +1,35 @@
-// Import Fastify
-const fastify = require('fastify')();
+import Fastify from "fastify";
+import { configureServer, configureGoogleAuth } from './config/config.js';
+import configureRoutes from './routes/routes.js';
+import { sequelize } from './db/models/index.js';
+import pino from 'pino';
 
-// Define a route
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' };
+const fastify = Fastify({ logger: false });
+
+configureServer(fastify);
+configureGoogleAuth(fastify);
+configureRoutes(fastify);
+
+
+const logger = pino({
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            colorize: true
+        }
+    }
 });
 
 // Initialize Server
 const start = async () => {
   try {
-    // Listenning in port 8000
+    // Sync the database
+    await sequelize.sync();
+    console.log('Database synced');
     await fastify.listen({ port: 8000, host: '0.0.0.0' });
-    console.log('Server listenning on http://localhost:8000');
-  } catch (err) {
+    console.log('Server listenning on http://backend:8000');
+  }
+  catch (err) {
     console.log(err);
     process.exit(1);
   }
