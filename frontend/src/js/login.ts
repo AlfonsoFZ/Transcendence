@@ -1,7 +1,7 @@
 const loginButton = document.getElementById("loginButton");
 const loginContainer = document.getElementById("app-container");
 
-export async function handleLoginSubmit(event: SubmitEvent) {
+async function handleLoginSubmit(event: SubmitEvent) {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
@@ -21,13 +21,21 @@ export async function handleLoginSubmit(event: SubmitEvent) {
         console.log("Data sent successfully:", result);
         if (loginContainer)
             loginContainer.innerHTML = "";
+
+		// Almacenar el token de autenticación y el nombre de usuario
+		localStorage.setItem('authToken', result.token);
+		localStorage.setItem('username', result.username);
+
+		// Actualizar la UI
+		const spa = new SPA('app-container');
+		spa.updateUI();
     }
     catch (error) {
         console.error(error);
     }
 }
 
-export async function render() {
+async function render() {
     try {
         const response = await fetch("../html/login.html");
         if (!response.ok)
@@ -54,6 +62,8 @@ export async function render() {
 
 document.addEventListener("DOMContentLoaded", () => {
     loginButton?.addEventListener("click", async () => {
-        await loadLoginHtml();
+        await render();
     });
 });
+
+export { render , handleLoginSubmit};

@@ -60,6 +60,6 @@ export function render() {
 }
 document.addEventListener("DOMContentLoaded", () => {
     registerButton === null || registerButton === void 0 ? void 0 : registerButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
-        yield loadRegisterHtml();
+        yield render();
     }));
 });

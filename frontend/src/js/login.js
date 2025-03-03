@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const loginButton = document.getElementById("loginButton");
 const loginContainer = document.getElementById("app-container");
-export function handleLoginSubmit(event) {
+function handleLoginSubmit(event) {
     return __awaiter(this, void 0, void 0, function* () {
         event.preventDefault();
         const form = event.target;
@@ -29,13 +29,19 @@ export function handleLoginSubmit(event) {
             console.log("Data sent successfully:", result);
             if (loginContainer)
                 loginContainer.innerHTML = "";
+            // Almacenar el token de autenticación y el nombre de usuario
+            localStorage.setItem('authToken', result.token);
+            localStorage.setItem('username', result.username);
+            // Actualizar la UI
+            const spa = new SPA('app-container');
+            spa.updateUI();
         }
         catch (error) {
             console.error(error);
         }
     });
 }
-export function render() {
+function render() {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -64,6 +70,7 @@ export function render() {
 }
 document.addEventListener("DOMContentLoaded", () => {
     loginButton === null || loginButton === void 0 ? void 0 : loginButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
-        yield loadLoginHtml();
+        yield render();
     }));
 });
+export { render, handleLoginSubmit };

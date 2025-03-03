@@ -1,5 +1,7 @@
 import fastifyPassport from "@fastify/passport";
 import { createUser, getUsers, deleteUserById, getUserByName } from '../db/crud.js';
+import { checkUser } from '../auth/login.js';
+
 
 export default function configureRoutes(fastify) {
 
@@ -26,6 +28,14 @@ export default function configureRoutes(fastify) {
 		}
 	);
 	
+	fastify.post('/auth/login', async (request, reply) => {
+	  const { email, password } = request.body;
+	//   console.log('Username:', email);
+	//   console.log('Password:', password);
+	//   console.log('Request:', request);
+	  return checkUser(email, password, reply);
+	});
+
 	// Define a route to handle google logout (It doesn't work check case logout and then re-login with google. It automatically logs in and shows the user name again. Maybe it's ok.)
 	fastify.get('/auth/google/logout', async (request, reply) => {
 		request.logout();

@@ -50,6 +50,6 @@ export async function render() {
 
 document.addEventListener("DOMContentLoaded", () => {
     registerButton?.addEventListener("click", async () => {
-        await loadRegisterHtml();
+        await render();
     });
 });

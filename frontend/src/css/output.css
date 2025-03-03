@@ -1954,9 +1954,7 @@
     --tw-outline-style: solid;
     outline-style: solid;
   }
-  .\[a-zA-Z0-9\:\\\\-\\\\\._\$\] {
-    a-zA-Z0-9: \\-\\. $;
-  }
+ 
   .\[keywords\:node-addon-api\] {
     keywords: node-addon-api;
   }
@@ -2163,7 +2161,7 @@
       padding: calc(var(--spacing) * 0);
     }
   }
-}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -2452,4 +2450,27 @@
 @property --tw-duration {
   syntax: "*";
   inherits: false;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+padding : 0 20rem 0 2rem 0;
+	margin: 0;
+}
+header {
+height: 12vh;
+}
+#content {
+	flex: 1;
+	overflow-y: auto;	
+}
+footer {
+	padding: 1.4rem;
+}
+.vertical-bar {
+	border-left: 1px solid white;
+	height: 24px;
+	margin: 0 10px;
 }
