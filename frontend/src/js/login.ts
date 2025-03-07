@@ -72,9 +72,9 @@ async function loadRegisterHtml() {
         catch (error) {
             console.error(error);
         }    
-    }
-}
-
+    }                        
+}                        
+                        
 async function loadLoginHtml() {
     const header = loginContainer?.querySelector("h1");
     if (header?.textContent?.trim() === "Sign in to your account")

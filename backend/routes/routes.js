@@ -1,4 +1,5 @@
 import fastifyPassport from "@fastify/passport";
+import fastifyWebsocket from "@fastify/websocket";
 import { createUser, getUsers, deleteUserById, getUserByName } from '../db/crud.js';
 
 export default function configureRoutes(fastify) {
@@ -78,4 +79,16 @@ export default function configureRoutes(fastify) {
 			reply.send({ error: 'Error deleting user' });
 		}
 	});
+
+	////////////////////////////////////////// Websockets //////////////////////////////////////////
+	
+	fastify.register(async function (fastify) {
+		fastify.get('/ws', { websocket: true }, (socket, req) => {
+			socket.on('message', message => {
+				fastify.log.info(`SERVER: Message from the client: ${message.toString()}`);
+				socket.send(`SERVER: ${message.toString()} de vuelta para Alfonsete`)
+				socket.send('SERVER: HAKUNAMATATA')
+			})
+		})
+	})
 }

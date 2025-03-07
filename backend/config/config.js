@@ -2,6 +2,7 @@ import fastifyCors from "@fastify/cors";
 import fastifyPassport from "@fastify/passport";
 import GoogleStrategy from "passport-google-oauth20";
 import fastifySecureSession from "@fastify/secure-session";
+import fastifyWebsocket from "@fastify/websocket";
 
 export function configureServer(fastify) {
 
@@ -11,6 +12,9 @@ export function configureServer(fastify) {
 		methods: ["GET", "POST", "PUT", "DELETE"],
 		allowedHeaders: ['Content-Type'],
 	});
+
+	// Register Fastify Websocket
+	fastify.register(fastifyWebsocket);
 }
 
 export function configureGoogleAuth(fastify) {
@@ -46,5 +50,4 @@ export function configureGoogleAuth(fastify) {
 	fastifyPassport.registerUserDeserializer(async (user, request) => {
 		return user;
 	})
-
 }

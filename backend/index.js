@@ -10,7 +10,6 @@ configureServer(fastify);
 configureGoogleAuth(fastify);
 configureRoutes(fastify);
 
-
 const logger = pino({
     transport: {
         target: 'pino-pretty',
