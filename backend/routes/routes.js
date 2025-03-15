@@ -23,7 +23,7 @@ export default function configureRoutes(fastify, sequelize) {
 
 	// Define a route to handle google login
 	fastify.get('/auth/google/login', {
-		preValidation: fastifyPassport.authenticate('google', { scope: ['profile'] })
+		preValidation: fastifyPassport.authenticate('google', { scope: ['profile', 'email'] })
 	},
 		async (request, reply) => {
 			reply.redirect('/back');

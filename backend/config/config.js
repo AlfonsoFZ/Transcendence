@@ -2,6 +2,7 @@ import fastifyCors from "@fastify/cors";
 import fastifyPassport from "@fastify/passport";
 import GoogleStrategy from "passport-google-oauth20";
 import fastifySecureSession from "@fastify/secure-session";
+import { createUser, getUserByName } from "../database/crud.cjs";
 
 export function configureServer(fastify) {
 
@@ -31,10 +32,27 @@ export function configureGoogleAuth(fastify) {
 	fastifyPassport.use(new GoogleStrategy({
 		clientID: process.env.GOOGLE_CLIENT_ID,
 		clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-		callbackURL: "https://localhost:8443/back/auth/google/login"
-	}, function (accessToken, refreshToken, profile, cb) {
-	// We should store the user profile in the database
-		cb(null, profile);
+		callbackURL: "https://localhost:8443/back/auth/google/login",
+		scope: ['profile', 'email']
+	}, async function (accessToken, refreshToken, profile, cb) {
+        try {
+            // Search for the user in the database
+            let user = await getUserByName(profile.displayName);
+            // If user does not exist, create a new user
+            if (!user){
+                user = await createUser(profile.displayName, null, profile.emails[0].value);
+				user.googleId = profile.id;
+				user.avatarPath = profile.photos?.[0]?.value || null;
+				user.googleToken = refreshToken;
+				// Save the user
+				await user.save();
+			}
+            // Return the user
+			
+            cb(null, user);
+        } catch (err) {
+            cb(err);
+        }
 	}));
 
 	// Define a serializer

@@ -3,19 +3,21 @@ const { hashPassword } = require('./users/PassUtils.cjs');
 
 const { User, Stat } = db;
 
-const createUser = async (username, password, email = 'default@email.com') => {
+const createUser = async (username, password, email) => {
 	if (!username) {
 		throw new Error('Username cannot be empty');
 	}
 	try {
-		const hashedPassword = await hashPassword(password);
-		const newUser = await User.create({ username, password: hashedPassword });
+		let hashedPassword = null;
+		if (password)
+			hashedPassword = await hashPassword(password);
+		const newUser = await User.create({ username, password: hashedPassword, email});
 		return newUser;
 	} catch (err) {
 		if (err.name === 'SequelizeUniqueConstraintError') {
 			throw new Error('Username already exists');
 		}
-		throw new Error('Error creating user');
+		throw new Error('Error creating user: ' + err);
 	}
 };
 
