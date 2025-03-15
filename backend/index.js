@@ -1,14 +1,17 @@
 import Fastify from "fastify";
 import { configureServer, configureGoogleAuth } from './config/config.js';
 import configureRoutes from './routes/routes.js';
-import { sequelize } from './db/models/index.js';
 import pino from 'pino';
+import pkg from './database/models/index.cjs';
+const { sequelize } = pkg;
 
-const fastify = Fastify({ logger: false });
+
+
+const fastify = Fastify({ logger: true });
 
 configureServer(fastify);
 configureGoogleAuth(fastify);
-configureRoutes(fastify);
+configureRoutes(fastify, sequelize);
 
 
 const logger = pino({
@@ -26,6 +29,7 @@ const start = async () => {
     // Sync the database
     await sequelize.sync();
     console.log('Database synced');
+
     await fastify.listen({ port: 8000, host: '0.0.0.0' });
     console.log('Server listenning on http://backend:8000');
   }

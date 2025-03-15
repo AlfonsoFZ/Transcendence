@@ -1,9 +1,11 @@
 import fastifyPassport from "@fastify/passport";
-import { createUser, getUsers, deleteUserById, getUserByName } from '../db/crud.js';
+// import { createUser, getUsers, deleteUserById, getUserByName } from '../db/crud.cjs';
+import pkg from '../database/crud.cjs';
+const { createUser, getUsers, deleteUserById, getUserByName } = pkg;
 import { checkUser } from '../auth/login.js';
 
 
-export default function configureRoutes(fastify) {
+export default function configureRoutes(fastify, sequelize) {
 
 	// Define a route for /
 	fastify.get('/', async (request, reply) => {
@@ -45,9 +47,19 @@ export default function configureRoutes(fastify) {
 	////////////////////////////////////////// Database //////////////////////////////////////////
 	// Define a POST route to create a new user
 	fastify.post('/create_user', async (request, reply) => {
-		const { username, password } = request.body;
+		const { username, password, email } = request.body;
+		console.log('Username:', username);
 		try {
-			const newUser = await createUser(username, password);
+
+				// Create a new user
+			const User = sequelize.models.User;
+			const newUser = await User.create({
+				username: username,
+				email: email,
+				password: password
+			});
+			console.log('New user created:', newUser);
+			// const newUser = await createUser(username, password, email);
 			reply.send({ message: `User ${username} created successfully`, user: newUser });
 		} catch (err) {
 			fastify.log.error(err);

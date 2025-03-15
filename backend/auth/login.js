@@ -1,5 +1,9 @@
-import { comparePassword } from '../db/users/PassUtils.js';
-import { getUserByName } from '../db/crud.js';
+// import { comparePassword } from '../db/users/PassUtils.cjs';
+// import { getUserByName } from '../db/crud.cjs';
+import pkg from '../database/users/PassUtils.cjs';
+const { comparePassword } = pkg;
+import pkg2 from '../database/crud.cjs';
+const { getUserByName } = pkg2;
 
 
 export const checkUser = async (email, password, reply) => {

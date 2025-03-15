@@ -1,9 +1,9 @@
-import db from './models/index.js';
-import { hashPassword } from './users/PassUtils.js';
+const db = require('./models/index.cjs');
+const { hashPassword } = require('./users/PassUtils.cjs');
 
 const { User, Stat } = db;
 
-export const createUser = async (username, password) => {
+const createUser = async (username, password, email = 'default@email.com') => {
 	if (!username) {
 		throw new Error('Username cannot be empty');
 	}
@@ -14,12 +14,12 @@ export const createUser = async (username, password) => {
 	} catch (err) {
 		if (err.name === 'SequelizeUniqueConstraintError') {
 			throw new Error('Username already exists');
-		  }
-		  throw new Error('Error creating user');
 		}
-	};
+		throw new Error('Error creating user');
+	}
+};
 
-	export const getUserByName = async (username) => {
+const getUserByName = async (username) => {
 	console.log('User en getUserByName antes del try:', username);
 	try {
 		const user = await User.findOne({ where: { username } });
@@ -28,30 +28,39 @@ export const createUser = async (username, password) => {
 	} catch (err) {
 		throw new Error('User not found');
 	}
-	};
+};
 
-	export const getUsers = async () => {
+const getUsers = async () => {
 	try {
-		const users = await User.findAll();
+		const users = await User.findAll({
+			logging: console.log
+		});
 		return users;
 	} catch (err) {
 		throw new Error('Error fetching users');
 	}
-	};
-	  
-	export const deleteUserById = async (userId) => {
+};
+
+const deleteUserById = async (userId) => {
 	try {
 		const user = await User.findByPk(userId);
 		if (user) {
-		await user.destroy();
-		return { message: `User ${userId} deleted successfully` };
+			await user.destroy();
+			return { message: `User ${userId} deleted successfully` };
 		} else {
-		return { error: `User ${userId} not found` };
+			return { error: `User ${userId} not found` };
 		}
 	} catch (err) {
 		throw new Error('Error deleting user');
 	}
-	};
+};
+
+module.exports = {
+	createUser,
+	getUserByName,
+	getUsers,
+	deleteUserById,
+};
 
 // Puedes agregar más funciones CRUD aquí
 
