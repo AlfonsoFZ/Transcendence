@@ -10,9 +10,12 @@ const createUser = async (username, password, email) => {
 	try {
 		let hashedPassword = null;
 		if (password)
-			hashedPassword = await hashPassword(password);
-		const newUser = await User.create({ username, password: hashedPassword, email});
+			hashedPassword = await hashPassword(password); 
+		const newUser = await User.create({ username, password: hashedPassword, email}); // para debug
+		// console.log(`password en createUser: ${newUser.password}`); // para debug
+		// console.log(hashedPassword); // para debug
 		return newUser;
+		// return hashedPassword; // para debug
 	} catch (err) {
 		if (err.name === 'SequelizeUniqueConstraintError') {
 			throw new Error('Username already exists');
@@ -22,10 +25,29 @@ const createUser = async (username, password, email) => {
 };
 
 const getUserByName = async (username) => {
-	console.log('User en getUserByName antes del try:', username);
 	try {
 		const user = await User.findOne({ where: { username } });
-		console.log(`User en getUserByName: ${user}`);
+		// console.log(`User en getUserByName: ${user.username}`);
+		return user;
+	} catch (err) {
+		throw new Error('User not found');
+	}
+};
+
+const getUserByEmail = async (email) => {
+	try {
+		const user = await User.findOne({ where: { email } });
+		// console.log(`User en getUserByEmail: ${user.email}`);
+		return user;
+	} catch (err) {
+		throw new Error('User not found');
+	}
+};
+
+const getUserByGoogleId = async (googleId) => {
+	try {
+		const user = await User.findOne({ where: { google_id: googleId } });
+		// console.log(`User en getUserByGoogleId: ${user.google_id}`);
 		return user;
 	} catch (err) {
 		throw new Error('User not found');
@@ -62,6 +84,8 @@ module.exports = {
 	getUserByName,
 	getUsers,
 	deleteUserById,
+	getUserByEmail,
+	getUserByGoogleId
 };
 
 // Puedes agregar más funciones CRUD aquí

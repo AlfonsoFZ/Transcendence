@@ -2,7 +2,8 @@ import fastifyCors from "@fastify/cors";
 import fastifyPassport from "@fastify/passport";
 import GoogleStrategy from "passport-google-oauth20";
 import fastifySecureSession from "@fastify/secure-session";
-import { createUser, getUserByName } from "../database/crud.cjs";
+import { createUser, getUserByGoogleId } from "../database/crud.cjs";
+import jwt from 'jsonwebtoken';
 
 export function configureServer(fastify) {
 
@@ -36,8 +37,9 @@ export function configureGoogleAuth(fastify) {
 		scope: ['profile', 'email']
 	}, async function (accessToken, refreshToken, profile, cb) {
         try {
+			const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
             // Search for the user in the database
-            let user = await getUserByName(profile.displayName);
+            let user = await getUserByGoogleId(profile.googleId);
             // If user does not exist, create a new user
             if (!user){
                 user = await createUser(profile.displayName, null, profile.emails[0].value);
@@ -48,8 +50,11 @@ export function configureGoogleAuth(fastify) {
 				await user.save();
 			}
             // Return the user
+			const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+			// return (null, { user, token });
+            // cb(null, user);
+            cb(null, token);
 			
-            cb(null, user);
         } catch (err) {
             cb(err);
         }

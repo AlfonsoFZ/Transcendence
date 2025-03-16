@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 // ***************************************************************//
-//	     La siguiente petición lanza error username vacío:        //
+//	     La siguiente petición crea otro usuario con email        //
 // ***************************************************************//
 
 POST https://localhost:8443/back/create_user HTTP/1.1
@@ -27,6 +27,20 @@ Content-Type: application/json
 }
 
 // ***************************************************************//
+//	     La siguiente petición lanza el login                     //
+// ***************************************************************//
+
+POST https://localhost:8443/back/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+	"username": "trutru2",
+	"password": "pass30",
+	"email": "trutru2@email.com"
+}
+
+
+// ***************************************************************//
 //	     La siguiente petición Obtiene todos los usuarios:        //
 // ***************************************************************//
 
@@ -37,8 +51,10 @@ GET https://localhost:8443/back/get_users  HTTP/1.1
 //	    La siguiente petición Obtiene el usuario por username:    //
 // ***************************************************************//
 
-GET https://localhost:8443/back/get_user_by_username/?username=nombreusuario2 HTTP/1.1
+GET https://localhost:8443/back/get_user_by_username/?username=trutru2@email.com HTTP/1.1
 
+GET https://localhost:8443/back/get_user_by_username/?username=trutru2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRydXRydTIiLCJpYXQiOjE3NDIxNDkyMTIsImV4cCI6MTc0MjE1MjgxMn0.Q3kSMYf-djluD-oBJ9ZCxNAOa5QLVA6Ym90F4Beaftw
 
 // ***************************************************************//
 //	     La siguiente petición elimina usuario por username:      //
@@ -59,7 +75,7 @@ DELETE  https://localhost:8443/back/delete_user_by_id  HTTP/1.1
 Content-Type: application/json
 
 {
-	"userId" : "13"
+	"userId" : "2"
 }
 
 // para ejecutar las pruebas de la api simplemente seleccionar y pulsar ctrl + alt + R 

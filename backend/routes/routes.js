@@ -3,7 +3,7 @@ import fastifyPassport from "@fastify/passport";
 import pkg from '../database/crud.cjs';
 const { createUser, getUsers, deleteUserById, getUserByName } = pkg;
 import { checkUser } from '../auth/login.js';
-
+import { verifyToken } from '../auth/jwtValidator.js';
 
 export default function configureRoutes(fastify, sequelize) {
 
@@ -51,15 +51,15 @@ export default function configureRoutes(fastify, sequelize) {
 		console.log('Username:', username);
 		try {
 
-				// Create a new user
-			const User = sequelize.models.User;
-			const newUser = await User.create({
-				username: username,
-				email: email,
-				password: password
-			});
-			console.log('New user created:', newUser);
-			// const newUser = await createUser(username, password, email);
+			// 	// Create a new user
+			// const User = sequelize.models.User;
+			// const newUser = await User.create({
+			// 	username: username,
+			// 	email: email,
+			// 	password: password
+			// });
+			// console.log('New user created:', newUser);
+			const newUser = await createUser(username, password, email);
 			reply.send({ message: `User ${username} created successfully`, user: newUser });
 		} catch (err) {
 			fastify.log.error(err);
@@ -79,7 +79,7 @@ export default function configureRoutes(fastify, sequelize) {
 	});
 
 	// Define a GET route to retrieve a user by username
-	fastify.get('/get_user_by_username/', async (request, reply) => {
+	fastify.get('/get_user_by_username/',{ preValidation: verifyToken }, async (request, reply) => {
 		try {
 			const user = await getUserByName(request.query.username);
 			reply.send(user);
