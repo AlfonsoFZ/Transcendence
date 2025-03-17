@@ -1,16 +1,17 @@
 import fastifyPassport from "@fastify/passport";
 // import { createUser, getUsers, deleteUserById, getUserByName } from '../db/crud.cjs';
 import pkg from '../database/crud.cjs';
-const { createUser, getUsers, deleteUserById, getUserByName } = pkg;
+const { createUser, getUserById, updateUserbyId, getUserByName, getUserByEmail, getUserByGoogleId, getUsers, deleteUserById, deleteAllUsers} = pkg;
 import { checkUser } from '../auth/login.js';
 import { verifyToken } from '../auth/jwtValidator.js';
+import fastify from "fastify";
 
 export default function configureRoutes(fastify, sequelize) {
 
 	// Define a route for /
 	fastify.get('/', async (request, reply) => {
-		if (request.user && request.user.displayName)
-			return reply.send(`Welcome ${request.user.displayName}`);
+		if (request.user && request.user.username)
+			return reply.send(`Welcome ${request.user.username}`);
 		else
 			return reply.send('Welcome stranger');
 	});
@@ -32,9 +33,6 @@ export default function configureRoutes(fastify, sequelize) {
 	
 	fastify.post('/auth/login', async (request, reply) => {
 	  const { email, password } = request.body;
-	//   console.log('Username:', email);
-	//   console.log('Password:', password);
-	//   console.log('Request:', request);
 	  return checkUser(email, password, reply);
 	});
 
@@ -50,20 +48,22 @@ export default function configureRoutes(fastify, sequelize) {
 		const { username, password, email } = request.body;
 		console.log('Username:', username);
 		try {
-
-			// 	// Create a new user
-			// const User = sequelize.models.User;
-			// const newUser = await User.create({
-			// 	username: username,
-			// 	email: email,
-			// 	password: password
-			// });
-			// console.log('New user created:', newUser);
 			const newUser = await createUser(username, password, email);
 			reply.send({ message: `User ${username} created successfully`, user: newUser });
 		} catch (err) {
 			fastify.log.error(err);
 			reply.send({ error: `Error creating user : ${err.message}` });
+		}
+	});
+
+	fastify.post('/update_user_by_id', async (request, reply) => {
+		const { userId, username, password, googleId, email, avatarPath } = request.body;
+		try {
+			const updatedUser = await updateUserbyId(userId, username, password, googleId, email, avatarPath);
+			reply.send(updatedUser);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.send({ error: `Error updating user : ${err.message}` });
 		}
 	});
 
@@ -78,10 +78,44 @@ export default function configureRoutes(fastify, sequelize) {
 		}
 	});
 
+	// Define a GET route to retrieve a user by ID
+	fastify.get('/get_user_by_id/', async (request, reply) => {
+		const userId = request.query.id;
+		try {
+			const user = await getUserById(userId);
+			reply.send(user);
+		} catch (err) {
+			fastify.log.error('User not found', err);
+			reply.send({ error: 'User not found' });
+		}
+	});
+
 	// Define a GET route to retrieve a user by username
 	fastify.get('/get_user_by_username/',{ preValidation: verifyToken }, async (request, reply) => {
 		try {
 			const user = await getUserByName(request.query.username);
+			reply.send(user);
+		} catch (err) {
+			fastify.log.error('User not found', err);
+			reply.send({ error: 'User not found' });
+		}
+	});
+
+	// Define a GET route to retrieve a user by email
+	fastify.get('/get_user_by_email/', async (request, reply) => {
+		try {
+			const user = await getUserByEmail(request.query.email);
+			reply.send(user);
+		} catch (err) {
+			fastify.log.error('User not found', err);
+			reply.send({ error: 'User not found' });
+		}
+	});
+
+	// Define a GET route to retrieve a user by googleId
+	fastify.get('/get_user_by_google_id/', async (request, reply) => {
+		try {
+			const user = await getUserByGoogleId(request.query.googleId);
 			reply.send(user);
 		} catch (err) {
 			fastify.log.error('User not found', err);
@@ -100,4 +134,17 @@ export default function configureRoutes(fastify, sequelize) {
 			reply.send({ error: 'Error deleting user' });
 		}
 	});
+
+	// Define a DELETE route to remove all users
+	fastify.delete('/delete_all_users', async (request, reply) => {
+		try {
+			const result = await deleteAllUsers();
+			reply.send(result);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.send({ error: 'Error deleting all users '});
+		}
+	});
+
 }
+

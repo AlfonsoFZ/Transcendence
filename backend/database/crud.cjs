@@ -24,13 +24,55 @@ const createUser = async (username, password, email) => {
 	}
 };
 
+const getUserById = async (userId) => {
+	try {
+		const user = await User.findByPk(userId);
+		return user;
+	} catch (err) {
+		throw new Error('User not found getUserById');
+	}
+};
+
+const updateUserbyId = async (userId, username, password, googleId, email, avatarPath) => {
+	try {
+		console.log(`userId en updateUserbyId: ${userId}`);
+		console.log(`username en updateUserbyId: ${username}`);
+		console.log(`password en updateUserbyId: ${
+			password ? 'password' : 'no password'}`);
+		console.log(`googleId en updateUserbyId: ${googleId}`);
+		console.log(`email en updateUserbyId: ${email}`);
+		console.log(`avatarPath en updateUserbyId: ${avatarPath}`);
+		let user = await User.findByPk(userId);
+		if (user) {
+			if (username)
+				user.username = username;
+            if (password) {
+                const hashedPassword = await hashPassword(password);
+                user.password = hashedPassword;
+            }
+			if (googleId)
+				user.googleId = googleId;
+			if (email)
+				user.email = email;
+			if (avatarPath)
+				user.avatarPath = avatarPath;
+			await user.save();
+			return user;
+		} else {
+			return { error: `User ${userId} not found updateUserbyId` };
+		}
+	} catch (err) {
+		throw new Error('Error updating user');
+	}
+};
+
 const getUserByName = async (username) => {
 	try {
 		const user = await User.findOne({ where: { username } });
 		// console.log(`User en getUserByName: ${user.username}`);
 		return user;
 	} catch (err) {
-		throw new Error('User not found');
+		throw new Error('User not found getUserByName');
 	}
 };
 
@@ -40,17 +82,17 @@ const getUserByEmail = async (email) => {
 		// console.log(`User en getUserByEmail: ${user.email}`);
 		return user;
 	} catch (err) {
-		throw new Error('User not found');
+		throw new Error('User not found getUserByEmail');
 	}
 };
 
 const getUserByGoogleId = async (googleId) => {
 	try {
-		const user = await User.findOne({ where: { google_id: googleId } });
+		const user = await User.findOne({ where: { googleId } });
 		// console.log(`User en getUserByGoogleId: ${user.google_id}`);
 		return user;
 	} catch (err) {
-		throw new Error('User not found');
+		throw new Error('User not found getUserByGoogleId');
 	}
 };
 
@@ -61,7 +103,7 @@ const getUsers = async () => {
 		});
 		return users;
 	} catch (err) {
-		throw new Error('Error fetching users');
+		throw new Error('Error fetching users getUsers');
 	}
 };
 
@@ -72,22 +114,34 @@ const deleteUserById = async (userId) => {
 			await user.destroy();
 			return { message: `User ${userId} deleted successfully` };
 		} else {
-			return { error: `User ${userId} not found` };
+			return { error: `User ${userId} not found deleteUserbyId` };
 		}
 	} catch (err) {
 		throw new Error('Error deleting user');
 	}
 };
 
-module.exports = {
-	createUser,
-	getUserByName,
-	getUsers,
-	deleteUserById,
-	getUserByEmail,
-	getUserByGoogleId
+const deleteAllUsers = async () => {
+	try {
+		const users = await User.findAll();
+		for (const user of users) {
+			await user.destroy();
+		}
+		return { message: 'All users deleted successfully' };
+	} catch (err) {
+		throw new Error('Error deleting users');
+	}
 };
 
-// Puedes agregar más funciones CRUD aquí
-
+module.exports = {
+	createUser,
+	getUserById,
+	updateUserbyId,
+	getUserByName,
+	getUserByEmail,
+	getUserByGoogleId,
+	getUsers,
+	deleteUserById,
+	deleteAllUsers
+};
 
