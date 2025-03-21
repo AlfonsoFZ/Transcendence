@@ -94,3 +94,15 @@ Content-Type: application/json
 	"email": "ElFary@gmail.com",
 	"avatarPath": "foto.jpg"
 }
+
+POST https://localhost:8443/back/api/data HTTP/1.1
+Content-Type: application/json
+
+{
+	"userId": "11",
+	"username": "ElFary",
+	"password": "Toritolindoaytoritoguapo",
+	"googleId": "Dejalosquecamelen",
+	"email": "ElFary@gmail.com",
+	"avatarPath": "foto.jpg"
+}

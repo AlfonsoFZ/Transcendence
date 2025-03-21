@@ -6,10 +6,9 @@ export function configureCrudRoutes(fastify) {
 
 	// Define a POST route to create a new user
 	fastify.post('/create_user', async (request, reply) => {
-		const { username, password, email } = request.body;
-		console.log('Username:', username);
+		const { username, password, googleId, email, avatarPath } = request.body;
 		try {
-			const newUser = await createUser(username, password, email);
+			const newUser = await createUser(username, password, googleId, email, avatarPath);
 			reply.send({ message: `User ${username} created successfully`, user: newUser });
 		} catch (err) {
 			fastify.log.error(err);
@@ -22,7 +21,7 @@ export function configureCrudRoutes(fastify) {
 		const { userId, username, password, googleId, email, avatarPath } = request.body;
 		try {
 			const updatedUser = await updateUserbyId(userId, username, password, googleId, email, avatarPath);
-			reply.send(updatedUser);
+			reply.send({message: `User ${username} updated successfully`, updatedUser});
 		} catch (err) {
 			fastify.log.error(err);
 			reply.send({ error: `Error updating user : ${err.message}` });
@@ -35,7 +34,7 @@ export function configureCrudRoutes(fastify) {
 			const users = await getUsers();
 			reply.send(users);
 		} catch (err) {
-			fastify.log.error('Cannot list users', err);
+			fastify.log.error('Cannot list users ', err);
 			reply.send({ error: 'Error fetching users' });
 		}
 	});
@@ -47,7 +46,7 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserById(userId);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found', err);
+			fastify.log.error('User not found ', err);
 			reply.send({ error: 'User not found' });
 		}
 	});
@@ -58,7 +57,7 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserByName(request.query.username);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found', err);
+			fastify.log.error('User not found ', err);
 			reply.send({ error: 'User not found' });
 		}
 	});
@@ -69,7 +68,7 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserByEmail(request.query.email);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found', err);
+			fastify.log.error('User not found ', err);
 			reply.send({ error: 'User not found' });
 		}
 	});
@@ -80,7 +79,7 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserByGoogleId(request.query.googleId);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found', err);
+			fastify.log.error('User not found ', err);
 			reply.send({ error: 'User not found' });
 		}
 	});
@@ -93,7 +92,7 @@ export function configureCrudRoutes(fastify) {
 			reply.send(result);
 		} catch (err) {
 			fastify.log.error(err);
-			reply.send({ error: 'Error deleting user' });
+			reply.send({ error: 'Error deleting user ', err });
 		}
 	});
 
@@ -104,7 +103,7 @@ export function configureCrudRoutes(fastify) {
 			reply.send(result);
 		} catch (err) {
 			fastify.log.error(err);
-			reply.send({ error: 'Error deleting all users ' });
+			reply.send({ error: 'Error deleting all users ', err });
 		}
 	});
 }

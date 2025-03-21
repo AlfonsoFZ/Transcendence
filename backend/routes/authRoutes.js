@@ -1,8 +1,8 @@
 import fastifyPassport from "@fastify/passport";
-import { authenticateUser } from "../auth/authUser.js";
+import { authenticateUser, signOutUser, signOutUserWithGoogleStrategy } from "../auth/authUser.js";
 import { setTokenCookie } from "../auth/authToken.js";
 
-export function configureAuthRoutes(fastify) {
+export function configureAuthRoutes(fastify, sequelize) {
 
 	// Define a POST route to authenticate an user
 	fastify.post('/auth/login', async (request, reply) => {
@@ -12,7 +12,8 @@ export function configureAuthRoutes(fastify) {
 
 	// Define a POST route to logout an user
 	fastify.post('/auth/logout', async (request, reply) => {
-		const { email, password } = request.body;
+		const { email } = request.body;
+		signOutUser(email, reply, sequelize);
 	});
 
 	// Define a GET route to authenticate an user with GoogleStrategy
@@ -27,12 +28,6 @@ export function configureAuthRoutes(fastify) {
 
 	// Define a GET route to logout an user with GoogleStrategy
 	fastify.get('/auth/google/logout', async (request, reply) => {
-		console.log("User should appear: ", request.user.username)
-		request.logout((err) => {
-			if (err) {
-				return reply.status(500).send({ message: 'Logout error' });
-			}
-		});
-		console.log("User should not appear: ", request.user.username)
+		signOutUserWithGoogleStrategy(request, reply, sequelize);
 	})
 }

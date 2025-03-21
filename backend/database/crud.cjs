@@ -3,24 +3,35 @@ const { hashPassword } = require('./users/PassUtils.cjs');
 
 const { User, Stat } = db;
 
-const createUser = async (username, password, email) => {
-	if (!username) {
-		throw new Error('Username cannot be empty');
+const createUser = async (username, password, googleId, email, avatarPath) => {
+	if (!username || !email) {
+		throw new Error('Username and Email cannot be empty');
+	}
+	if (!googleId && !password) {
+		throw new Error('Password or GoogleId must be provided');
 	}
 	try {
 		let hashedPassword = null;
 		if (password)
-			hashedPassword = await hashPassword(password); 
-		const newUser = await User.create({ username, password: hashedPassword, email}); // para debug
-		// console.log(`password en createUser: ${newUser.password}`); // para debug
-		// console.log(hashedPassword); // para debug
+			hashedPassword = await hashPassword(password);
+		const userData = { username, email };
+		if (hashedPassword)
+			userData.password = hashedPassword;
+		if (googleId)
+			userData.googleId = googleId;
+		if (avatarPath)
+			userData.avatarPath = avatarPath;
+		const newUser = await User.create(userData);
 		return newUser;
-		// return hashedPassword; // para debug
-	} catch (err) {
+	}
+	catch (err) {
 		if (err.name === 'SequelizeUniqueConstraintError') {
 			throw new Error('Username already exists');
 		}
-		throw new Error('Error creating user: ' + err);
+		else if (err.email === 'SequelizeUniqueConstraintError') {
+			throw new Error('Email already exists');
+		}
+		throw new Error('Error creating user: ', err);
 	}
 };
 
@@ -29,19 +40,12 @@ const getUserById = async (userId) => {
 		const user = await User.findByPk(userId);
 		return user;
 	} catch (err) {
-		throw new Error('User not found getUserById');
+		throw new Error('User not found at getUserById ', err);
 	}
 };
 
 const updateUserbyId = async (userId, username, password, googleId, email, avatarPath) => {
 	try {
-		console.log(`userId en updateUserbyId: ${userId}`);
-		console.log(`username en updateUserbyId: ${username}`);
-		console.log(`password en updateUserbyId: ${
-			password ? 'password' : 'no password'}`);
-		console.log(`googleId en updateUserbyId: ${googleId}`);
-		console.log(`email en updateUserbyId: ${email}`);
-		console.log(`avatarPath en updateUserbyId: ${avatarPath}`);
 		let user = await User.findByPk(userId);
 		if (user) {
 			if (username)
@@ -59,51 +63,46 @@ const updateUserbyId = async (userId, username, password, googleId, email, avata
 			await user.save();
 			return user;
 		} else {
-			return { error: `User ${userId} not found updateUserbyId` };
+			return { error: `User ${userId} not found at updateUserbyId` };
 		}
 	} catch (err) {
-		throw new Error('Error updating user');
+		throw new Error('Error updating user ', err);
 	}
 };
 
 const getUserByName = async (username) => {
 	try {
 		const user = await User.findOne({ where: { username } });
-		// console.log(`User en getUserByName: ${user.username}`);
 		return user;
 	} catch (err) {
-		throw new Error('User not found getUserByName');
+		throw new Error('User not found at getUserByName ', err);
 	}
 };
 
 const getUserByEmail = async (email) => {
 	try {
 		const user = await User.findOne({ where: { email } });
-		// console.log(`User en getUserByEmail: ${user.email}`);
 		return user;
 	} catch (err) {
-		throw new Error('User not found getUserByEmail');
+		throw new Error('User not found at getUserByEmail ', err);
 	}
 };
 
 const getUserByGoogleId = async (googleId) => {
 	try {
 		const user = await User.findOne({ where: { googleId } });
-		// console.log(`User en getUserByGoogleId: ${user.google_id}`);
 		return user;
 	} catch (err) {
-		throw new Error('User not found getUserByGoogleId');
+		throw new Error('User not found at getUserByGoogleId ', err);
 	}
 };
 
 const getUsers = async () => {
 	try {
-		const users = await User.findAll({
-			logging: console.log
-		});
+		const users = await User.findAll({});
 		return users;
 	} catch (err) {
-		throw new Error('Error fetching users getUsers');
+		throw new Error('Error fetching users ', err);
 	}
 };
 
@@ -117,7 +116,7 @@ const deleteUserById = async (userId) => {
 			return { error: `User ${userId} not found deleteUserbyId` };
 		}
 	} catch (err) {
-		throw new Error('Error deleting user');
+		throw new Error('Error deleting user ', err);
 	}
 };
 
@@ -129,7 +128,7 @@ const deleteAllUsers = async () => {
 		}
 		return { message: 'All users deleted successfully' };
 	} catch (err) {
-		throw new Error('Error deleting users');
+		throw new Error('Error deleting users ', err);
 	}
 };
 

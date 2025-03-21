@@ -40,12 +40,8 @@ export function authenticateUserWithGoogleStrategy() {
 				if (user) {
 					user.googleId = profile.id;
 				}
-				else {
-					user = await createUser(profile.displayName, null, profile.emails[0].value);
-					user.googleId = profile.id;
-					user.avatarPath = profile.photos?.[0]?.value || null;
-				}
-				await user.save();
+				else
+					user = await createUser(profile.displayName, null, profile.id, profile.emails?.[0]?.value || null, profile.photos?.[0]?.value || null);
 			}
 			cb(null, user);
 		}
@@ -53,4 +49,13 @@ export function authenticateUserWithGoogleStrategy() {
 			cb(err);
 		}
 	}));
+}
+
+export async function signOutUser (email, password, reply) {
+
+}
+
+
+export function signOutUserWithGoogleStrategy (email, password, reply) {
+	
 }
