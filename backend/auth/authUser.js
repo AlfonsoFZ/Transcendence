@@ -1,7 +1,7 @@
 import fastifyPassport from "@fastify/passport";
 import GoogleStrategy from "passport-google-oauth20";
 import { comparePassword } from '../database/users/PassUtils.cjs';
-import { createUser, getUserByEmail, getUserByGoogleId } from "../database/crud.cjs";
+import { createUser, getUserByEmail, getUserByGoogleId, getUserByName, updateLastLoginById, updateLastLogoutById } from "../database/crud.cjs";
 import { setTokenCookie, destroyTokenCookie } from "./authToken.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -16,6 +16,7 @@ export async function authenticateUser(email, password, reply) {
 	if (!isMatch)
 		return reply.status(401).send({ message: 'Wrong password' });
 	setTokenCookie(user.username, reply);
+	updateLastLoginById(user.id);
 	return reply.status(200).send({
 		user: user
 	});
@@ -29,9 +30,12 @@ export function authenticateUserWithGoogleStrategy() {
 		clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 		callbackURL: "https://localhost:8443/back/auth/google/login",
 		scope: ['profile', 'email']
-	}, async function (accessToken, refreshToken, profile, cb) {
+	}, async function (googleAccessToken, googleRefreshToken, profile, cb) {
 		try {
 			let user = await getUserByGoogleId(profile.id);
+			if (user) {
+				updateLastLoginById(user.id);
+			}
 			if (!user) {
 				user = await getUserByEmail(profile.emails[0].value);
 				if (user) {
@@ -48,12 +52,22 @@ export function authenticateUserWithGoogleStrategy() {
 	}));
 }
 
-export async function signOutUser(reply) {
+// Both functions below are used to logout an user and seem to be exactly the same
+// Check if one function can to all the job
+export async function signOutUser(username, reply) {
 	destroyTokenCookie(reply);
+	const user = getUserByName(username);
+	if (!user)
+		return reply.status(401).send({ message: 'User not found' });
+	updateLastLogoutById(user.id);
 	return reply.status(200).send({ message: 'Logged out successfully' });
 }
 
-
-export function signOutUserWithGoogleStrategy(email, password, reply) {
-
+export function signOutUserWithGoogleStrategy(username, reply) {
+	destroyTokenCookie(reply);
+	const user = getUserByName(username);
+	if (!user)
+		return reply.status(401).send({ message: 'User not found' });
+	updateLastLogoutById(user.id);
+	return reply.status(200).send({ message: 'Logged out successfully' });
 }

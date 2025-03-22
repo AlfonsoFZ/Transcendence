@@ -14,8 +14,8 @@ export function configureAuthRoutes(fastify, sequelize) {
 	// Define a POST route to logout an user
 	fastify.post('/auth/logout', async (request, reply) => {
 		fastify.log.info({ body: request.body }, 'logout data sent');
-		const { email } = request.body;
-		signOutUser(reply);
+		const { username } = request.body;
+		signOutUser(username, reply);
 	});
 
 	// Define a GET route to authenticate an user with GoogleStrategy
@@ -30,6 +30,6 @@ export function configureAuthRoutes(fastify, sequelize) {
 
 	// Define a GET route to logout an user with GoogleStrategy
 	fastify.get('/auth/google/logout', async (request, reply) => {
-		signOutUserWithGoogleStrategy(request, reply, sequelize);
+		signOutUserWithGoogleStrategy(request.user.username, reply);
 	})
 }

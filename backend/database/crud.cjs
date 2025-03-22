@@ -132,6 +132,36 @@ const deleteAllUsers = async () => {
 	}
 };
 
+const updateLastLoginById = async (userId) => {
+	try {
+		const user = await User.findByPk(userId);
+		if (user) {
+			user.lastLogin = new Date();
+			await user.save();
+			return user;
+		} else {
+			return { error: `User ${userId} not found at updateLastLogin` };
+		}
+	} catch (err) {
+		throw new Error('Error updating last login ', err);
+	}
+};
+
+const updateLastLogoutById = async (userId) => {
+	try {
+		const user = await User.findByPk(userId);
+		if (user) {
+			user.lastLogout = new Date();
+			await user.save();
+			return user;
+		} else {
+			return { error: `User ${userId} not found at updateLastLogout` };
+		}
+	} catch (err) {
+		throw new Error('Error updating last logout ', err);
+	}
+}
+
 module.exports = {
 	createUser,
 	getUserById,
@@ -141,6 +171,8 @@ module.exports = {
 	getUserByGoogleId,
 	getUsers,
 	deleteUserById,
-	deleteAllUsers
+	deleteAllUsers,
+	updateLastLoginById,
+	updateLastLogoutById
 };
 

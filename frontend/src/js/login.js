@@ -42,8 +42,8 @@ function handleLoginSubmit(event) {
     });
 }
 function render() {
-    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b, _c;
         try {
             const response = yield fetch("../html/login.html");
             if (!response.ok)

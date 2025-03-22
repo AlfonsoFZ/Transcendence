@@ -36,8 +36,8 @@ export function handleRegisterSubmit(event) {
     });
 }
 export function render() {
-    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b, _c;
         try {
             const response = yield fetch("../html/register.html");
             if (!response.ok)
