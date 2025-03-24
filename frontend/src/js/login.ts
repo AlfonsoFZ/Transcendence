@@ -26,9 +26,9 @@ async function handleLoginSubmit(event: SubmitEvent) {
 		localStorage.setItem('authToken', result.token);
 		localStorage.setItem('username', result.username);
 
-		// Actualizar la UI
-		const spa = new SPA('app-container');
-		spa.updateUI();
+		// // Actualizar la UI
+		// const spa = new SPA('app-container');
+		// spa.updateUI();
     }
     catch (error) {
         console.error(error);

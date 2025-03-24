@@ -115,3 +115,6 @@ Content-Type: application/json
 	"password": "1234",
 	"email": "ismael@gmail.com"
 }
+
+GET https://localhost:8443/back/auth/verify-token HTTP/1.1
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBlcGVAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUzNDkwLCJleHAiOjE3NDI3NTcwOTB9.usZno2kUB8wepF3M327E6Dmjs3U7wTRFB91ZnqhqoXg

@@ -11,19 +11,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class SPA {
     constructor(containerId) {
         this.routes = {
-            'home': 'home.js',
-            'login': 'login.js',
-            'register': 'register.js',
-            'play-pong': 'playPong.js',
-            'play-tournament': 'playTournament.js',
-            'friends': 'friends.js',
-            'chat': 'chat.js',
-            'stats': 'stats.js',
-            'logout': 'logout.js'
+            'home': { module: 'home.js', protected: false },
+            'login': { module: 'login.js', protected: false },
+            'register': { module: 'register.js', protected: false },
+            'play-pong': { module: 'playPong.js', protected: true },
+            'play-tournament': { module: 'playTournament.js', protected: true },
+            'friends': { module: 'friends.js', protected: true },
+            'chat': { module: 'chat.js', protected: true },
+            'stats': { module: 'stats.js', protected: true },
+            'logout': { module: 'logout.js', protected: true }
         };
         this.container = document.getElementById(containerId);
+        // Cargar el header y el footer
+        this.loadHeaderAndFooter();
         window.onpopstate = () => this.loadStep();
-        this.updateUI();
         if (!this.isAuthenticated()) {
             this.navigate('home');
         }
@@ -31,57 +32,128 @@ class SPA {
             this.loadStep();
         }
     }
+    loadHeaderAndFooter() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Cargar el header
+                // const headerResponse = await fetch('../html/header.html');
+                // if (headerResponse.ok) {
+                // 	const headerContent = await headerResponse.text();
+                // 	const headerElement = document.getElementById('header-container');
+                // 	if (headerElement) {
+                // 		headerElement.innerHTML = headerContent;
+                // 	}
+                // } else {
+                // 	console.error('Error al cargar el header:', headerResponse.statusText);
+                // }
+                // const appElement = document.getElementById('app-container');
+                // // const welcomeMessage = '<h1> Welcome</h1>';
+                // const welcomeMessage =
+                // 	`<div id="pong-container">
+                // 	<div class="paddle left-paddle"></div>
+                // 	<div class="ball"><img src="../img/bola.png" alt="Ball"></div>
+                // 	<div class="paddle right-paddle"></div>
+                // 	</div>`;
+                // if (appElement) {
+                // 	appElement.innerHTML = welcomeMessage;
+                // }
+                // Cargar el footer
+                const footerResponse = yield fetch('../html/footer.html');
+                if (footerResponse.ok) {
+                    const footerContent = yield footerResponse.text();
+                    const footerElement = document.getElementById('footer-container');
+                    if (footerElement) {
+                        footerElement.innerHTML = footerContent;
+                    }
+                }
+                else {
+                    console.error('Error al cargar el footer:', footerResponse.statusText);
+                }
+            }
+            catch (error) {
+                console.error('Error al cargar el header o footer:', error);
+            }
+        });
+    }
     navigate(step) {
         history.pushState({}, '', `#${step}`);
         this.loadStep();
     }
     loadStep() {
         return __awaiter(this, void 0, void 0, function* () {
-            const step = location.hash.replace('#', '') || 'home';
+            let step = location.hash.replace('#', '') || 'home';
             const modulePath = this.routes[step];
             if (modulePath) {
-                const module = yield import(`./${modulePath}`);
-                this.container.innerHTML = module.render();
-            }
-            else {
-                this.container.innerHTML = '<div>Step not found</div>';
+                const module = yield import(`./${modulePath.module}`);
+                console.log('import:', module);
+                // Inicializar el módulo antes de renderizar
+                if (module.initialize) {
+                    yield module.initialize();
+                }
+                const headerElement = document.getElementById('header_buttons');
+                const menuElement = document.getElementById('menu-container');
+                const appElement = document.getElementById('app-container');
+                console.log('headerElement:', headerElement);
+                console.log('menuElement:', menuElement);
+                console.log('appElement:', appElement);
+                console.log('module.renderHeader:', module.renderHeader);
+                if (headerElement && module.renderHeader) {
+                    const headerContent = yield module.renderHeader();
+                    if (headerContent) {
+                        headerElement.innerHTML = headerContent;
+                    }
+                }
+                if (menuElement && module.renderMenu) {
+                    const menuContent = yield module.renderMenu();
+                    if (menuContent) {
+                        menuElement.innerHTML = menuContent;
+                    }
+                }
+                if (appElement && module.render) {
+                    const appcontent = yield module.render();
+                    if (appcontent) {
+                        appElement.innerHTML = appcontent;
+                    }
+                }
+                else {
+                    const appElement = document.getElementById('app-container');
+                    if (appElement) {
+                        appElement.innerHTML = '<div>Step not found</div>';
+                    }
+                }
             }
         });
     }
-    updateUI() {
-        console.log('En updateUI');
-        const isLoggedIn = this.isAuthenticated();
-        const loginButton = document.getElementById('loginButton');
-        const registerButton = document.getElementById('registerButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const usernameSpan = document.getElementById('username');
-        const nav = document.getElementById('nav');
-        if (isLoggedIn) {
-            const username = this.getUsername();
-            loginButton === null || loginButton === void 0 ? void 0 : loginButton.classList.add('hidden');
-            registerButton === null || registerButton === void 0 ? void 0 : registerButton.classList.add('hidden');
-            logoutButton === null || logoutButton === void 0 ? void 0 : logoutButton.classList.remove('hidden');
-            usernameSpan === null || usernameSpan === void 0 ? void 0 : usernameSpan.classList.remove('hidden');
-            usernameSpan.textContent = username;
-            nav === null || nav === void 0 ? void 0 : nav.classList.remove('hidden');
-        }
-        else {
-            loginButton === null || loginButton === void 0 ? void 0 : loginButton.classList.remove('hidden');
-            registerButton === null || registerButton === void 0 ? void 0 : registerButton.classList.remove('hidden');
-            logoutButton === null || logoutButton === void 0 ? void 0 : logoutButton.classList.add('hidden');
-            usernameSpan === null || usernameSpan === void 0 ? void 0 : usernameSpan.classList.add('hidden');
-            nav === null || nav === void 0 ? void 0 : nav.classList.add('hidden');
-        }
-    }
+    // updateUI() {
+    // 	console.log ('En updateUI');
+    // 	const isLoggedIn = this.isAuthenticated();
+    // 	const loginButton = document.getElementById('loginButton');
+    // 	const registerButton = document.getElementById('registerButton');
+    // 	const logoutButton = document.getElementById('logoutButton');
+    // 	const usernameSpan = document.getElementById('username');
+    // 	const nav = document.getElementById('nav');
+    // 	if (isLoggedIn) {
+    // 		const username = this.getUsername();
+    // 		loginButton?.classList.add('hidden');
+    // 		registerButton?.classList.add('hidden');
+    // 		logoutButton?.classList.remove('hidden');
+    // 		usernameSpan?.classList.remove('hidden');
+    // 		usernameSpan!.textContent = username;
+    // 		nav?.classList.remove('hidden');
+    // 	} else {
+    // 		loginButton?.classList.remove('hidden');
+    // 		registerButton?.classList.remove('hidden');
+    // 		logoutButton?.classList.add('hidden');
+    // 		usernameSpan?.classList.add('hidden');
+    // 		nav?.classList.add('hidden');
+    // 	}
+    // }
     isAuthenticated() {
+        console.log('En isAuthenticated');
+        console.log(localStorage.getItem('authToken'));
         // Aquí puedes agregar la lógica para verificar si el usuario está autenticado
         // Por ejemplo, verificar un token en el localStorage o una cookie
         return !!localStorage.getItem('authToken');
     }
-    getUsername() {
-        // Aquí puedes agregar la lógica para obtener el nombre de usuario
-        // Por ejemplo, decodificar un token JWT o hacer una solicitud a la API
-        return localStorage.getItem('username') || 'User';
-    }
 }
-document.addEventListener('DOMContentLoaded', () => new SPA('app-container'));
+document.addEventListener('DOMContentLoaded', () => new SPA('content'));

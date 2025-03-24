@@ -1,21 +1,24 @@
 class SPA {
     private container: HTMLElement;
-    private routes: { [key: string]: string } = {
-        'home': 'home.js',
-        'login': 'login.js',
-        'register': 'register.js',
-        'play-pong': 'playPong.js',
-        'play-tournament': 'playTournament.js',
-        'friends': 'friends.js',
-        'chat': 'chat.js',
-        'stats': 'stats.js',
-		'logout': 'logout.js'
+    private routes: { [key: string]: { module: string; protected: boolean } } = {
+		'home': { module: 'home.js', protected: false },
+        'login': { module: 'login.js', protected: false },
+		'register': { module: 'register.js', protected: false },
+		'play-pong': { module: 'playPong.js', protected: true },
+		'play-tournament': { module: 'playTournament.js', protected: true },
+		'friends': { module: 'friends.js', protected: true },
+		'chat': { module: 'chat.js', protected: true },
+		'stats': { module: 'stats.js', protected: true },
+		'logout': { module: 'logout.js', protected: true }
     };
     
     constructor(containerId: string) {
         this.container = document.getElementById(containerId) as HTMLElement;
-        window.onpopstate = () => this.loadStep();
-        this.updateUI();
+		
+		// Cargar el header y el footer
+		this.loadHeaderAndFooter();
+        
+		window.onpopstate = () => this.loadStep();
         if (!this.isAuthenticated()) {
             this.navigate('home');
         } else {
@@ -23,59 +26,135 @@ class SPA {
         }
     }
     
+	private async loadHeaderAndFooter() {
+		try {
+			// Cargar el header
+			// const headerResponse = await fetch('../html/header.html');
+			// if (headerResponse.ok) {
+			// 	const headerContent = await headerResponse.text();
+			// 	const headerElement = document.getElementById('header-container');
+			// 	if (headerElement) {
+			// 		headerElement.innerHTML = headerContent;
+			// 	}
+			// } else {
+			// 	console.error('Error al cargar el header:', headerResponse.statusText);
+			// }
+			// const appElement = document.getElementById('app-container');
+			// // const welcomeMessage = '<h1> Welcome</h1>';
+			// const welcomeMessage =
+			// 	`<div id="pong-container">
+			// 	<div class="paddle left-paddle"></div>
+			// 	<div class="ball"><img src="../img/bola.png" alt="Ball"></div>
+			// 	<div class="paddle right-paddle"></div>
+			// 	</div>`;
+			// if (appElement) {
+			// 	appElement.innerHTML = welcomeMessage;
+			// }
+			// Cargar el footer
+			const footerResponse = await fetch('../html/footer.html');
+			if (footerResponse.ok) {
+				const footerContent = await footerResponse.text();
+				const footerElement = document.getElementById('footer-container');
+				if (footerElement) {
+					footerElement.innerHTML = footerContent;
+				}
+			} else {
+				console.error('Error al cargar el footer:', footerResponse.statusText);
+			}
+		} catch (error) {
+			console.error('Error al cargar el header o footer:', error);
+		}
+	}
+
     navigate(step: string) {
         history.pushState({}, '', `#${step}`);
         this.loadStep();
     }
     
-    async loadStep() {
-        const step = location.hash.replace('#', '') || 'home';
-        const modulePath = this.routes[step];
-        if (modulePath) {
-            const module = await import(`./${modulePath}`);
-            this.container.innerHTML = module.render();
-        } else {
-            this.container.innerHTML = '<div>Step not found</div>';
-		}
-	}
+	async loadStep() {
+		let step = location.hash.replace('#', '') || 'home';
+		const modulePath = this.routes[step];
+		if (modulePath) {
+			const module = await import(`./${modulePath.module}`);
+			console.log('import:', module);
 
-	updateUI() {
-		console.log ('En updateUI');
-		const isLoggedIn = this.isAuthenticated();
-		const loginButton = document.getElementById('loginButton');
-		const registerButton = document.getElementById('registerButton');
-		const logoutButton = document.getElementById('logoutButton');
-		const usernameSpan = document.getElementById('username');
-		const nav = document.getElementById('nav');
 
-		if (isLoggedIn) {
-			const username = this.getUsername();
-			loginButton?.classList.add('hidden');
-			registerButton?.classList.add('hidden');
-			logoutButton?.classList.remove('hidden');
-			usernameSpan?.classList.remove('hidden');
-			usernameSpan!.textContent = username;
-			nav?.classList.remove('hidden');
+	        // Inicializar el módulo antes de renderizar
+	        if (module.initialize) {
+	            await module.initialize();
+	        }
+			const headerElement = document.getElementById('header_buttons');
+			const menuElement = document.getElementById('menu-container');
+			const appElement = document.getElementById('app-container');
+			console.log('headerElement:', headerElement);
+			console.log('menuElement:', menuElement);
+			console.log('appElement:', appElement);	
+			console.log('module.renderHeader:', module.renderHeader);
+			if (headerElement && module.renderHeader) {
+				const headerContent = await module.renderHeader();
+				if (headerContent) {
+					headerElement.innerHTML = headerContent;
+				}
+			}
+			if (menuElement && module.renderMenu) {
+				const menuContent = await module.renderMenu();
+				if (menuContent) {
+					menuElement.innerHTML = menuContent;
+				}
+			}		
+			if (appElement && module.render) {
+				const appcontent = await module.render();
+				if(appcontent) {
+					appElement.innerHTML = appcontent;	
+			}
 		} else {
-			loginButton?.classList.remove('hidden');
-			registerButton?.classList.remove('hidden');
-			logoutButton?.classList.add('hidden');
-			usernameSpan?.classList.add('hidden');
-			nav?.classList.add('hidden');
+			const appElement = document.getElementById('app-container');
+			if (appElement) {
+				appElement.innerHTML = '<div>Step not found</div>';
+			}
 		}
 	}
+
+	}
+	// updateUI() {
+	// 	console.log ('En updateUI');
+	// 	const isLoggedIn = this.isAuthenticated();
+	// 	const loginButton = document.getElementById('loginButton');
+	// 	const registerButton = document.getElementById('registerButton');
+	// 	const logoutButton = document.getElementById('logoutButton');
+	// 	const usernameSpan = document.getElementById('username');
+	// 	const nav = document.getElementById('nav');
+
+	// 	if (isLoggedIn) {
+	// 		const username = this.getUsername();
+	// 		loginButton?.classList.add('hidden');
+	// 		registerButton?.classList.add('hidden');
+	// 		logoutButton?.classList.remove('hidden');
+	// 		usernameSpan?.classList.remove('hidden');
+	// 		usernameSpan!.textContent = username;
+	// 		nav?.classList.remove('hidden');
+	// 	} else {
+	// 		loginButton?.classList.remove('hidden');
+	// 		registerButton?.classList.remove('hidden');
+	// 		logoutButton?.classList.add('hidden');
+	// 		usernameSpan?.classList.add('hidden');
+	// 		nav?.classList.add('hidden');
+	// 	}
+	// }
 
 	isAuthenticated(): boolean {
+		console.log('En isAuthenticated');
+		console.log(localStorage.getItem('authToken'));
 		// Aquí puedes agregar la lógica para verificar si el usuario está autenticado
 		// Por ejemplo, verificar un token en el localStorage o una cookie
 		return !!localStorage.getItem('authToken');
 	}
 
-	getUsername(): string {
-		// Aquí puedes agregar la lógica para obtener el nombre de usuario
-		// Por ejemplo, decodificar un token JWT o hacer una solicitud a la API
-		return localStorage.getItem('username') || 'User';
-	}
+	// getUsername(): string {
+	// 	// Aquí puedes agregar la lógica para obtener el nombre de usuario
+	// 	// Por ejemplo, decodificar un token JWT o hacer una solicitud a la API
+	// 	return localStorage.getItem('username') || 'User';
+	// }
 }
 
-document.addEventListener('DOMContentLoaded', () => new SPA('app-container'));
+document.addEventListener('DOMContentLoaded', () => new SPA('content'));

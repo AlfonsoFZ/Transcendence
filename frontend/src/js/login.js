@@ -32,9 +32,9 @@ function handleLoginSubmit(event) {
             // Almacenar el token de autenticación y el nombre de usuario
             localStorage.setItem('authToken', result.token);
             localStorage.setItem('username', result.username);
-            // Actualizar la UI
-            const spa = new SPA('app-container');
-            spa.updateUI();
+            // // Actualizar la UI
+            // const spa = new SPA('app-container');
+            // spa.updateUI();
         }
         catch (error) {
             console.error(error);
@@ -42,8 +42,8 @@ function handleLoginSubmit(event) {
     });
 }
 function render() {
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c;
         try {
             const response = yield fetch("../html/login.html");
             if (!response.ok)
