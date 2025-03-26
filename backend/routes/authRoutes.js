@@ -77,7 +77,7 @@ export function configureAuthRoutes(fastify, sequelize) {
 	},
 		async (request, reply) => {
 			setTokenCookie(request.user.username, reply);
-			reply.redirect('/back');
+			reply.redirect('https://localhost:8443/#home');
 		}
 	);
 
