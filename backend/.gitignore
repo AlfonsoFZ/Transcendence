@@ -1,4 +1,4 @@
 node_modules
 package-lock.json
-./database/database.sqlite
-./database/package-lock.json
+database/database.sqlite
+database/package-lock.json
