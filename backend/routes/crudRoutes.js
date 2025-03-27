@@ -106,4 +106,5 @@ export function configureCrudRoutes(fastify) {
 			reply.send({ error: 'Error deleting all users ', err });
 		}
 	});
+
 }
