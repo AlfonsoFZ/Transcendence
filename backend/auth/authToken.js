@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { getUserByName } from "../database/crud.cjs";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -32,18 +33,33 @@ export function verifyToken (request, reply, done) {
     });
 };
 
-// Destroy token cookie
-// Change the last logout session date in the database
-// Change the last login session date in the database in the login functions too
-// Check if the cookie is set with a frontend fetch request
+export async function extractUserFromToken(token) {
+    try {
+        if (!token) {
+            console.log('No token provided.');
+            return null;
+        }
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (!decoded || !decoded.username) {
+            console.log('Invalid or missing username in token.');
+            return null;
+        }
+        const username = decoded.username;
+        const user = await getUserByName(username);
+        return user;
+    } catch (error) {
+        console.error('Error verifying token:', error);
+        return null;
+    }
+}
+
 export function destroyTokenCookie(reply) {
     
     // Destroy accessToken cookie
-    reply.setCookie('token', 'lacookiedelmonstruodelasgalletas', {
+    reply.clearCookie('token', {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
         path: '/',
-        expires: new Date(0),
     });
 }

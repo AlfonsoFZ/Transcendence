@@ -1,7 +1,7 @@
 import fastifyPassport from "@fastify/passport";
 import GoogleStrategy from "passport-google-oauth20";
 import { comparePassword } from '../database/users/PassUtils.cjs';
-import { createUser, getUserByEmail, getUserByGoogleId, getUserByName, updateLastLoginById, updateLastLogoutById } from "../database/crud.cjs";
+import { createUser, getUserByEmail, getUserByGoogleId, updateLastLoginById, updateLastLogoutById } from "../database/crud.cjs";
 import { setTokenCookie, destroyTokenCookie } from "./authToken.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -54,22 +54,14 @@ export function authenticateUserWithGoogleStrategy() {
 	}));
 }
 
-// Both functions below are used to logout an user and seem to be exactly the same
-// Check if one function can to all the job
-export async function signOutUser(username, reply) {
-	destroyTokenCookie(reply);
-	const user = getUserByName(username);
-	if (!user)
-		return reply.status(401).send({ message: 'User not found' });
-	updateLastLogoutById(user.id);
-	return reply.status(200).send({ message: 'Logged out successfully' });
-}
+export async function signOutUser(token, user, reply) {
 
-export function signOutUserWithGoogleStrategy(username, reply) {
-	destroyTokenCookie(reply);
-	const user = getUserByName(username);
+	// Sign out user updating lastLogout and destroying token
+	if (!token)
+		return reply.status(401).send({ message: 'Token not found' });
 	if (!user)
-		return reply.status(401).send({ message: 'User not found' });
-	updateLastLogoutById(user.id);
+		return reply.status(401).send({ message: 'Invalid token' });
+	await updateLastLogoutById(user.id);
+	destroyTokenCookie(reply);
 	return reply.status(200).send({ message: 'Logged out successfully' });
 }
