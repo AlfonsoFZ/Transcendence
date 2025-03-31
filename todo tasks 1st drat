@@ -1,30 +1,42 @@
-
 USER MANAGEMENT
-1.- Login con google - ver opciones para cambiar username si coincide, 
-	prompt para cambiarlo o añadimos el user_id al final (opción preferida).
-2.- Login con google - chequear si su funcionamiento es correcto
-3.- Logout con google - chequer si debe funconar así, actualmente al 
-	hacer logout se elimina el jwt pero al pulsar login sobre google entra sin más 
-	con tu información.
-4.- crear formulario de edición de datos personales, con la posibilidad de 
-	usar un avatar y enlazarlo a su usuario en el header
-	DUDA??? el nickname lo creamos específico para los torneos o hacemos el 
-5.- logout - incluir la llamada
-6.- ver validación o role admin para rutas comprometidas 
-7.- Olvidó su contraseña -  ver opciones para su implementación
 
+BACK
+1. Login con google. Añadir al username de google el ID del usuario de la base de datos (para evitar posibles coincidencias)
+2. Investigar cómo gestionar las imágenes de avatar subidas por el usuario. ¿Dónde se guardan? ¿Cómo se gestionan? (Hay que cambiar la configuración de NGINX ?).
+3. Incluir la fecha de logout en la base de datos.
+4. Echarle un vistazo a la configuración de CORS y a las rutas comprometidas (delete users, etc.). Por ejemplo, para realizar un delete user, quizás sea importante que el token del usuario que intenta realizar esa acción coincida con el token del usuario que se quiere borrar.
 
-USER/STATS
-5.- Stats crear modelo 	
+fecha | usuario1 | usuario2 | winner | loser | hits | misses | duration | game_id | tournament_id
+
+5. Crear modelo userHistory para el usuario. Sería un listadpo:
+	- Número de partidas jugadas
+	- Número de partidas ganadas
+	- Número de partidas perdidas
+	- Número de partidas empatadas ?
+	- Número de torneos jugados
+	- Número de torneos ganados
+	- Racha de victorias
+		-- (Si se implementa en el perfil de usuario)
+		-- 	- ELO
+		-- 		- Cada jugador empieza con 1000 puntos de ELO al registrarse.
+		-- 		- $A1 = ELO del jugador
+		-- 		- $A2 = ELO del oponente
+		-- 		- Cálculo del ELO (puntuación) Fórmula: REDONDEAR(16 / (1 + 10^(($A1 - $A2) / 400)))
+		-- 		- El ELO aumentará en 8 puntos con adversarios igualados. Si tienen menor puntuación, el elo ganado será menor y con adversarios de mayor puntuación, el elo ganado será mayor.
+6. Para editar los datos del usuario, es necesario comprobar que los datos sean válidos (username, mail, etc.). Si hay un error, hay que mandar un mensaje al front para que lo especifique al usuario. Una vez editados los datos, es necesario cambiar el token ya que éste lleva el nombre de usuario encriptado en él, etc.
+7. Implementar un modelo de uno a varios que reagrupe los amigos de un usuario. Se debe poder ver si el usuario está conectado.
 
 
 FRONT
-1.- navegación - ver como gestionar las almohadillas y su eliminnación en la url
-2.- añadir los headers y el menú en todos los pasos - al hacer refresh se van todos...
-3.- register - revisar que las dos contraseñas coinciden (validar datos que no estén bien puestos)
-4.- avatar - ver como implementar el avatar en el header y si merece la pena
+1. Crear en el front un formulario para editar los datos personales del usuario. En los datos, debe ser posible incluir un avatar y este debería aparecer en el header de la página. (displayname de usuario == username ?).
+2. Establecer un protocolo para cuando el usuario haya olvidado su contraseña. ¿Cómo se le envía un correo para que pueda recuperarla? (Posible módulo a implementar) o eliminar el enlace del formulario del login.
+3. Navegación en la página: las url van con almohadillas. ¿Cómo se pueden eliminar? ¿Es necesario?
+4. Añadir los headers y el menú en todos los pasos. Al realizar refresh, se pierden todos los datos. ¿Cómo se pueden mantener?
+5. En el register, revisar que las dos contraseñas coinciden (no validar los datos cuando las dos contraseñas no coincidan).
+
 
 BACK/FRONT
-4.- play game - implementar juego para jugar en local
-5.- gestionar Torneos
-6.-	 
+
+1. Implementar el juegazo.
+2. Gestionar torneos.
+3. Implementar chat.
