@@ -20,9 +20,6 @@ export default class LoginRender extends Step {
                 if (!response.ok)
                     throw new Error("Failed to logout");
                 console.log("User logged out successfully.");
-                // Eliminar datos de autenticación del almacenamiento local y cookies
-                // localStorage.removeItem("authToken");
-                // localStorage.removeItem("username");
                 document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 // Redirigir a la página principal
                 window.location.hash = "#home";

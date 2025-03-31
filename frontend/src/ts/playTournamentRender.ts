@@ -73,14 +73,14 @@ export default class Tournament extends Step {
 		}
 	}
 
-	async renderMenu(): Promise<string> {
-		return `<ul><li>Inicio</li><li>Contacto</li></ul>`;
-	}
+	// async renderMenu(): Promise<string> {
+	// 	return `<ul><li>Inicio</li><li>Contacto</li></ul>`;
+	// }
 
-	// Método para inicializar eventos después de renderizar el contenido
-	async afterRender() {
-		document.getElementById('goToLogin')?.addEventListener('click', () => {
-			this.navigate('login');
-		});
-	}
+// 	// Método para inicializar eventos después de renderizar el contenido
+// 	async afterRender() {
+// 		document.getElementById('goToLogin')?.addEventListener('click', () => {
+// 			this.navigate('login');
+// 		});
+// 	}
 }

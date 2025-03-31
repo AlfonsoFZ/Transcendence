@@ -78,18 +78,4 @@ export default class Pong extends Step {
             }
         });
     }
-    renderMenu() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return `<ul><li>Inicio</li><li>Contacto</li></ul>`;
-        });
-    }
-    // Método para inicializar eventos después de renderizar el contenido
-    afterRender() {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            (_a = document.getElementById('goToLogin')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => {
-                this.navigate('login');
-            });
-        });
-    }
 }

@@ -23,7 +23,6 @@ export default class Home extends Step {
 					</nav>
 				`;
 			}
-	
 			// Retornar el contenido para usuarios autenticados
 			return `
 				<div id="pong-container">
@@ -36,8 +35,7 @@ export default class Home extends Step {
 				if (menuContainer) {
 					menuContainer.innerHTML = "";
 				}			
-	
-				// Retornar el contenido para usuarios no autenticados
+					// Retornar el contenido para usuarios no autenticados
 				return `
 					<div id="pong-container">
 						<div class="paddle left-paddle"></div>
@@ -47,7 +45,6 @@ export default class Home extends Step {
 				`;
 			}
 		} 
-	
 		catch (error) {
 			console.error("Error en render:", error);
 			return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
@@ -78,14 +75,14 @@ export default class Home extends Step {
 		}
 	}
 
-	async renderMenu(): Promise<string> {
-		return `<ul><li>Inicio</li><li>Contacto</li></ul>`;
-	}
+	// async renderMenu(): Promise<string> {
+	// 	return `<ul><li>Inicio</li><li>Contacto</li></ul>`;
+	// }
 
 	// Método para inicializar eventos después de renderizar el contenido
-	async afterRender() {
-		document.getElementById('goToLogin')?.addEventListener('click', () => {
-			this.navigate('login');
-		});
-	}
+	// async afterRender() {
+	// 	document.getElementById('goToLogin')?.addEventListener('click', () => {
+	// 		this.navigate('login');
+	// 	});
+	// }
 }

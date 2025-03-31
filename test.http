@@ -40,6 +40,16 @@ Content-Type: application/json
 }
 
 
+POST https://localhost:8443/back/register_user HTTP/1.1
+Content-Type: application/json
+
+{
+	"username": "Pepe5@gmail.com",
+	"password": "1234",
+	"email": "Pepe5@gmail.com"
+}
+
+
 // ***************************************************************//
 //	     La siguiente petición Obtiene todos los usuarios:        //
 // ***************************************************************//
@@ -51,7 +61,7 @@ GET https://localhost:8443/back/get_users  HTTP/1.1
 //	    La siguiente petición Obtiene el usuario por username:    //
 // ***************************************************************//
 
-GET https://localhost:8443/back/?username=trutru2 HTTP/1.1
+GET https://localhost:8443/back/localhost:8443/back/get_user_by_username/?username=trutru2 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRydXRydTIiLCJpYXQiOjE3NDIxNDkyMTIsImV4cCI6MTc0MjE1MjgxMn0.Q3kSMYf-djluD-oBJ9ZCxNAOa5QLVA6Ym90F4Beaftw
 
 // ***************************************************************//

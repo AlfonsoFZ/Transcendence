@@ -7,13 +7,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-export default class RegisterRender {
-    constructor(containerId) {
-        this.container = document.getElementById(containerId);
-    }
+import { Step } from './stepRender.js';
+export default class RegisterRender extends Step {
     render() {
         return __awaiter(this, void 0, void 0, function* () {
-            // Lógica para renderizar el registro
+            try {
+                const response = yield fetch("../html/register.html");
+                if (!response.ok)
+                    throw new Error("Failed to load the HTML file");
+                const htmlContent = yield response.text();
+                history.pushState(null, '', '/#register');
+                requestAnimationFrame(() => __awaiter(this, void 0, void 0, function* () {
+                    const form = this.container.querySelector("form");
+                    if (form) {
+                        try {
+                            const { handleRegisterSubmit } = yield import('./handleRegisterSubmit.js');
+                            form === null || form === void 0 ? void 0 : form.addEventListener("submit", (event) => __awaiter(this, void 0, void 0, function* () {
+                                event.preventDefault();
+                                // console.log("Se ha pulsado handleRegisterSubmit:", event);
+                                handleRegisterSubmit(event);
+                            }));
+                        }
+                        catch (err) {
+                            console.error("Error al importar handleRegisterSubmit.js:", err);
+                        }
+                    }
+                }));
+                return htmlContent;
+            }
+            catch (err) {
+                console.error("Error in render method:", err);
+                return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+            }
         });
     }
 }
