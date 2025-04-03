@@ -1,5 +1,5 @@
 import { verifyToken } from '../auth/authToken.js';
-import { createUser, getUserById, updateUserbyId, getUserByName, getUserByEmail, getUserByGoogleId, getUsers, deleteUserById, deleteAllUsers, getGamelogs } from '../database/crud.cjs';
+import { createUser, getUserById, updateUserbyId, getUserByName, getUserByEmail, getUserByGoogleId, getUsers, deleteUserById, deleteAllUsers, getGamelogs, getGamelogsByUserId } from '../database/crud.cjs';
 
 export function configureCrudRoutes(fastify) {
 // Define all CRUD routes here
@@ -12,7 +12,7 @@ export function configureCrudRoutes(fastify) {
 			reply.send({ message: `User ${username} created successfully`, user: newUser });
 		} catch (err) {
 			fastify.log.error(err);
-			reply.send({ error: `Error creating user : ${err.message}` });
+			reply.send({ error: 'Error creating user' + err.message });
 		}
 	});
 
@@ -24,7 +24,7 @@ export function configureCrudRoutes(fastify) {
 			reply.send({message: `User ${username} updated successfully`, updatedUser});
 		} catch (err) {
 			fastify.log.error(err);
-			reply.send({ error: `Error updating user : ${err.message}` });
+			reply.send({ error: 'Error updating user' + err.message });
 		}
 	});
 
@@ -34,8 +34,8 @@ export function configureCrudRoutes(fastify) {
 			const users = await getUsers();
 			reply.send(users);
 		} catch (err) {
-			fastify.log.error('Cannot list users ', err);
-			reply.send({ error: 'Error fetching users' });
+			fastify.log.error(err);
+			reply.send({ error: 'Error fetching users' + err.message });
 		}
 	});
 
@@ -46,8 +46,8 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserById(userId);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found ', err);
-			reply.send({ error: 'User not found' });
+			fastify.log.error(err);
+			reply.send({ error: 'Error searching userId' + err.message });
 		}
 	});
 
@@ -57,8 +57,8 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserByName(request.query.username);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found ', err);
-			reply.send({ error: 'User not found' });
+			fastify.log.error(err);
+			reply.send({ error: 'Error searching username' + err.message });
 		}
 	});
 
@@ -68,8 +68,8 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserByEmail(request.query.email);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found ', err);
-			reply.send({ error: 'User not found' });
+			fastify.log.error(err);
+			reply.send({ error: 'Error searching email' + err.message });
 		}
 	});
 
@@ -79,8 +79,8 @@ export function configureCrudRoutes(fastify) {
 			const user = await getUserByGoogleId(request.query.googleId);
 			reply.send(user);
 		} catch (err) {
-			fastify.log.error('User not found ', err);
-			reply.send({ error: 'User not found' });
+			fastify.log.error(err);
+			reply.send({ error: 'Error searching googleId' + err.message });
 		}
 	});
 
@@ -92,7 +92,7 @@ export function configureCrudRoutes(fastify) {
 			reply.send(result);
 		} catch (err) {
 			fastify.log.error(err);
-			reply.send({ error: 'Error deleting user ', err });
+			reply.send({ error: 'Error deleting user' + err.message });
 		}
 	});
 
@@ -103,7 +103,7 @@ export function configureCrudRoutes(fastify) {
 			reply.send(result);
 		} catch (err) {
 			fastify.log.error(err);
-			reply.send({ error: 'Error deleting all users ', err });
+			reply.send({ error: 'Error deleting all users '+ err.message });
 		}
 	});
 
@@ -113,8 +113,20 @@ export function configureCrudRoutes(fastify) {
 			const gamelogs = await getGamelogs();
 			reply.send(gamelogs);
 		} catch (err) {
-			fastify.log.error('Cannot list gamelogs ', err);
-			reply.send({ error: 'Error fetching gamelogs' });
+			fastify.log.error(err);
+			reply.send({ error: 'Error fetching gamelogs '+ err.message });
 		}
 	});
+
+	fastify.get('/get_user_gamelogs/:userId', async (request, reply) => {
+		try {
+			const userId = request.params.userId;
+			const userGamelogs = await getGamelogsByUserId(userId);
+			reply.send(userGamelogs);
+		} catch (err) {
+			fastify.log.error(err);
+			reply.send({ error: 'Error fetching user gamelogs' + err.message });
+		}
+	});
+
 }

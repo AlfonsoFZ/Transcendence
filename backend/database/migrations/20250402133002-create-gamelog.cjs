@@ -56,3 +56,6 @@ module.exports = {
 		await queryInterface.dropTable('Gamelogs');
 	}
 };
+
+// docker exec -it backend bash && cd ./database && npx sequelize-cli db:migrate
+// docker exec -it backend bash && cd ./database && npx sequelize-cli db:migrate:undo

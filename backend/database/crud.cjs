@@ -172,19 +172,20 @@ const getGamelogs = async () => {
 	}
 };
 
-// const getGamelogsByUserId = async () => {
-// 	try {
-// 	  const [matchHistory] = await db.sequelize.query(
-// 		'SELECT * FROM "UserMatchHistory" WHERE userId = 1',
-// 		{
-// 		  type: db.Sequelize.QueryTypes.SELECT,
-// 		}
-// 	  );
-// 	  return matchHistory;  // Retorna el resultado (único registro)
-// 	} catch (err) {
-// 	  throw new Error('Error fetching match history: ' + err.message);
-// 	}
-//   };
+const getGamelogsByUserId = async (userId) => {
+	try {
+		const [userGamelogs] = await db.sequelize.query(
+			'SELECT * FROM "Usergamelog" WHERE "userId" = :userId',
+			{
+				type: db.Sequelize.QueryTypes.SELECT,
+				replacements: { userId },
+			}
+		);
+		return userGamelogs;
+	} catch (err) {
+		throw new Error('Error fetching user gamelogs: ', err.message);
+	}
+};
 
 module.exports = {
 	createUser,
@@ -199,5 +200,5 @@ module.exports = {
 	updateLastLoginById,
 	updateLastLogoutById,
 	getGamelogs,
+	getGamelogsByUserId,
 };
-

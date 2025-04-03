@@ -27,12 +27,12 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: 0
 		},
-		game_id: {
+		gameId: {
 			type: DataTypes.STRING,
 			allowNull: true,
 			defaultValue: null
 		},
-		tournament_id: {
+		tournamentId: {
 			type: DataTypes.STRING,
 			allowNull: true,
 			defaultValue: null

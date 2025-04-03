@@ -31,6 +31,21 @@ module.exports = {
 				type: Sequelize.STRING,
 				defaultValue: '/images/default-avatar.png'
 			},
+			last_login: {
+				type: Sequelize.DATE,
+				allowNull: false,
+				defaultValue: Sequelize.NOW
+			},
+			last_logout: {
+				type: Sequelize.DATE,
+				allowNull: true,
+				defaultValue: null
+			},
+			refresh_token: {
+				type: Sequelize.STRING,
+				allowNull: true,
+				defaultValue: null
+			},	
 			created_at: {
 				allowNull: false,
 				type: Sequelize.DATE,
@@ -48,3 +63,6 @@ module.exports = {
 		await queryInterface.dropTable('Users');
 	}
 };
+
+// docker exec -it backend bash && cd ./database && npx sequelize-cli db:migrate
+// docker exec -it backend bash && cd ./database && npx sequelize-cli db:migrate:undo

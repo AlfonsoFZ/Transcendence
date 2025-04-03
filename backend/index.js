@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import pinoConfig from "./config/pino.js";
 import { configureServer } from './config/config.js';
 import configureRoutes from './routes/routes.js';
+import { runMigrations, runSeeders } from './utils/migrationUtils.js';
 import pkg from './database/models/index.cjs';
 const { sequelize } = pkg;
 
@@ -15,6 +16,9 @@ const start = async () => {
 	try {
 		// Sync the database
 		await sequelize.sync();
+		await runMigrations();
+		// await runSeeders();
+
 		fastify.log.info('Database synced');
 
 		await fastify.listen({ port: 8000, host: '0.0.0.0' });
