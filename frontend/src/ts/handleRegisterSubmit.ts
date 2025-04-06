@@ -5,6 +5,10 @@ export async function handleRegisterSubmit(event: SubmitEvent) {
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+	if (data.password !== data.confirm_password) {
+		alert("Las contraseñas no coinciden. Por favor, verifica e intenta nuevamente.");
+		return;
+	}
     try {
         const response = await fetch("https://localhost:8443/back/register_user", {
             method: "POST",

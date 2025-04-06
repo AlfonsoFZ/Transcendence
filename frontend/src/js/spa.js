@@ -104,9 +104,9 @@ export class SPA {
                     menuElement = document.getElementById('menu-container');
                     appElement = document.getElementById('app-container');
                 }
-                console.log('headerElement: ', headerElement);
-                console.log('menuElement: ', menuElement);
-                console.log('appElement: ', appElement);
+                // console.log('headerElement: ', headerElement);
+                // console.log('menuElement: ', menuElement);
+                // console.log('appElement: ', appElement);
                 if (headerElement) {
                     headerElement.innerHTML = yield stepInstance.renderHeader();
                 }

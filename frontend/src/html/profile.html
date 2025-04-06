@@ -3,7 +3,9 @@
 	<div class="w-1/2 p-6 flex flex-col items-center border-r border-gray-700">
 	  <!-- Avatar -->
 	  <div class="mb-6">
-		<img id="avatar-preview" src="{{ avatarPath }}" alt="Avatar" class="w-32 h-32 rounded-full border-2 border-gray-600">
+		<img id="avatar-preview" src="{{ avatarPath }}" alt="Avatar" 
+		class="w-32 h-32 rounded-full border-2 border-gray-600 hover:ring-4 hover:ring-blue-500 hover:brightness-110" 
+		title="Double click to edit">
 	  </div>
   
 	  <!-- Formulario de datos del usuario -->
@@ -17,12 +19,13 @@
 		  <input type="email" id="email" name="email" value="{{ email }}" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" readonly>
 		</div>
 		<div>
-		  <label for="avatar" class="block mb-2 text-sm font-medium">Upload Avatar</label>
-		  <input type="file" id="avatar" name="avatar" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white hidden" accept="image/*">
-		</div>
+			<label for="tournamentusername" class="block mb-2 text-sm font-medium">Tournament Username</label>
+			<input type="text" id="tournamentusername" name="tournamentusername" value="{{ tournamentusername }}" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" readonly>
+		  </div>
 		<div class="flex justify-between">
 		  <button type="button" id="edit-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Edit info</button>
-		  <button type="button" id="change-password-button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">Change Password</button>
+		  <!-- <button type="file"   id="avatar" name="avatar" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Cambiar Avatar</button> -->
+		  <button type="button" id="change-password-button" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Change Password</button>
 		</div>
 	  </form>
 	</div>

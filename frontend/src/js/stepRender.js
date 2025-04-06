@@ -33,7 +33,7 @@ export class Step {
                 return user.username;
             }
             else {
-                console.log("Verificando autenticación...");
+                // console.log("Verificando autenticación...");
                 try {
                     const response = yield fetch("https://localhost:8443/back/auth/verify-token", {
                         method: "GET",
@@ -60,7 +60,7 @@ export class Step {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this.checkAuth();
-                console.log("Valor de user en renderHeader:", user);
+                // console.log("Valor de user en renderHeader:", user);
                 return user ?
                     `<div id="authButtons" class="flex items-center">
 					<span id="username" class="text-white"><a href="#profile"> ${user} </a></span>

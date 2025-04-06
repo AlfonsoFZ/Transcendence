@@ -41,41 +41,10 @@ export default class Profile extends Step {
 			htmlContent = htmlContent.replace("{{ username }}", userData.username); // Ejemplo de reemplazo simple
 			htmlContent = htmlContent.replace("{{ email }}", userData.email);
 			htmlContent = htmlContent.replace("{{ avatarPath }}", userData.avatarPath);
+			userData.tournamentUserName ? htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.tournamentUserName) 
+				: htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.username);
 
-			// if (this.container && htmlContent) {
-			// 	this.container.innerHTML = htmlContent;
-	
-				// Esperar un breve tiempo antes de asignar eventos
-				// requestAnimationFrame(async () => {
-				// 	const form = this.container.querySelector("form");
-					// if (form) {
-					// 	try {
-					// 		const { handleLoginSubmit } = await import('./handleLoginSubmit.js');
-					// 		form.addEventListener("submit", async (event) => {
-					// 			event.preventDefault();
-					// 			console.log("Se ha pulsado handleLoginSubmit:", event);
-					// 			handleLoginSubmit(event);
-					// 		});
-					// 	} catch (err) {
-					// 		console.error("Error al importar handleLoginSubmit.js:", err);
-					// 	}
-					// }
-	
-					// Configurar evento para el botón de registro
-					// const signUp = this.container.querySelector("#signUp");
-					// if (signUp) {
-					// 	signUp.addEventListener("click", async () => {
-					// 		try {
-					// 			const { default: RegisterRender } = await import('./registerRender.js');
-					// 			const registerInstance = new RegisterRender('app-container');
-					// 			await registerInstance.render();
-					// 		} catch (err) {
-					// 			console.error("Error al importar registerRender.js:", err);
-					// 		}
-					// 	});
-					// }
-				// });
-	
+			
 				return htmlContent;
 			// }
 		} catch (error) {
