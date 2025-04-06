@@ -10,12 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { SPA } from './spa.js';
 export class Step {
     constructor(containerId) {
+        this.username = null; // Almacena el nombre de usuario autenticado
         this.container = document.getElementById(containerId);
         this.spa = SPA.getInstance(); // Obtenemos la instancia de SPA
+        this.initializeUsername();
+    }
+    initializeUsername() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.username = yield this.checkAuth();
+        });
     }
     checkAuth() {
         return __awaiter(this, void 0, void 0, function* () {
-            const validation = false;
+            const validation = false; // si está en false se está verificando la autenticación
             // Simulación de verificación de autenticación PARA CUANDO LA COOKIE NO SE ENVIA BIEN"
             if (validation) {
                 const user = {
@@ -26,7 +33,7 @@ export class Step {
                 return user.username;
             }
             else {
-                console.log("Verificando autenticación...");
+                // console.log("Verificando autenticación...");
                 try {
                     const response = yield fetch("https://localhost:8443/back/auth/verify-token", {
                         method: "GET",
@@ -53,10 +60,10 @@ export class Step {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this.checkAuth();
-                console.log('user en renderHeader: ' + user);
+                // console.log("Valor de user en renderHeader:", user);
                 return user ?
                     `<div id="authButtons" class="flex items-center">
-					<span id="username" class="text-white">${user}</span>
+					<span id="username" class="text-white"><a href="#profile"> ${user} </a></span>
 					<div id="headerSeparator" class="vertical-bar"></div>
 					<a href="#logout" id="logoutButton" class="text-white hover:text-gray-400">Logout</a>
 				</div>
