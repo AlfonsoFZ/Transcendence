@@ -1,4 +1,5 @@
 import { verifyToken } from '../auth/authToken.js';
+import { authenticateUser } from '../auth/authUser.js';
 import { createUser, getUserById, updateUserbyId, getUserByName, getUserByEmail, getUserByGoogleId, getUsers, deleteUserById, deleteAllUsers, getGamelogs, getGamelogsByUserId } from '../database/crud.cjs';
 
 export function configureCrudRoutes(fastify) {
@@ -16,6 +17,7 @@ export function configureCrudRoutes(fastify) {
 		}
 	});
 
+	// Define a POST route to register a new user
 	fastify.post('/register_user', async (request, reply) => {
 		const { username, password, googleId, email, avatarPath } = request.body;
 		try {
@@ -27,12 +29,12 @@ export function configureCrudRoutes(fastify) {
 		} catch (err) {
 			fastify.log.error(err);
 			if (err.message === 'Username already exists') {
-				return reply.status(409).send({ error: err.message });
+				return reply.status(409).send({ error: 'Error registering user' + err.message });
 			}
 			if (err.message === 'Email already exists') {
-				return reply.status(409).send({ error: err.message });
+				return reply.status(409).send({ error: 'Error registering user' + err.message });
 			} else {
-			reply.status(500).send({ error: `Error creating user : ${err.message}`}); 
+				reply.status(500).send({ error: 'Error registering user' + err.message }); 
 			}
 		}
 	});
@@ -142,6 +144,7 @@ export function configureCrudRoutes(fastify) {
 		}
 	});
 
+	// Define a GET route to retrieve gamelogs by userId
 	fastify.get('/get_user_gamelogs/:userId', async (request, reply) => {
 		try {
 			const userId = request.params.userId;
@@ -152,5 +155,4 @@ export function configureCrudRoutes(fastify) {
 			reply.send({ error: 'Error fetching user gamelogs' + err.message });
 		}
 	});
-
 }
