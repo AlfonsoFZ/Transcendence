@@ -22,15 +22,10 @@ export class SPA {
             'profile': { module: 'userProfileRender.js', protected: true }
         };
         this.container = document.getElementById(containerId);
-        SPA.instance = this; // Guardamos la instancia en una propiedad estática
+        SPA.instance = this; // Guardamos la instancia en la propiedad estática para poder exportarla
         this.loadHEaderAndFooter();
         window.onpopstate = () => this.loadStep();
-        if (!this.isAuthenticated()) {
-            this.navigate('home');
-        }
-        else {
-            this.loadStep();
-        }
+        this.navigate('home');
     }
     loadHEaderAndFooter() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -82,52 +77,42 @@ export class SPA {
             // history.replaceState(null, '', newUrl);
             const routeConfig = this.routes[step];
             if (routeConfig) {
-                // Verificar si la ruta es protegida y si el usuario está autenticado
-                if (routeConfig.protected && !this.isAuthenticated()) {
+                //Verificar si la ruta es protegida y si el usuario está autenticado
+                // Cargar el módulo correspondiente
+                console.log("he pasado por loadStep de la clase SPA");
+                //importamos el módulo correspondiente
+                const module = yield import(`./${routeConfig.module}`);
+                // Creamos una instancia del módulo
+                const stepInstance = new module.default('app-container');
+                // Verificamos si el usuario está autenticado
+                const user = yield stepInstance.checkAuth();
+                if (user) {
+                    console.log("Usuario autenticado: ", user);
+                }
+                else {
+                    console.log("Usuario no autenticado: ", user);
+                }
+                if (routeConfig.protected && !user) {
                     console.warn(`Acceso denegado a la ruta protegida: ${step}`);
                     this.navigate('login'); // Redirigir al usuario a la página de login
                     return;
                 }
-                // Cargar el módulo correspondiente
-                const module = yield import(`./${routeConfig.module}`);
-                const stepInstance = new module.default('app-container');
-                // Esperar hasta que los elementos del DOM estén disponibles
-                let headerElement = document.getElementById('header-buttons');
-                let menuElement = document.getElementById('menu-container');
-                let appElement = document.getElementById('app-container');
-                // const headerElement = document.getElementById('header-buttons');
-                // const menuElement = document.getElementById('menu-container');
-                // const appElement = document.getElementById('app-container');
-                while (!headerElement || !menuElement || !appElement) {
-                    yield new Promise(resolve => setTimeout(resolve, 100)); // Esperar 100ms antes de volver a comprobar
-                    headerElement = document.getElementById('header-buttons');
-                    menuElement = document.getElementById('menu-container');
-                    appElement = document.getElementById('app-container');
-                }
-                // console.log('headerElement: ', headerElement);
-                // console.log('menuElement: ', menuElement);
-                // console.log('appElement: ', appElement);
-                if (headerElement) {
-                    headerElement.innerHTML = yield stepInstance.renderHeader();
-                }
-                if (menuElement) {
-                    menuElement.innerHTML = yield stepInstance.renderMenu();
-                }
-                if (appElement) {
-                    appElement.innerHTML = yield stepInstance.render();
-                }
+                yield stepInstance.init(); // Inicializar el módulo
             }
             else {
                 this.container.innerHTML = '<div>Step not found</div>';
             }
         });
     }
-    isAuthenticated() {
-        //hardcode para las pruebas
-        // return false; // Aquí iría la lógica real de autenticación
-        return true; // Para pruebas, siempre autenticado
-    }
-    // Método estático para acceder a la instancia de SPA
+    // isAuthenticated(): boolean {
+    // 	//hardcode para las pruebas
+    //     // return false; // Aquí iría la lógica real de autenticación
+    // 	return true; // Para pruebas, siempre autenticado
+    // }
+    // // Método estático para acceder a la instancia de SPA
+    // static getInstance(): SPA {
+    //     return SPA.instance;
+    // }
     static getInstance() {
         return SPA.instance;
     }

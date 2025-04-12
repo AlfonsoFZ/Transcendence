@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from './stepRender.js';
 export default class LoginRender extends Step {
-    render() {
+    render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("En logout render");
             try {
@@ -22,12 +22,18 @@ export default class LoginRender extends Step {
                 console.log("User logged out successfully.");
                 document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 // Redirigir a la página principal
-                window.location.hash = "#home";
-                return "<h1>Logout successful</h1>";
+                appElement.innerHTML = `<div id="pong-container">
+									<div class="paddle left-paddle"></div>
+									<h2> Logout successful, redirecting to home...</h2>
+									<div class="paddle right-paddle"></div>
+									</div>`;
+                setTimeout(() => {
+                    window.location.hash = "#home";
+                }, 2000);
             }
             catch (error) {
                 console.error("Error during logout:", error);
-                return "<h1>Logout failed</h1>";
+                // appElement.innerHTML =  "<h1>Logout failed</h1>";
             }
         });
     }

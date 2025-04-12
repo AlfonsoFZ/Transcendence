@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from './stepRender.js';
 export default class LoginRender extends Step {
-    render() {
+    render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("En login render");
             try {
@@ -42,26 +42,25 @@ export default class LoginRender extends Step {
                         // 		try {
                         // 			const { default: RegisterRender } = await import('./registerRender.js');
                         // 			const registerInstance = new RegisterRender('app-container');
-                        // 			await registerInstance.render();
+                        // 			await registerInstance.render(appElement: HTMLElement);
                         // 		} catch (err) {
                         // 			console.error("Error al importar registerRender.js:", err);
                         // 		}
                         // 	});
                         // }
                     }));
-                    return htmlContent;
+                    appElement.innerHTML = htmlContent;
                 }
             }
             catch (error) {
                 console.error("Error al renderizar la página de login:", error);
-                return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+                appElement.innerHTML = `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
             }
-            return "";
         });
     }
-    renderHeader() {
+    renderHeader(headerElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            return `
+            headerElement.innerHTML = `
 				<div id="authButtons" class="flex items-center">
 					<a href="#register" class="text-white hover:text-gray-400 ml-2">Register</a>
 				</div>
