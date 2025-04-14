@@ -65,7 +65,6 @@ export async function extractUserFromToken(token) {
             console.log('Invalid or missing username in getUserById.');
             return null;
         }
-        const username = decodedUser.username;
         return decodedUser;
     } catch (error) {
         console.error('Error verifying token:', error);

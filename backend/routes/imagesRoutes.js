@@ -13,7 +13,7 @@ export function configureImagesRoutes(fastify, sequelize) {
 		const parts = request.parts();
 		for await (const part of parts) {
 			if (part.file) {
-				const user = extractUserFromToken(request.cookies.token);
+				const user = await extractUserFromToken(request.cookies.token);
 				if (!user)
 					return reply.code(401).send({ error: 'Unauthenticated user' });
 				const imageId = user.id + '.png';
@@ -21,7 +21,8 @@ export function configureImagesRoutes(fastify, sequelize) {
 					return reply.code(400).send({ error: 'Only .png files are allowed' });
 				const filePath = path.join('/app/images', imageId);
 				await pump(part.file, fs.createWriteStream(filePath));
-				await updateUserbyId(user.id, null, null, null, null, filePath);
+				const avatarPath = "https://localhost:8443/back/images/" + imageId;
+				await updateUserbyId(user.id, null, null, null, null, avatarPath);
 				return reply.send({ status: 'ok', message: 'Image uploaded successfully' });
 			}
 		}
@@ -39,12 +40,9 @@ export function configureImagesRoutes(fastify, sequelize) {
 				if (err)
 					return reply.code(500).send({ error: 'Error deleting the image' });
 			});
-			await updateUserbyId(user.id, null, null, null, null, '/app/images/default-avatar.png');
+			const avatarPath = "https://localhost:8443/back/images/" + imageId;
+			await updateUserbyId(user.id, null, null, null, null, avatarPath);
 			return reply.send({ status: 'ok', message: 'Image deleted successfully' });
 		}
 	});
 }
-
-
-
-
