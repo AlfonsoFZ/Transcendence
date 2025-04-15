@@ -46,7 +46,7 @@ export default class Profile extends Step {
                 htmlContent = htmlContent.replace("{{ username }}", userData.username); // Ejemplo de reemplazo simple
                 htmlContent = htmlContent.replace("{{ email }}", userData.email);
                 htmlContent = htmlContent.replace("{{ avatarPath }}", userData.avatarPath);
-                userData.tournamentUserName ? htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.tournamentUserName)
+                userData.tournamentUsername ? htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.tournamentUsername)
                     : htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.username);
                 appElement.innerHTML = htmlContent;
                 handleProfile();
