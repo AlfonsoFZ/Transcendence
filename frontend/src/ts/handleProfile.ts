@@ -161,12 +161,50 @@ async function saveInfo() {
 	cancelButton?.addEventListener("click", changePassword);
 }
 
+async function changeAvatar() {
+	const avatar = document.getElementById("avatar-preview") as HTMLImageElement;
+	const fileInput = document.getElementById("avatar-input") as HTMLInputElement;
+
+	avatar?.addEventListener("dblclick", () => {
+		fileInput?.click();
+	});
+	fileInput?.addEventListener("change", async () => {
+		const file = fileInput?.files?.[0];
+		if (file) {
+			const formData = new FormData();
+			formData.append("avatar", file);
+			try {
+				const response = await fetch("https://localhost:8443/back/upload_image", {
+					method: "POST",
+					credentials: "include",
+					body: formData,
+				});
+				if (response.ok) {
+					const result = await response.json();
+					showMessage(`Image successfully updated`, null);
+					avatar.src = `${result.url}?t=${new Date().getTime()}`;
+					result.url
+				} else {
+					const errorResponse = await response.json();
+					showMessage(`Image update failed: ${errorResponse.error}`, null);
+
+				}
+			} catch (error) {
+				showMessage('An error occurred', null);
+			}
+		}
+	});
+};
+
+
 export async function handleProfile() {
 
 		console.log("En desde el ts handleProfile");
 		const editButton = document.getElementById("edit-button");
 		const changePasswordButton = document.getElementById("change-password-button");
 
+		requestAnimationFrame(() => {
+			changeAvatar();})
 		editButton?.addEventListener('click', () => {
 			if (editButton.innerHTML === 'Edit info') {
 			  	editInfo(); // Habilitas los campos o haces lo que necesites

@@ -163,11 +163,52 @@ function saveInfo() {
         cancelButton === null || cancelButton === void 0 ? void 0 : cancelButton.addEventListener("click", changePassword);
     });
 }
+function changeAvatar() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const avatar = document.getElementById("avatar-preview");
+        const fileInput = document.getElementById("avatar-input");
+        avatar === null || avatar === void 0 ? void 0 : avatar.addEventListener("dblclick", () => {
+            fileInput === null || fileInput === void 0 ? void 0 : fileInput.click();
+        });
+        fileInput === null || fileInput === void 0 ? void 0 : fileInput.addEventListener("change", () => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const file = (_a = fileInput === null || fileInput === void 0 ? void 0 : fileInput.files) === null || _a === void 0 ? void 0 : _a[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append("avatar", file);
+                try {
+                    const response = yield fetch("https://localhost:8443/back/upload_image", {
+                        method: "POST",
+                        credentials: "include",
+                        body: formData,
+                    });
+                    if (response.ok) {
+                        const result = yield response.json();
+                        showMessage(`Image successfully updated`, null);
+                        avatar.src = `${result.url}?t=${new Date().getTime()}`;
+                        result.url;
+                    }
+                    else {
+                        const errorResponse = yield response.json();
+                        showMessage(`Image update failed: ${errorResponse.error}`, null);
+                    }
+                }
+                catch (error) {
+                    showMessage('An error occurred', null);
+                }
+            }
+        }));
+    });
+}
+;
 export function handleProfile() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("En desde el ts handleProfile");
         const editButton = document.getElementById("edit-button");
         const changePasswordButton = document.getElementById("change-password-button");
+        requestAnimationFrame(() => {
+            changeAvatar();
+        });
         editButton === null || editButton === void 0 ? void 0 : editButton.addEventListener('click', () => {
             if (editButton.innerHTML === 'Edit info') {
                 editInfo(); // Habilitas los campos o haces lo que necesites

@@ -23,7 +23,7 @@ export function configureImagesRoutes(fastify, sequelize) {
 				await pump(part.file, fs.createWriteStream(filePath));
 				const avatarPath = "https://localhost:8443/back/images/" + imageId;
 				await updateUserbyId(user.id, null, null, null, null, avatarPath);
-				return reply.send({ status: 'ok', message: 'Image uploaded successfully' });
+				return reply.send({ status: 'ok', url: avatarPath });
 			}
 		}
 		return reply.code(400).send({ error: 'No file received' });
