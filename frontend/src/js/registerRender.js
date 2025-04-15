@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from './stepRender.js';
 export default class RegisterRender extends Step {
-    render() {
+    render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const response = yield fetch("../html/register.html");
@@ -33,17 +33,17 @@ export default class RegisterRender extends Step {
                         }
                     }
                 }));
-                return htmlContent;
+                appElement.innerHTML = htmlContent;
             }
             catch (err) {
                 console.error("Error in render method:", err);
-                return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+                appElement.innerHTML = `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
             }
         });
     }
-    renderHeader() {
+    renderHeader(headerElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            return `
+            headerElement.innerHTML = `
 			<div id="authButtons" class="flex items-center">
 				<a href="#login" class="text-white hover:text-gray-400">Login</a>
 			</div>`;

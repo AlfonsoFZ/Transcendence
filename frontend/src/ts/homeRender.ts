@@ -1,15 +1,14 @@
 import { Step } from './stepRender.js';
 
 export default class Home extends Step {
-	async render(): Promise<string> {
+	async render(appElement: HTMLElement): Promise<void> {
 		const menuContainer = document.getElementById("menu-container");
 		try {
-			console.log("En render");
 			const user = await this.checkAuth();
 			console.log ('En Home user despues de checkAuth: ' + user);
 		if (user) {
 			// Retornar el contenido para usuarios autenticados
-			return `
+			appElement.innerHTML =  `
 				<div id="pong-container">
 					<div class="paddle left-paddle"></div>
 					<h2>Bienvenido, ${user}!</h2>
@@ -17,7 +16,7 @@ export default class Home extends Step {
 				</div>
 			`;
 			} else {
-				return `
+				appElement.innerHTML =  `
 					<div id="pong-container">
 						<div class="paddle left-paddle"></div>
 						<div class="ball"><img src="../img/bola.png" alt="Ball"></div>
@@ -27,8 +26,7 @@ export default class Home extends Step {
 			}
 		} 
 		catch (error) {
-			console.error("Error en render:", error);
-			return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+			appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
 		}
 	}
 }

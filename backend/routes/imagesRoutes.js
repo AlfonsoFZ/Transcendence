@@ -46,7 +46,3 @@ export function configureImagesRoutes(fastify, sequelize) {
 		}
 	});
 }
-
-
-
-

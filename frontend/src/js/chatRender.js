@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from './stepRender.js';
 export default class Chat extends Step {
-    render() {
+    render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
             const menuContainer = document.getElementById("menu-container");
             try {
                 const user = yield this.checkAuth();
                 if (user) {
                     // Retornar el contenido para usuarios autenticados
-                    return `
+                    appElement.innerHTML = `
 					<div class="flex-grow flex flex-col items-center justify-center ">
 	   					<h1 class="text-4xl font-bold text-gray-800">Chat Step</h1>
 						</div>
@@ -24,7 +24,7 @@ export default class Chat extends Step {
                 }
                 else {
                     // Retornar el contenido para usuarios no autenticados
-                    return `
+                    appElement.innerHTML = `
 						<div id="pong-container">
 							<div class="paddle left-paddle"></div>
 							<div class="ball"><img src="../img/bola.png" alt="Ball"></div>
@@ -34,8 +34,7 @@ export default class Chat extends Step {
                 }
             }
             catch (error) {
-                console.error("Error en render:", error);
-                return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+                appElement.innerHTML = `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
             }
         });
     }

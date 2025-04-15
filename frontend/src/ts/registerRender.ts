@@ -1,7 +1,7 @@
 import { Step } from './stepRender.js';
 
 export default class RegisterRender extends Step{
-	async render(): Promise<string> {
+	async render(appElement: HTMLElement): Promise<void>  {
 		try {
 			const response = await fetch("../html/register.html");
 			if (!response.ok)
@@ -24,15 +24,15 @@ export default class RegisterRender extends Step{
 					}
 				}
 			});
-			return htmlContent;
+			appElement.innerHTML =  htmlContent;
 		} catch (err) {
 			console.error("Error in render method:", err);
-			return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+			appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
 		}
 	}
 	
-	async renderHeader(): Promise<string> {
-		return `
+	async renderHeader(headerElement: HTMLElement): Promise<void>  {
+		headerElement.innerHTML = `
 			<div id="authButtons" class="flex items-center">
 				<a href="#login" class="text-white hover:text-gray-400">Login</a>
 			</div>`;

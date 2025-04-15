@@ -1,6 +1,8 @@
+import { Step } from "./stepRender";
+
 export class SPA {
     private container: HTMLElement;
-    private static instance: SPA; // Guardamos una referencia estática
+    private static instance: SPA; // Guardamos una referencia estática y privada para solo poder acceder con el getter
 
     private routes: { [key: string]: { module: string; protected: boolean } } = {
         'home': { module: 'homeRender.js', protected: false },
@@ -15,17 +17,12 @@ export class SPA {
 		'profile': { module: 'userProfileRender.js', protected: true }
     };
 
-    constructor(containerId: string) {
+    public constructor(containerId: string) {
         this.container = document.getElementById(containerId) as HTMLElement;
-        SPA.instance = this; // Guardamos la instancia en una propiedad estática
-
+		SPA.instance = this; // Guardamos la instancia en la propiedad estática para poder exportarla
         this.loadHEaderAndFooter();
         window.onpopstate = () => this.loadStep();
-        if (!this.isAuthenticated()) {
-            this.navigate('home');
-        } else {
-            this.loadStep();
-        }
+		this.navigate('home');
     }
 
     private async loadHEaderAndFooter() {
@@ -81,58 +78,49 @@ export class SPA {
 		const routeConfig = this.routes[step];
 	
 		if (routeConfig) {
-			// Verificar si la ruta es protegida y si el usuario está autenticado
-			if (routeConfig.protected && !this.isAuthenticated()) {
+			//Verificar si la ruta es protegida y si el usuario está autenticado
+
+			
+			// Cargar el módulo correspondiente
+			console.log("he pasado por loadStep de la clase SPA");
+			//importamos el módulo correspondiente
+			const module = await import(`./${routeConfig.module}`);
+			// Creamos una instancia del módulo
+			const stepInstance = new module.default('app-container');
+			// Verificamos si el usuario está autenticado
+			const user = await stepInstance.checkAuth();
+			if (user) {
+				console.log("Usuario autenticado: ", user);
+			} else {
+				console.log("Usuario no autenticado: ", user);
+			}
+			if (routeConfig.protected && !user) {
 				console.warn(`Acceso denegado a la ruta protegida: ${step}`);
 				this.navigate('login'); // Redirigir al usuario a la página de login
 				return;
 			}
-	
-			// Cargar el módulo correspondiente
-			const module = await import(`./${routeConfig.module}`);
-			const stepInstance = new module.default('app-container');
-			// Esperar hasta que los elementos del DOM estén disponibles
-			let headerElement = document.getElementById('header-buttons');
-			let menuElement = document.getElementById('menu-container');
-			let appElement = document.getElementById('app-container');
-
-			// const headerElement = document.getElementById('header-buttons');
-			// const menuElement = document.getElementById('menu-container');
-			// const appElement = document.getElementById('app-container');
-
-			while (!headerElement || !menuElement || !appElement) {
-				await new Promise(resolve => setTimeout(resolve, 100)); // Esperar 100ms antes de volver a comprobar
-				headerElement = document.getElementById('header-buttons');
-				menuElement = document.getElementById('menu-container');
-				appElement = document.getElementById('app-container');
-			}
-			// console.log('headerElement: ', headerElement);
-			// console.log('menuElement: ', menuElement);
-			// console.log('appElement: ', appElement);
-			if (headerElement) {
-				headerElement.innerHTML = await stepInstance.renderHeader();
-			}
-			if (menuElement) {
-				menuElement.innerHTML = await stepInstance.renderMenu();
-			}
-			if (appElement) {
-				appElement.innerHTML = await stepInstance.render();
-			}
+			await stepInstance.init(); // Inicializar el módulo
 		} else {
 			this.container.innerHTML = '<div>Step not found</div>';
 		}
 	}
 
-    isAuthenticated(): boolean {
-		//hardcode para las pruebas
-        // return false; // Aquí iría la lógica real de autenticación
-		return true; // Para pruebas, siempre autenticado
-    }
+    // isAuthenticated(): boolean {
+	// 	//hardcode para las pruebas
+    //     // return false; // Aquí iría la lógica real de autenticación
+	// 	return true; // Para pruebas, siempre autenticado
+    // }
 
-    // Método estático para acceder a la instancia de SPA
-    static getInstance(): SPA {
-        return SPA.instance;
-    }
+    // // Método estático para acceder a la instancia de SPA
+    // static getInstance(): SPA {
+    //     return SPA.instance;
+    // }
+
+	public static getInstance(): SPA {
+		return SPA.instance;
+	}
+
+
 }
 
 document.addEventListener('DOMContentLoaded', () => new SPA('content'));

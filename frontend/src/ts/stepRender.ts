@@ -45,15 +45,15 @@ export class Step {
 		}
 	}
 	
-	async render(): Promise<string> {
-		return '<div>Contenido no definido</div>';
+	async render(appElement: HTMLElement):Promise<void> {
+		appElement.innerHTML= '<div>Contenido no definido</div>';
 	}
 
-	async renderHeader(): Promise<string> {
+	async renderHeader(headerElement: HTMLElement): Promise<void> {
 		try {
 			const user = await this.checkAuth();
 			// console.log("Valor de user en renderHeader:", user);
-			return user ? 			
+			headerElement.innerHTML = user ? 			
 				`<div id="authButtons" class="flex items-center">
 					<span id="username" class="text-white"><a href="#profile"> ${user} </a></span>
 					<div id="headerSeparator" class="vertical-bar"></div>
@@ -68,15 +68,19 @@ export class Step {
 			`;
 		} catch (error) {
 			console.error("Error en renderHeader:", error);
-			return `<div id="authButtons">Error al cargar el estado de autenticación</div>`;
+			headerElement.innerHTML = `<div id="authButtons">Error al cargar el estado de autenticación</div>`;
 		}
 	}
 
-	async renderMenu(): Promise<string> {
+	/**º
+	 * Método para renderizar el menú de navegación si se está logueado
+	 * @param menuElement elemento HTML donde se renderiza el menú
+	 */
+	async renderMenu(menuElement: HTMLElement): Promise<void>{
 		const user = await this.checkAuth();
 		if (user) {
 			// Modificar el innerHTML de menuContainer si el usuario está autenticado
-			return `
+			menuElement.innerHTML = `
 	        <nav id="nav" class="bg-gray-800 p-4">
 	            <ul class="flex space-x-4">
 	                <li><a href="#play-pong" class="text-white hover:text-gray-400">Play Game</a></li>
@@ -88,11 +92,53 @@ export class Step {
 	        </nav>
     	`;
 		}else {
-			return '';
+			menuElement.innerHTML =  '';
 		}
 	}
 
+	/**
+	 * Método para navegar a un paso especifico
+	 * @param step nombre del paso al que se quiere navegar
+	 */
 	navigate(step: string) {
 		this.spa.navigate(step); // Usamos la instancia de SPA para navegar
+	}
+
+	/**
+	 * 
+	 * @param headerElement botónes del header
+	 * @param menuElement barra de navegación
+	 * @param appElement contenido o cuerpo principal de la aplicación
+	 * 
+	 */
+	async initChild(headerElement: HTMLElement, menuElement: HTMLElement, appElement: HTMLElement) {
+		if (headerElement) {
+			await this.renderHeader(headerElement);
+		}
+		if (menuElement) {
+			await this.renderMenu(menuElement);
+		}
+		if (appElement) {
+			await this.render(appElement);
+		}
+	}
+
+	/**
+	 * Método para inicializar el paso se asegura que existen los elementos header, menu y app
+	 * para poder renderizar el contenido correspondiente en cada slot o "placeholder"
+	 */
+	async init(){
+		let headerElement = document.getElementById('header-buttons');
+		let menuElement = document.getElementById('menu-container');
+		let appElement = document.getElementById('app-container');
+
+		while (!headerElement || !menuElement || !appElement) {
+			await new Promise(resolve => setTimeout(resolve, 100)); // Esperar 100ms antes de volver a comprobar
+			headerElement = document.getElementById('header-buttons');
+			menuElement = document.getElementById('menu-container');
+			appElement = document.getElementById('app-container');
+		}
+		this.initChild(headerElement, menuElement, appElement);
+
 	}
 }

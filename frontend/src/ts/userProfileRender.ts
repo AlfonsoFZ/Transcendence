@@ -1,7 +1,8 @@
 import { Step } from './stepRender.js';
+import { handleProfile } from './handleProfile.js';
 
 export default class Profile extends Step {
-	async render(): Promise<string> {
+	async render(appElement: HTMLElement): Promise<void>  {
 		console.log("En Profile render");
 		try {
 
@@ -44,15 +45,13 @@ export default class Profile extends Step {
 			htmlContent = htmlContent.replace("{{ avatarPath }}", userData.avatarPath);
 			userData.tournamentUserName ? htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.tournamentUserName) 
 				: htmlContent = htmlContent.replace("{{ tournamentusername }}", userData.username);
-
-			
-				return htmlContent;
+			appElement.innerHTML =  htmlContent;
+			handleProfile();
 			// }
 		} catch (error) {
 			console.error("Error al renderizar la página de login:", error);
-			return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+			appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
 		}
-		return "";
 	}
 }
 

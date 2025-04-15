@@ -2,19 +2,19 @@ import { Step } from './stepRender.js';
 
 export default class Friends extends Step {
 	
-	async render(): Promise<string> {
+	async render(appElement: HTMLElement): Promise<void>  {
 		const menuContainer = document.getElementById("menu-container");
 		try {
 			const user = await this.checkAuth();
 			if (user) {
-				return`   
+				appElement.innerHTML = `   
 					    <div class="flex-grow flex flex-col items-center justify-center ">
            					<h1 class="text-4xl font-bold text-gray-800">Friends Step</h1>
 					    </div>
 						`;
 				} else {
 					// Retornar el contenido para usuarios no autenticados
-					return `
+					appElement.innerHTML =  `
 						<div id="pong-container">
 							<div class="paddle left-paddle"></div>
 							<div class="ball"><img src="../img/bola.png" alt="Ball"></div>
@@ -26,7 +26,7 @@ export default class Friends extends Step {
 	
 		catch (error) {
 			console.error("Error en render:", error);
-			return `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+			appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
 		}
 	}
 }

@@ -52,17 +52,17 @@ export class Step {
             }
         });
     }
-    render() {
+    render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            return '<div>Contenido no definido</div>';
+            appElement.innerHTML = '<div>Contenido no definido</div>';
         });
     }
-    renderHeader() {
+    renderHeader(headerElement) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this.checkAuth();
                 // console.log("Valor de user en renderHeader:", user);
-                return user ?
+                headerElement.innerHTML = user ?
                     `<div id="authButtons" class="flex items-center">
 					<span id="username" class="text-white"><a href="#profile"> ${user} </a></span>
 					<div id="headerSeparator" class="vertical-bar"></div>
@@ -78,16 +78,20 @@ export class Step {
             }
             catch (error) {
                 console.error("Error en renderHeader:", error);
-                return `<div id="authButtons">Error al cargar el estado de autenticación</div>`;
+                headerElement.innerHTML = `<div id="authButtons">Error al cargar el estado de autenticación</div>`;
             }
         });
     }
-    renderMenu() {
+    /**º
+     * Método para renderizar el menú de navegación si se está logueado
+     * @param menuElement elemento HTML donde se renderiza el menú
+     */
+    renderMenu(menuElement) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.checkAuth();
             if (user) {
                 // Modificar el innerHTML de menuContainer si el usuario está autenticado
-                return `
+                menuElement.innerHTML = `
 	        <nav id="nav" class="bg-gray-800 p-4">
 	            <ul class="flex space-x-4">
 	                <li><a href="#play-pong" class="text-white hover:text-gray-400">Play Game</a></li>
@@ -100,11 +104,53 @@ export class Step {
     	`;
             }
             else {
-                return '';
+                menuElement.innerHTML = '';
             }
         });
     }
+    /**
+     * Método para navegar a un paso especifico
+     * @param step nombre del paso al que se quiere navegar
+     */
     navigate(step) {
         this.spa.navigate(step); // Usamos la instancia de SPA para navegar
+    }
+    /**
+     *
+     * @param headerElement botónes del header
+     * @param menuElement barra de navegación
+     * @param appElement contenido o cuerpo principal de la aplicación
+     *
+     */
+    initChild(headerElement, menuElement, appElement) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (headerElement) {
+                yield this.renderHeader(headerElement);
+            }
+            if (menuElement) {
+                yield this.renderMenu(menuElement);
+            }
+            if (appElement) {
+                yield this.render(appElement);
+            }
+        });
+    }
+    /**
+     * Método para inicializar el paso se asegura que existen los elementos header, menu y app
+     * para poder renderizar el contenido correspondiente en cada slot o "placeholder"
+     */
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let headerElement = document.getElementById('header-buttons');
+            let menuElement = document.getElementById('menu-container');
+            let appElement = document.getElementById('app-container');
+            while (!headerElement || !menuElement || !appElement) {
+                yield new Promise(resolve => setTimeout(resolve, 100)); // Esperar 100ms antes de volver a comprobar
+                headerElement = document.getElementById('header-buttons');
+                menuElement = document.getElementById('menu-container');
+                appElement = document.getElementById('app-container');
+            }
+            this.initChild(headerElement, menuElement, appElement);
+        });
     }
 }
