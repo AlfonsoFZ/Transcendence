@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "npm install && nodemon index.js",
     "start_container": "tail -f /dev/null"
   },
   "dependencies": {
