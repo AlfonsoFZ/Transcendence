@@ -8,36 +8,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from './stepRender.js';
+import { showMessage } from './showMessage.js';
 export default class RegisterRender extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const response = yield fetch("../html/register.html");
-                if (!response.ok)
-                    throw new Error("Failed to load the HTML file");
-                const htmlContent = yield response.text();
-                history.pushState(null, '', '/#register');
-                requestAnimationFrame(() => __awaiter(this, void 0, void 0, function* () {
-                    const form = this.container.querySelector("form");
-                    if (form) {
-                        try {
-                            const { handleRegisterSubmit } = yield import('./handleRegisterSubmit.js');
-                            form === null || form === void 0 ? void 0 : form.addEventListener("submit", (event) => __awaiter(this, void 0, void 0, function* () {
-                                event.preventDefault();
-                                // console.log("Se ha pulsado handleRegisterSubmit:", event);
-                                handleRegisterSubmit(event);
-                            }));
-                        }
-                        catch (err) {
-                            console.error("Error al importar handleRegisterSubmit.js:", err);
-                        }
-                    }
-                }));
-                appElement.innerHTML = htmlContent;
+            const user = yield this.checkAuth();
+            console.log("En register render");
+            if (user) {
+				showMessage("User authenticated, redirecting to profile", 3000);
+                window.location.hash = "#home";
             }
-            catch (err) {
-                console.error("Error in render method:", err);
-                appElement.innerHTML = `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
+            else {
+                try {
+                    const response = yield fetch("../html/register.html");
+                    if (!response.ok)
+                        throw new Error("Failed to load the HTML file");
+                    const htmlContent = yield response.text();
+                    history.pushState(null, '', '/#register');
+                    requestAnimationFrame(() => __awaiter(this, void 0, void 0, function* () {
+                        const form = this.container.querySelector("form");
+                        if (form) {
+                            try {
+                                const { handleRegisterSubmit } = yield import('./handleRegisterSubmit.js');
+                                form === null || form === void 0 ? void 0 : form.addEventListener("submit", (event) => __awaiter(this, void 0, void 0, function* () {
+                                    event.preventDefault();
+                                    // console.log("Se ha pulsado handleRegisterSubmit:", event);
+                                    handleRegisterSubmit(event);
+                                }));
+                            }
+                            catch (err) {
+								console.error("Error importing handleRegisterSubmit.js:", err);
+                            }
+                        }
+                    }));
+                    appElement.innerHTML = htmlContent;
+                }
+                catch (err) {
+                    console.error("Error in render method:", err);
+					appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
+                }
             }
         });
     }

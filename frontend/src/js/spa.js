@@ -28,6 +28,16 @@ export class SPA {
         this.loadStep();
         window.onpopstate = () => this.loadStep();
         // this.navigate('home');
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted && location.hash === '#login') {
+                console.log("Recargando el step de login");
+                const appContainer = document.getElementById('app-container');
+                if (appContainer) {
+                    appContainer.innerHTML = '';
+                }
+                this.loadStep(); // Vuelve a cargar el step para forzar la lógica
+            }
+        });
     }
     loadHEaderAndFooter() {
         return __awaiter(this, void 0, void 0, function* () {
