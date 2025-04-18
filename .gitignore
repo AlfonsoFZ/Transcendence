@@ -2,3 +2,5 @@
 pino_readme.md
 *.db
 backend/node_modules/
+mycred.json
+DS_Store
