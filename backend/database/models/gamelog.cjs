@@ -27,13 +27,8 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: 0
 		},
-		gameId: {
-			type: DataTypes.STRING,
-			allowNull: true,
-			defaultValue: null
-		},
 		tournamentId: {
-			type: DataTypes.STRING,
+			type: DataTypes.INTEGER,
 			allowNull: true,
 			defaultValue: null
 		}
