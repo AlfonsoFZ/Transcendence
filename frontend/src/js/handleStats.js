@@ -30,6 +30,28 @@ function fetchUsers() {
         }
     });
 }
+export function fetchGameLogs() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield fetch('https://localhost:8443/back/get_gamelogs', {
+                method: "GET",
+                credentials: "include"
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return yield response.json();
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Failed to fetch game logs: ${error.message}`);
+            }
+            else {
+                throw new Error("Failed to fetch game logs: Unknown error");
+            }
+        }
+    });
+}
 export function initializeUserNames() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -124,28 +146,6 @@ export function handleStats(userStats) {
                 }
             }
         });
-        function fetchGameLogs() {
-            return __awaiter(this, void 0, void 0, function* () {
-                try {
-                    const response = yield fetch('https://localhost:8443/back/get_gamelogs', {
-                        method: "GET",
-                        credentials: "include"
-                    });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return yield response.json();
-                }
-                catch (error) {
-                    if (error instanceof Error) {
-                        throw new Error(`Failed to fetch game logs: ${error.message}`);
-                    }
-                    else {
-                        throw new Error("Failed to fetch game logs: Unknown error");
-                    }
-                }
-            });
-        }
         function navivageBack() {
             const container = document.getElementById("stats-modal");
             if (container) {
@@ -255,7 +255,7 @@ export function handleStats(userStats) {
         });
     });
 }
-// Cargmos por cdn Chart.js para no tener que instalarlo
+// Cargamos por cdn Chart.js para no tener que instalarlo
 function loadChartJs() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -268,155 +268,3 @@ function loadChartJs() {
         });
     });
 }
-// export async function handleStats(userStats: { wins: number; losses: number; totalGames: number }): Promise<void> {
-// // export async function handleStats() {
-// 		console.log("En desde el ts handleStats");
-// 		console.log("userStats:", userStats);
-// }
-// 		// const editButton = document.getElementById("edit-button");
-// 		// const changePasswordButton = document.getElementById("change-password-button");
-// 		// requestAnimationFrame(() => {
-// 		// 	changeAvatar();})
-// 		// editButton?.addEventListener('click', () => {
-// 		// 	if (editButton.innerHTML === 'Edit info') {
-// 		// 			editInfo(); // Habilitas los campos o haces lo que necesites
-// 		// 			editButton.innerHTML = 'Save';
-// 		// 		editButton.classList.replace("bg-blue-500","bg-green-500");
-// 		// 		editButton.classList.replace("hover:bg-blue-600","hover:bg-green-600");
-// 		// 		changePasswordButton!.innerHTML = 'Cancel';
-// 		// 		changePasswordButton!.classList.replace("bg-orange-500" ,"bg-red-500");
-// 		// 		changePasswordButton!.classList.replace("hover:bg-orange-600", "hover:bg-red-600");
-// 		// 	} else {
-// 		// 			saveInfo(); // Guardas los datos
-// 		// 			editButton.innerHTML = 'Edit info';
-// 		// 			editButton.classList.replace("bg-green-500", "bg-blue-500");
-// 		// 			editButton.classList.replace("hover:bg-green-600", "hover:bg-blue-600");
-// 		// 			changePasswordButton!.innerHTML = 'Change password';
-// 		// 			changePasswordButton!.classList.replace("bg-red-500", "bg-orange-500");
-// 		// 			changePasswordButton!.classList.replace("hover:bg-red-600" , "hover:bg-orange-600");
-// 		// 		}
-// 		// 	});
-// 		// if (editButton?.innerHTML === 'Edit info'){
-// 		// 		changePasswordButton?.addEventListener("click", changePassword);
-// 		// }
-// }
-// document.addEventListener('DOMContentLoaded', () => {handleStats();});
-// // avatarInput?.classList.remove("hidden");
-// 			// if (editButton) {
-// 			// 	editButton.textContent = "Save";
-// 			// 	editButton.classList.replace("bg-blue-500", "bg-green-500");
-// 			// 	editButton.addEventListener("click", async () => {
-// 			// 		const formData = new FormData(userForm as HTMLFormElement);
-// 			// 		const data = Object.fromEntries(formData.entries());
-// 			// 		console.log("Form data:", data);
-// 			// 		try {
-// 			// 			const response = await fetch('https://localhost:8443/back/update_user', {
-// 			// 				method: "POST",
-// 			// 				headers: {
-// 			// 					"Content-Type": "application/json",
-// 			// 					},
-// 			// 				body: JSON.stringify(data),
-// 			// 			});
-// 			// 			if (response.ok) {
-// 			// 				alert('Profile updated successfully');
-// 			// 				const HeaderButton = document.getElementById("username");
-// 			// 				if (HeaderButton) {
-// 			// 					HeaderButton.textContent = data.username.toString();
-// 			// 				}
-// 			// 				window.location.hash = "#profile";
-// 			// 				if (userForm) {
-// 			// 					const inputs = userForm.querySelectorAll("input");
-// 			// 					inputs.forEach(input => input.setAttribute("readonly", "true"));
-// 			// 				}
-// 			// 				editButton.textContent = "Edit info";
-// 			// 				editButton.classList.replace("bg-green-500", "bg-blue-500");
-// 			// 			} else {
-// 			// 				alert('Failed to update profile');
-// 			// 			}
-// 			// 			} catch (error) {
-// 			// 				console.error("Error al enviar el formulario de registro:", error);
-// 			// 			}
-// 			// 	});
-// 			// 	}
-// // 			});
-// // }
-// /*
-// // function saveAvatar(avatarInput: HTMLInputElement | null, avatarPreview: HTMLImageElement | null) {
-// // 		// Guardar el avatar
-// // 		if (avatarInput && avatarInput.files && avatarInput.files.length > 0) {
-// // 			const file = avatarInput.files[0];
-// // 			const reader = new FileReader();
-// // 			reader.onload = function (e) {
-// // 				if (avatarPreview) {
-// // 					avatarPreview.src = e.target?.result as string;
-// // 				}
-// // 			};
-// // 			reader.readAsDataURL(file);
-// // 		}
-// // 	}
-// // function changePassword(changePasswordButton: HTMLButtonElement | null, changePasswordModal: HTMLDivElement | null, cancelModalButton: HTMLButtonElement | null) {
-// // 	// Cambiar contraseña
-// // 	changePasswordButton?.addEventListener("click", () => {
-// // 		console.log("Change password button clicked");
-// // 		});
-// // 	}
-// 	}		
-// function savefields(editButton: HTMLButtonElement | null, userForm: HTMLFormElement | null) {
-// 	}
-// export async function handleProfile() {
-// 		console.log("En desde el ts handleProfile");
-// 		const editButton = document.getElementById("edit-button");
-// 		const changePasswordButton = document.getElementById("change-password-button");
-// 		const avatarInput = document.getElementById("avatar");
-// 		const avatarPreview = document.getElementById("avatar-preview");
-// 		const userForm = document.getElementById("user-form");
-// 		const changePasswordModal = document.getElementById("change-password-modal");
-// 		const cancelModalButton = document.getElementById("cancel-modal");
-// 		// Habilitar edición de campos
-// 		editButton?.addEventListener("click", () => {
-// 			console.log("Edit button clicked");
-// 			if (userForm) {
-// 				const inputs = userForm.querySelectorAll("input");
-// 				inputs.forEach(input => input.removeAttribute("readonly"));
-// 			}
-// 			avatarInput?.classList.remove("hidden");
-// 			if (editButton) {
-// 				editButton.textContent = "Save";
-// 				editButton.classList.replace("bg-blue-500", "bg-green-500");
-// 				editButton.addEventListener("click", async () => {
-// 					const formData = new FormData(userForm as HTMLFormElement);
-// 					const data = Object.fromEntries(formData.entries());
-// 					console.log("Form data:", data);
-// 					try {
-// 						const response = await fetch('https://localhost:8443/back/update_user', {
-// 							method: "POST",
-// 							headers: {
-// 								"Content-Type": "application/json",
-// 								},
-// 							body: JSON.stringify(data),
-// 						});
-// 						if (response.ok) {
-// 							alert('Profile updated successfully');
-// 							const HeaderButton = document.getElementById("username");
-// 							if (HeaderButton) {
-// 								HeaderButton.textContent = data.username.toString();
-// 							}
-// 							window.location.hash = "#profile";
-// 							if (userForm) {
-// 								const inputs = userForm.querySelectorAll("input");
-// 								inputs.forEach(input => input.setAttribute("readonly", "true"));
-// 							}
-// 							editButton.textContent = "Edit info";
-// 							editButton.classList.replace("bg-green-500", "bg-blue-500");
-// 						} else {
-// 							alert('Failed to update profile');
-// 						}
-// 						} catch (error) {
-// 							console.error("Error al enviar el formulario de registro:", error);
-// 						}
-// 				});
-// 				}
-// 			});
-// }
-// document.addEventListener('DOMContentLoaded', () => {handleProfile();});
-// */

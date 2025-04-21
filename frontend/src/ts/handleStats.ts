@@ -1,7 +1,5 @@
-import { showMessage } from "./showMessage.js";
-
 declare var Chart: any;
-let userID :string;
+let userID: string;
 let userNames: Map<string, string> = new Map();
 
 async function fetchUsers(): Promise<any> {
@@ -13,12 +11,30 @@ async function fetchUsers(): Promise<any> {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 		return await response.json();
-
 	} catch (error) {
 		if (error instanceof Error) {
 			throw new Error(`Failed to fetch users: ${error.message}`);
 		} else {
 			throw new Error("Failed to fetch users logs: Unknown error");
+		}
+	}
+}
+
+export async function fetchGameLogs(): Promise<any> {
+	try {
+		const response = await fetch('https://localhost:8443/back/get_gamelogs', {
+			method: "GET",
+			credentials: "include"
+		});
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return await response.json();
+	} catch (error) {
+		if (error instanceof Error) {
+			throw new Error(`Failed to fetch game logs: ${error.message}`);
+		} else {
+			throw new Error("Failed to fetch game logs: Unknown error");
 		}
 	}
 }
@@ -40,8 +56,7 @@ export function getUserNameById(userId: string): string | undefined {
 	return userNames.get(userId);
 }
 
-export async function handleStats(userStats: { userId:string; wins: number; losses: number; totalGames: number, tournamentsPlayed:number, tournamentsWon:number }): Promise<void> {
-
+export async function handleStats(userStats: { userId: string; wins: number; losses: number; totalGames: number, tournamentsPlayed: number, tournamentsWon: number }): Promise<void> {
 	userID = userStats.userId;
 	initializeUserNames();
 	// De esta forma hacemos que se ejectue el script de Chart.js
@@ -102,7 +117,7 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 		data: {
 			labels: ['Wins', 'Looses', 'Total'],
 			datasets: [{
-				data: [ userStats.tournamentsWon, torunamentLoosed, userStats.tournamentsPlayed],
+				data: [userStats.tournamentsWon, torunamentLoosed, userStats.tournamentsPlayed],
 
 				backgroundColor: ['#34D399', '#F87171', '#60A5FA'], // green, red, blue
 				borderColor: '#1F2937',
@@ -121,26 +136,7 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 		}
 	});
 
-	async function fetchGameLogs(): Promise<any> {
-		try {
-			const response = await fetch('https://localhost:8443/back/get_gamelogs', {
-				method: "GET",
-				credentials: "include"
-			});
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			return await response.json();
-		} catch (error) {
-			if (error instanceof Error) {
-				throw new Error(`Failed to fetch game logs: ${error.message}`);
-			} else {
-				throw new Error("Failed to fetch game logs: Unknown error");
-			}
-		}
-	}
-
-	function navivageBack(){
+	function navivageBack() {
 		const container = document.getElementById("stats-modal");
 		if (container) {
 			container.remove();
@@ -149,7 +145,7 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 		window.removeEventListener("popstate", navivageBack);
 	};
 	// 🖱️ Doble click handler for game stats
-	canvas.addEventListener('dblclick', async function(event) {
+	canvas.addEventListener('dblclick', async function (event) {
 		const points = statsChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, false);
 
 		if (points.length) {
@@ -165,14 +161,13 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 				const response = await fetch("../html/statslist.html");
 				let htmlTemplate = await response.text();
 				// Generar el contenido dinámico
-					
+
 				let tableRows = "";
-				gameRecords.forEach((record: { createdAt: string; winner: string; loser: string; duration: number; tournamentId: string | null }) => 
-					{
+				gameRecords.forEach((record: { createdAt: string; winner: string; loser: string; duration: number; tournamentId: string | null }) => {
 					const date = new Date(record.createdAt).toLocaleString();
 					const tournamentInfo = record.tournamentId ? `Tournament: ${record.tournamentId}` : "Non-tournament game";
-					if (label === 'Wins'){
-						if (record.winner == userID ){
+					if (label === 'Wins') {
+						if (record.winner == userID) {
 							tableRows += `
 							<tr class="hover:bg-gray-800">
 								<td class="p-2 border-b border-gray-700">${date}</td>
@@ -183,9 +178,9 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 								</tr>
 							`;
 						}
-						}else if (label === 'Losses'){
-							if(record.loser === userID) {
-								tableRows += `
+					} else if (label === 'Losses') {
+						if (record.loser === userID) {
+							tableRows += `
 								<tr class="hover:bg-gray-800">
 									<td class="p-2 border-b border-gray-700">${date}</td>
 									<td class="p-2 border-b border-gray-700">${getUserNameById(record.winner)}</td>
@@ -194,52 +189,52 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 									<td class="p-2 border-b border-gray-700">${tournamentInfo}</td>
 									</tr>
 								`;
-							}
-						} 
-						else if (label === 'Total'){
-							if(record.winner === userID || record.loser === userID) {
-								tableRows += `
-								<tr class="hover:bg-gray-800">
-									<td class="p-2 border-b border-gray-700">${date}</td>
-									<td class="p-2 border-b border-gray-700">${getUserNameById(record.winner)}</td>
-									<td class="p-2 border-b border-gray-700">${getUserNameById(record.loser)}</td>
-									<td class="p-2 border-b border-gray-700">${record.duration}ms</td>
-									<td class="p-2 border-b border-gray-700">${tournamentInfo}</td>
-									</tr>
-								`;
-							}
+						}
 					}
-					});
+					else if (label === 'Total') {
+						if (record.winner === userID || record.loser === userID) {
+							tableRows += `
+								<tr class="hover:bg-gray-800">
+									<td class="p-2 border-b border-gray-700">${date}</td>
+									<td class="p-2 border-b border-gray-700">${getUserNameById(record.winner)}</td>
+									<td class="p-2 border-b border-gray-700">${getUserNameById(record.loser)}</td>
+									<td class="p-2 border-b border-gray-700">${record.duration}ms</td>
+									<td class="p-2 border-b border-gray-700">${tournamentInfo}</td>
+									</tr>
+								`;
+						}
+					}
+				});
 
-					htmlTemplate = htmlTemplate.replace(/{{table_rows}}/g, tableRows);
+				htmlTemplate = htmlTemplate.replace(/{{table_rows}}/g, tableRows);
 
-					// Reemplazar los marcadores de posición
-					htmlTemplate = htmlTemplate
+				// Reemplazar los marcadores de posición
+				htmlTemplate = htmlTemplate
 					.replace(/{{label}}/g, label)
 					.replace(/{{color}}/g, color)
 					.replace(/{{table_rows}}/g, tableRows);
 
-					// Insertar en el DOM
-					const container = document.createElement("div");
-					container.innerHTML = htmlTemplate;
-					document.body.appendChild(container);
+				// Insertar en el DOM
+				const container = document.createElement("div");
+				container.innerHTML = htmlTemplate;
+				document.body.appendChild(container);
 
-					const closeBtn = container.querySelector("#close-stats-modal");
-					if (closeBtn) {
+				const closeBtn = container.querySelector("#close-stats-modal");
+				if (closeBtn) {
 					window.addEventListener("popstate", navivageBack)
 				}
-			
+
 				closeBtn?.addEventListener("click", () => {
-				container.remove();
+					container.remove();
 				});
 			} catch (error) {
 				console.error("Error fetching game logs:", error);
 			}
 		}
 	});
-		
+
 	// 🖱️ Doble click handler for tournament stats
-	canvas2.addEventListener('dblclick', function(event) {
+	canvas2.addEventListener('dblclick', function (event) {
 		const points = statsTournamentChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, false);
 
 		if (points.length) {
@@ -257,8 +252,7 @@ export async function handleStats(userStats: { userId:string; wins: number; loss
 	});
 }
 
-
-// Cargmos por cdn Chart.js para no tener que instalarlo
+// Cargamos por cdn Chart.js para no tener que instalarlo
 async function loadChartJs(): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const script = document.createElement('script');
@@ -269,202 +263,3 @@ async function loadChartJs(): Promise<void> {
 		document.head.appendChild(script);
 	});
 }
-
-
-// export async function handleStats(userStats: { wins: number; losses: number; totalGames: number }): Promise<void> {
-
-// // export async function handleStats() {
-
-// 		console.log("En desde el ts handleStats");
-// 		console.log("userStats:", userStats);
-
-// }
-// 		// const editButton = document.getElementById("edit-button");
-// 		// const changePasswordButton = document.getElementById("change-password-button");
-
-// 		// requestAnimationFrame(() => {
-// 		// 	changeAvatar();})
-// 		// editButton?.addEventListener('click', () => {
-// 		// 	if (editButton.innerHTML === 'Edit info') {
-// 		// 			editInfo(); // Habilitas los campos o haces lo que necesites
-// 		// 			editButton.innerHTML = 'Save';
-// 		// 		editButton.classList.replace("bg-blue-500","bg-green-500");
-// 		// 		editButton.classList.replace("hover:bg-blue-600","hover:bg-green-600");
-// 		// 		changePasswordButton!.innerHTML = 'Cancel';
-// 		// 		changePasswordButton!.classList.replace("bg-orange-500" ,"bg-red-500");
-// 		// 		changePasswordButton!.classList.replace("hover:bg-orange-600", "hover:bg-red-600");
-
-// 		// 	} else {
-// 		// 			saveInfo(); // Guardas los datos
-// 		// 			editButton.innerHTML = 'Edit info';
-// 		// 			editButton.classList.replace("bg-green-500", "bg-blue-500");
-// 		// 			editButton.classList.replace("hover:bg-green-600", "hover:bg-blue-600");
-// 		// 			changePasswordButton!.innerHTML = 'Change password';
-// 		// 			changePasswordButton!.classList.replace("bg-red-500", "bg-orange-500");
-// 		// 			changePasswordButton!.classList.replace("hover:bg-red-600" , "hover:bg-orange-600");
-// 		// 		}
-// 		// 	});
-// 		// if (editButton?.innerHTML === 'Edit info'){
-// 		// 		changePasswordButton?.addEventListener("click", changePassword);
-// 		// }
-// }
-
-// document.addEventListener('DOMContentLoaded', () => {handleStats();});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // avatarInput?.classList.remove("hidden");
-// 			// if (editButton) {
-// 			// 	editButton.textContent = "Save";
-// 			// 	editButton.classList.replace("bg-blue-500", "bg-green-500");
-// 			// 	editButton.addEventListener("click", async () => {
-// 			// 		const formData = new FormData(userForm as HTMLFormElement);
-// 			// 		const data = Object.fromEntries(formData.entries());
-// 			// 		console.log("Form data:", data);
-// 			// 		try {
-// 			// 			const response = await fetch('https://localhost:8443/back/update_user', {
-// 			// 				method: "POST",
-// 			// 				headers: {
-// 			// 					"Content-Type": "application/json",
-// 			// 					},
-// 			// 				body: JSON.stringify(data),
-// 			// 			});
-// 			// 			if (response.ok) {
-// 			// 				alert('Profile updated successfully');
-// 			// 				const HeaderButton = document.getElementById("username");
-// 			// 				if (HeaderButton) {
-// 			// 					HeaderButton.textContent = data.username.toString();
-// 			// 				}
-// 			// 				window.location.hash = "#profile";
-// 			// 				if (userForm) {
-// 			// 					const inputs = userForm.querySelectorAll("input");
-// 			// 					inputs.forEach(input => input.setAttribute("readonly", "true"));
-// 			// 				}
-// 			// 				editButton.textContent = "Edit info";
-// 			// 				editButton.classList.replace("bg-green-500", "bg-blue-500");
-
-// 			// 			} else {
-// 			// 				alert('Failed to update profile');
-// 			// 			}
-// 			// 			} catch (error) {
-// 			// 				console.error("Error al enviar el formulario de registro:", error);
-// 			// 			}
-// 			// 	});
-// 			// 	}
-// // 			});
-// // }
-
-
-
-
-
-// /*
-
-// // function saveAvatar(avatarInput: HTMLInputElement | null, avatarPreview: HTMLImageElement | null) {
-// // 		// Guardar el avatar
-// // 		if (avatarInput && avatarInput.files && avatarInput.files.length > 0) {
-// // 			const file = avatarInput.files[0];
-// // 			const reader = new FileReader();
-// // 			reader.onload = function (e) {
-// // 				if (avatarPreview) {
-// // 					avatarPreview.src = e.target?.result as string;
-// // 				}
-// // 			};
-// // 			reader.readAsDataURL(file);
-// // 		}
-// // 	}
-// // function changePassword(changePasswordButton: HTMLButtonElement | null, changePasswordModal: HTMLDivElement | null, cancelModalButton: HTMLButtonElement | null) {
-// // 	// Cambiar contraseña
-// // 	changePasswordButton?.addEventListener("click", () => {
-// // 		console.log("Change password button clicked");
-
-// // 		});
-// // 	}
-// 	}		
-
-// function savefields(editButton: HTMLButtonElement | null, userForm: HTMLFormElement | null) {
-// 	}
-
-// export async function handleProfile() {
-
-// 		console.log("En desde el ts handleProfile");
-// 		const editButton = document.getElementById("edit-button");
-// 		const changePasswordButton = document.getElementById("change-password-button");
-// 		const avatarInput = document.getElementById("avatar");
-// 		const avatarPreview = document.getElementById("avatar-preview");
-// 		const userForm = document.getElementById("user-form");
-// 		const changePasswordModal = document.getElementById("change-password-modal");
-// 		const cancelModalButton = document.getElementById("cancel-modal");
-	
-// 		// Habilitar edición de campos
-// 		editButton?.addEventListener("click", () => {
-// 			console.log("Edit button clicked");
-// 			if (userForm) {
-// 				const inputs = userForm.querySelectorAll("input");
-// 				inputs.forEach(input => input.removeAttribute("readonly"));
-// 			}
-// 			avatarInput?.classList.remove("hidden");
-// 			if (editButton) {
-// 				editButton.textContent = "Save";
-// 				editButton.classList.replace("bg-blue-500", "bg-green-500");
-// 				editButton.addEventListener("click", async () => {
-// 					const formData = new FormData(userForm as HTMLFormElement);
-// 					const data = Object.fromEntries(formData.entries());
-// 					console.log("Form data:", data);
-// 					try {
-// 						const response = await fetch('https://localhost:8443/back/update_user', {
-// 							method: "POST",
-// 							headers: {
-// 								"Content-Type": "application/json",
-// 								},
-// 							body: JSON.stringify(data),
-// 						});
-// 						if (response.ok) {
-// 							alert('Profile updated successfully');
-// 							const HeaderButton = document.getElementById("username");
-// 							if (HeaderButton) {
-// 								HeaderButton.textContent = data.username.toString();
-// 							}
-// 							window.location.hash = "#profile";
-// 							if (userForm) {
-// 								const inputs = userForm.querySelectorAll("input");
-// 								inputs.forEach(input => input.setAttribute("readonly", "true"));
-// 							}
-// 							editButton.textContent = "Edit info";
-// 							editButton.classList.replace("bg-green-500", "bg-blue-500");
-
-// 						} else {
-// 							alert('Failed to update profile');
-// 						}
-// 						} catch (error) {
-// 							console.error("Error al enviar el formulario de registro:", error);
-// 						}
-// 				});
-// 				}
-// 			});
-// }
-
-// document.addEventListener('DOMContentLoaded', () => {handleProfile();});
-// */
-
