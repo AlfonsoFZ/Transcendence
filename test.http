@@ -138,13 +138,90 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsZ
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBlcGU0MEBnbWFpbC5jb20iLCJpYXQiOjE3NDM5MzU2NDksImV4cCI6MTc0MzkzOTI0OX0.F9B84eGNdqQ7nsa9nAME_hPp6oNAxiMWjIBLadDr1Qc
 
 
-// ***************************************************************//
-//	     Petición para crear enviar una friend_request:           //
-// ***************************************************************//
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                              FRIENDS                                  ║
+// ║                         RELATIONSHIP HANDLERS                         ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
 
+# Petición para enviar una friend_request:
 POST https://localhost:8443/back/send_friend_request HTTP/1.1
 Content-Type: application/json
-Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NTQxOTI5OSwiZXhwIjoxNzQ1NDIyODk5fQ.Ulpjra2ma58qPUM3rrZjXRabcKNcSLS_v37NFBFlniY
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "3"
+}
+
+# Petición para aceptar una friend_request:
+POST https://localhost:8443/back/accept_friend_request HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "2"
+}
+
+# Petición para rechazar una friend_request:
+POST https://localhost:8443/back/reject_friend_request HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "3"
+}
+
+
+# Petición para bloquear un usuario:
+POST https://localhost:8443/back/block_user HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "2"
+}
+
+# Petición para desbloquear un usuario:
+POST https://localhost:8443/back/unblock_user HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "2"
+}
+
+
+# Petición para tener la lista de relaciones de un usuario:
+POST https://localhost:8443/back/get_all_friends_entries_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "1"
+}
+
+# Petición para tener la lista de solicitudes pendientes de un usuario:
+POST https://localhost:8443/back/get_all_pending_users_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "3"
+}
+
+
+# Petición para tener la lista de amigos de un usuario:
+POST https://localhost:8443/back/get_all_accepted_users_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
+
+{
+  "friendId": "3"
+}
+
+# Petición para tener la lista de bloqueados de un usuario:
+POST https://localhost:8443/back/get_all_blocked_users_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQxOTY2NywiZXhwIjoxNzQ1NDIzMjY3fQ.rJgXjx9EXdFkU9IjldswZtLbuyQeZS7fi5NEbAM5kho
 
 {
   "friendId": "3"
