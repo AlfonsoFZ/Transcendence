@@ -30,7 +30,7 @@ export function configureImagesRoutes(fastify, sequelize) {
 	});
 
 	fastify.post('/delete_image', async (request, reply) => {
-		const user = extractUserFromToken(request.cookies.token);
+		const user = await extractUserFromToken(request.cookies.token);
 		if (!user)
 			return reply.code(401).send({ error: 'Unauthenticated user' });
 		const imageId = user.id + '.png';

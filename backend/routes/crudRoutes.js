@@ -176,7 +176,7 @@ export function configureCrudRoutes(fastify) {
 		}
 	});
 
-
+	// Define a GET route to retrieve gamelogs by userId from token
 	fastify.get('/get_user_gamelogs', async (request, reply) => {
 		try {
 			const token = request.cookies.token;
@@ -192,7 +192,4 @@ export function configureCrudRoutes(fastify) {
 			reply.status(400).send({ error: 'Error fetching user gamelogs' + err.message });
 		}
 	});
-
-
-
 }

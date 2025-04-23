@@ -1,6 +1,7 @@
 import { configureAuthRoutes } from './authRoutes.js';
 import { configureCrudRoutes } from './crudRoutes.js';
 import { configureImagesRoutes } from './imagesRoutes.js';
+import { configureFriendsRoutes } from './friendsRoutes.js';
 
 export default function configureRoutes(fastify, sequelize) {
 
@@ -21,5 +22,6 @@ export default function configureRoutes(fastify, sequelize) {
 	configureAuthRoutes(fastify);
 	configureCrudRoutes(fastify);
 	configureImagesRoutes(fastify);
+	configureFriendsRoutes(fastify);
 }
 
