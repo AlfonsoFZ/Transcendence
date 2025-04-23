@@ -20,23 +20,24 @@ export default class Friends extends Step {
 			if (!searchTableTemplate.ok) throw new Error("Failed to load the HTML file");
 			else 
 			{
+				const searchMainContainer = document.getElementById("search-main-container");
 				let searchTableContent = await searchTableTemplate.text();
-				appElement.innerHTML += searchTableContent;
+				if (searchMainContainer && searchTableContent) {
+					searchMainContainer.innerHTML += searchTableContent;
+				}
+				// htmlContent = htmlContent
+				// 	.replace("{{ totalGames }}", userStats.totalGames.toString())
+				// 	.replace("{{ wins }}", userStats.wins.toString())
+				// 	.replace("{{ losses }}", userStats.losses.toString())
+				// 	.replace("{{ timePlayed }}", userStats.timePlayed.toString())
+				// 	.replace("{{ tournamentsPlayed }}", userStats.tournamentsPlayed.toString())
+				// 	.replace("{{ tournamentsWon }}", userStats.tournamentsWon.toString());
 
-			// htmlContent = htmlContent
-			// 	.replace("{{ totalGames }}", userStats.totalGames.toString())
-			// 	.replace("{{ wins }}", userStats.wins.toString())
-			// 	.replace("{{ losses }}", userStats.losses.toString())
-			// 	.replace("{{ timePlayed }}", userStats.timePlayed.toString())
-			// 	.replace("{{ tournamentsPlayed }}", userStats.tournamentsPlayed.toString())
-			// 	.replace("{{ tournamentsWon }}", userStats.tournamentsWon.toString());
-
-			const searchItem = new SearchItem('search_results', ["123", "Pepe"], 0);
-			const searchItem1 = new SearchItem('search_results', ["1234", "Pepe2"], 1);
-			const searchItem2 = new SearchItem('search_results', ["1235", "Pepe3"], 2);
-			const searchItem3 = new SearchItem('search_results', ["1236", "Pepe4"], 3);
-			const searchItem4 = new SearchItem('search_results', ["1237", "Pepe5"], 4);
-			const searchItem5 = new SearchItem('search_results', ["1238", "Pepe6"], 5);
+				const searchItem = new SearchItem('search_results', ["123", "Pepe"], 0);
+				const searchItem1 = new SearchItem('search_results', ["1234", "Pepe2"], 1);
+				const searchItem2 = new SearchItem('search_results', ["1235", "Pepe3"], 2);
+				const searchItem3 = new SearchItem('search_results', ["1236", "Pepe4"], 3);
+				const searchItem4 = new SearchItem('search_results', ["1237", "Pepe5"], 4);
 
 			}
 

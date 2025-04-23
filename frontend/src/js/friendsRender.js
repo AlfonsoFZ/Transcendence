@@ -26,8 +26,11 @@ export default class Friends extends Step {
                 if (!searchTableTemplate.ok)
                     throw new Error("Failed to load the HTML file");
                 else {
+                    const searchMainContainer = document.getElementById("search-main-container");
                     let searchTableContent = yield searchTableTemplate.text();
-                    appElement.innerHTML += searchTableContent;
+                    if (searchMainContainer && searchTableContent) {
+                        searchMainContainer.innerHTML += searchTableContent;
+                    }
                     // htmlContent = htmlContent
                     // 	.replace("{{ totalGames }}", userStats.totalGames.toString())
                     // 	.replace("{{ wins }}", userStats.wins.toString())
@@ -40,7 +43,6 @@ export default class Friends extends Step {
                     const searchItem2 = new SearchItem('search_results', ["1235", "Pepe3"], 2);
                     const searchItem3 = new SearchItem('search_results', ["1236", "Pepe4"], 3);
                     const searchItem4 = new SearchItem('search_results', ["1237", "Pepe5"], 4);
-                    const searchItem5 = new SearchItem('search_results', ["1238", "Pepe6"], 5);
                 }
                 // handleStats(userStats);
             }
