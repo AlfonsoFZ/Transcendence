@@ -84,7 +84,7 @@ DELETE  https://localhost:8443/back/delete_user_by_id  HTTP/1.1
 Content-Type: application/json
 
 {
-	"userId" : "28"
+	"userId" : "2"
 }
 
 GET https://localhost:8443/back/get_user_by_id/?id=1  HTTP/1.1
@@ -132,23 +132,93 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsZ
 
 
 
-GET https://localhost:8443/back/get_gamelogs HTTP/1.1
 
 
-# /** para crear datos " a mano" en gamelogs dar permisos 777 a la base de datos
-# abrirla con DB Browser for SQlite y ejectuar insert*/
-	INSERT INTO gamelogs (user1, user2, winner, loser, duration, game_id, tournament_id, created_at, updated_at)
-	VALUES
-	(1, 2, 1, 2, 3500, 'game_001', 'tournament_001', DATETIME('now'), DATETIME('now')),
-	(3, 4, 3, 4, 4200, 'game_002', NULL, DATETIME('now'), DATETIME('now')),
-	(5, 6, 6, 5, 2800, 'game_003', 'tournament_002', DATETIME('now'), DATETIME('now')),
-	(7, 8, 7, 8, 3100, 'game_004', NULL, DATETIME('now'), DATETIME('now')),
-	(2, 3, 3, 2, 3900, 'game_005', 'tournament_001', DATETIME('now'), DATETIME('now'));
 
-# Actualiar los datos de gamelogs
-	UPDATE gamelogs
-	SET winner = 2,
-	    loser = 1,
-	    game_id = 'game_000',
-	    updated_at = DATETIME('now')
-	WHERE id = 2;
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBlcGU0MEBnbWFpbC5jb20iLCJpYXQiOjE3NDM5MzU2NDksImV4cCI6MTc0MzkzOTI0OX0.F9B84eGNdqQ7nsa9nAME_hPp6oNAxiMWjIBLadDr1Qc
+
+
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                              FRIENDS                                  ║
+// ║                         RELATIONSHIP HANDLERS                         ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
+
+# Petición para enviar una friend_request:
+POST https://localhost:8443/back/send_friend_request HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+  "friendId": "1"
+}
+
+# Petición para aceptar una friend_request:
+POST https://localhost:8443/back/accept_friend_request HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+  "friendId": "2"
+}
+
+# Petición para rechazar una friend_request:
+POST https://localhost:8443/back/reject_friend_request HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+  "friendId": "3"
+}
+
+
+# Petición para bloquear un usuario:
+POST https://localhost:8443/back/block_user HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+  "friendId": "2"
+}
+
+# Petición para desbloquear un usuario:
+POST https://localhost:8443/back/unblock_user HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+  "friendId": "2"
+}
+
+
+# Petición para tener la lista de relaciones de un usuario:
+POST https://localhost:8443/back/get_all_friends_entries_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+}
+
+# Petición para tener la lista de solicitudes pendientes de un usuario:
+POST https://localhost:8443/back/get_all_pending_users_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+}
+
+
+# Petición para tener la lista de amigos de un usuario:
+POST https://localhost:8443/back/get_all_accepted_users_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+}
+
+# Petición para tener la lista de bloqueados de un usuario:
+POST https://localhost:8443/back/get_all_blocked_users_from_an_id HTTP/1.1
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTQ5MjIzOSwiZXhwIjoxNzQ1NDk1ODM5fQ.TQYLYnErr_TR0P5KyUPF27PoP1J6-yGQaMs0SN4qawA
+
+{
+}
