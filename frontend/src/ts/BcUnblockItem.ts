@@ -1,15 +1,16 @@
 import { BasicComponent } from './BasicComponent.js';
 import { showMessage } from './showMessage.js';
+import { searchUsersFriends } from './friendsSearchUsers.js';
 
-export class BcAcceptFriendRequest extends BasicComponent {
+export class BcUnblockItem extends BasicComponent {
   constructor() {
-    super('../html/BcAcceptFriendRequestItem.html', () => {
+    super('../html/BcUnblockItem.html', () => {
       this.bindEvents();
     });
   }
 
   private bindEvents() {
-    const btn = this.el?.querySelector('.btnAcceptFriendRequest');
+    const btn = this.el?.querySelector('.btnUnblockItem');
     btn?.addEventListener('click', async (e) => {
 		const btn = e.currentTarget as HTMLElement;
 		const wrapper = btn.closest('div.flex');
@@ -22,7 +23,7 @@ export class BcAcceptFriendRequest extends BasicComponent {
 			friendId: userId
 		};
       try {
-	        const response = await fetch("https://localhost:8443/back/", {
+	        const response = await fetch("https://localhost:8443/back/unblock_user", {
 	            method: "POST",
 	            credentials: 'include',	
 	            headers: {
@@ -31,14 +32,15 @@ export class BcAcceptFriendRequest extends BasicComponent {
 	            	body: JSON.stringify(requestBody),
 	        	});
 			if (response.ok) {
-				showMessage(`Friend request Cancelled successfully:`, null);
+				showMessage(`User unblocked successfully:`, null);
+				searchUsersFriends();
 			}
 			else {
 				const errorMessage = await response.json();
 				showMessage(errorMessage.error, null);
 			}	
 		} catch (error) {	
-			console.error("Error cancelling friend request");
+			console.error("Error unblocking user");
 			}
 		});
   }

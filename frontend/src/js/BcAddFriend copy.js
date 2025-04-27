@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { BasicComponent } from './BasicComponent.js';
 import { showMessage } from './showMessage.js';
-export class BcCancelFriendRequest extends BasicComponent {
+export class BcAddFriend extends BasicComponent {
     constructor() {
-        super('../html/CancelFriendRequestItem.html', () => {
+        super('../html/BcAddfriendItem.html', () => {
             this.bindEvents();
         });
     }
     bindEvents() {
         var _a;
-        const btn = (_a = this.el) === null || _a === void 0 ? void 0 : _a.querySelector('.btnCancelFriendRequest');
+        const btn = (_a = this.el) === null || _a === void 0 ? void 0 : _a.querySelector('.btnAddfriend');
         btn === null || btn === void 0 ? void 0 : btn.addEventListener('click', (e) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const btn = e.currentTarget;
@@ -33,7 +33,7 @@ export class BcCancelFriendRequest extends BasicComponent {
                 friendId: userId
             };
             try {
-                const response = yield fetch("https://localhost:8443/back/delete_friend", {
+                const response = yield fetch("https://localhost:8443/back/send_friend_request", {
                     method: "POST",
                     credentials: 'include',
                     headers: {
@@ -42,7 +42,7 @@ export class BcCancelFriendRequest extends BasicComponent {
                     body: JSON.stringify(requestBody),
                 });
                 if (response.ok) {
-                    showMessage(`Friend request Cancelled successfully:`, null);
+                    showMessage(`Friend request sent successfully:`, null);
                 }
                 else {
                     const errorMessage = yield response.json();
@@ -50,7 +50,7 @@ export class BcCancelFriendRequest extends BasicComponent {
                 }
             }
             catch (error) {
-                console.error("Error cancelling friend request");
+                console.error("Error sending friend request");
             }
         }));
     }

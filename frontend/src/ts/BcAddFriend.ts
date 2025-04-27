@@ -1,5 +1,6 @@
 import { BasicComponent } from './BasicComponent.js';
 import { showMessage } from './showMessage.js';
+import { searchUsersFriends } from './friendsSearchUsers.js';
 
 export class BcAddFriend extends BasicComponent {
   constructor() {
@@ -32,6 +33,7 @@ export class BcAddFriend extends BasicComponent {
 	        	});
 			if (response.ok) {
 				showMessage(`Friend request sent successfully:`, null);
+				searchUsersFriends();
 			}
 			else {
 				const errorMessage = await response.json();

@@ -1,9 +1,10 @@
 import { BasicComponent } from './BasicComponent.js';
+import { searchUsersFriends } from './friendsSearchUsers.js';
 import { showMessage } from './showMessage.js';
 
 export class BcCancelFriendRequest extends BasicComponent {
   constructor() {
-    super('../html/BcCancelFriendRequestItem.html', () => {
+	super('../html/BcCancelFriendRequest.html', () => {
       this.bindEvents();
     });
   }
@@ -14,7 +15,7 @@ export class BcCancelFriendRequest extends BasicComponent {
 		const btn = e.currentTarget as HTMLElement;
 		const wrapper = btn.closest('div.flex');
 		if (!wrapper) return;
-		const span = wrapper.querySelector('span[data-user-id]');
+		const span = wrapper.querySelector('span[data-user-id]'); 
 		if (!span) return;
 		const userId = span.textContent?.trim();
 		console.log('ID del usuario:', userId);
@@ -32,6 +33,7 @@ export class BcCancelFriendRequest extends BasicComponent {
 	        	});
 			if (response.ok) {
 				showMessage(`Friend request Cancelled successfully:`, null);
+				searchUsersFriends();
 			}
 			else {
 				const errorMessage = await response.json();

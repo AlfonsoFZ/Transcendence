@@ -8,17 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { BasicComponent } from './BasicComponent.js';
-import { searchUsersFriends } from './friendsSearchUsers.js';
 import { showMessage } from './showMessage.js';
-export class BcCancelFriendRequest extends BasicComponent {
+import { searchUsersFriends } from './friendsSearchUsers.js';
+export class BcUnblockItem extends BasicComponent {
     constructor() {
-        super('../html/BcCancelFriendRequest.html', () => {
+        super('../html/BcUnblockItem.html', () => {
             this.bindEvents();
         });
     }
     bindEvents() {
         var _a;
-        const btn = (_a = this.el) === null || _a === void 0 ? void 0 : _a.querySelector('.btnCancelFriendRequest');
+        const btn = (_a = this.el) === null || _a === void 0 ? void 0 : _a.querySelector('.btnUnblockItem');
         btn === null || btn === void 0 ? void 0 : btn.addEventListener('click', (e) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             const btn = e.currentTarget;
@@ -34,7 +34,7 @@ export class BcCancelFriendRequest extends BasicComponent {
                 friendId: userId
             };
             try {
-                const response = yield fetch("https://localhost:8443/back/delete_friend", {
+                const response = yield fetch("https://localhost:8443/back/unblock_user", {
                     method: "POST",
                     credentials: 'include',
                     headers: {
@@ -43,7 +43,7 @@ export class BcCancelFriendRequest extends BasicComponent {
                     body: JSON.stringify(requestBody),
                 });
                 if (response.ok) {
-                    showMessage(`Friend request Cancelled successfully:`, null);
+                    showMessage(`User unblocked successfully:`, null);
                     searchUsersFriends();
                 }
                 else {
@@ -52,7 +52,7 @@ export class BcCancelFriendRequest extends BasicComponent {
                 }
             }
             catch (error) {
-                console.error("Error cancelling friend request");
+                console.error("Error unblocking user");
             }
         }));
     }
