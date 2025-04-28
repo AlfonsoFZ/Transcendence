@@ -21,10 +21,21 @@ export class SPA {
     public constructor(containerId: string) {
         this.container = document.getElementById(containerId) as HTMLElement;
 		SPA.instance = this; // Guardamos la instancia en la propiedad estática para poder exportarla
-        this.loadHEaderAndFooter();
+        this.loadHEaderAndFooter();	
 		this.loadStep();
         window.onpopstate = () => this.loadStep();
 		// this.navigate('home');
+
+		window.addEventListener("pageshow", (event) => {
+			if (event.persisted && location.hash === '#login') {
+				console.log("Recargando el step de login" );
+				const appContainer = document.getElementById('app-container');
+				if (appContainer) {
+					appContainer.innerHTML = '';
+				}
+				this.loadStep(); // Vuelve a cargar el step para forzar la lógica
+			}
+		});
     }
 
     private async loadHEaderAndFooter() {
@@ -50,6 +61,7 @@ export class SPA {
                 if (footerElement) {
                     footerElement.innerHTML = footerContent;
                 }
+				console.log ('footer cargado');
             } else {
                 console.error('Error al cargar el footer:', footerResponse.statusText);
             }
@@ -80,12 +92,7 @@ export class SPA {
 		// history.replaceState(null, '', newUrl);
 
 		const routeConfig = this.routes[step];
-		console.log (this);
 		if (routeConfig) {
-			//Verificar si la ruta es protegida y si el usuario está autenticado
-
-			// Cargar el módulo correspondiente
-			console.log("he pasado por loadStep de la clase SPA");
 			//importamos el módulo correspondiente
 			const module = await import(`./${routeConfig.module}`);
 			// Creamos una instancia del módulo
@@ -128,3 +135,4 @@ export class SPA {
 }
 
 document.addEventListener('DOMContentLoaded', () => new SPA('content'));
+

@@ -2,13 +2,11 @@ import { Step } from './stepRender.js';
 import { showMessage } from './showMessage.js';
 
 export default class LoginRender extends Step {
-
 	async render(appElement: HTMLElement): Promise<void>  {
-		
 		const user = await this.checkAuth();
 		console.log("En login render");
 		if (user) {
-			showMessage("Usuario autenticado, redirigiendo a perfil", null);
+			showMessage("Usuario autenticado, redirigiendo a perfil", 3000);
 			window.location.hash = "#home";
 		} else {
 			try {

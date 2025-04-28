@@ -29,13 +29,8 @@ module.exports = {
 				allowNull: false,
 				defaultValue: 0
 			},
-			game_id: {
-				type: Sequelize.STRING,
-				allowNull: true,
-				defaultValue: null
-			},
 			tournament_id: {
-				type: Sequelize.STRING,
+				type: Sequelize.INTEGER,
 				allowNull: true,
 				defaultValue: null
 			},

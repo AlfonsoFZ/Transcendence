@@ -15,7 +15,7 @@ export default class LoginRender extends Step {
             const user = yield this.checkAuth();
             console.log("En login render");
             if (user) {
-                showMessage("Usuario autenticado, redirigiendo a perfil", null);
+                showMessage("Usuario autenticado, redirigiendo a perfil", 3000);
                 window.location.hash = "#home";
             }
             else {

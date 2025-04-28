@@ -21,6 +21,30 @@ module.exports = {
 				created_at: new Date(),
 				updated_at: new Date(),
 			},
+			{
+				username: 'fernando',
+				password: await hashPassword('1234'),
+				email: 'fernando@gmail.com',
+				last_login: new Date(),
+				created_at: new Date(),
+				updated_at: new Date(),
+			},
+			{
+				username: 'pedro',
+				password: await hashPassword('1234'),
+				email: 'pedro@gmail.com',
+				last_login: new Date(),
+				created_at: new Date(),
+				updated_at: new Date(),
+			},
+			{
+				username: 'user',
+				password: await hashPassword('1234'),
+				email: 'user@gmail.com',
+				last_login: new Date(),
+				created_at: new Date(),
+				updated_at: new Date(),
+			},
 		], {});
 	},
 
