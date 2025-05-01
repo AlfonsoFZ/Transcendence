@@ -44,7 +44,7 @@ export class BcAcceptDeclineRequest extends BasicComponent {
                 });
                 if (response.ok) {
                     showMessage(`Friend added successfully:`, null);
-                    searchUsersFriends();
+                    searchUsersFriends('codigo');
                 }
                 else {
                     const errorMessage = yield response.json();
@@ -81,7 +81,7 @@ export class BcAcceptDeclineRequest extends BasicComponent {
                 });
                 if (response.ok) {
                     showMessage(`Friend request declined successfully:`, null);
-                    searchUsersFriends();
+                    searchUsersFriends('codigo');
                 }
                 else {
                     const errorMessage = yield response.json();

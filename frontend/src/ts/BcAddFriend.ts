@@ -33,7 +33,7 @@ export class BcAddFriend extends BasicComponent {
 	        	});
 			if (response.ok) {
 				showMessage(`Friend request sent successfully:`, null);
-				searchUsersFriends();
+				searchUsersFriends('codigo');
 			}
 			else {
 				const errorMessage = await response.json();

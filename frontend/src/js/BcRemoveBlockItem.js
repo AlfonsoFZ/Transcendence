@@ -46,7 +46,7 @@ export class BcRemoveBlockItem extends BasicComponent {
                 });
                 if (response.ok) {
                     showMessage(`Friend removed successfully:`, null);
-                    searchUsersFriends();
+                    searchUsersFriends('codigo');
                 }
                 else {
                     const errorMessage = yield response.json();
@@ -85,7 +85,7 @@ export class BcRemoveBlockItem extends BasicComponent {
                 });
                 if (response.ok) {
                     showMessage(`Friend blocked successfully:`, null);
-                    searchUsersFriends();
+                    searchUsersFriends('codigo');
                 }
                 else {
                     const errorMessage = yield response.json();

@@ -9,19 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { SearchResultItem } from "./friendsResultItems.js";
 import { showMessage } from "./showMessage.js";
-export function searchUsersFriends() {
+export function searchUsersFriends(origen) {
     return __awaiter(this, void 0, void 0, function* () {
         // event.preventDefault();
         const searchInput = document.getElementById("searchInput");
-        const searchValue = searchInput.value.trim();
-        // searchInput.value = ""; // Limpiar el input
+        const lastSearch = document.getElementById("friendLastSearch");
+        let searchValue = searchInput.value.trim();
+        // Si llamamos a la función para actualizar la lista despues de pulsar un boton de un cbccomponent
+        if (searchValue.trim() === "" && lastSearch.textContent.length > 0 && origen === 'codigo') {
+            searchValue = lastSearch.textContent.trim();
+        }
+        if (searchValue !== "") {
+            lastSearch.textContent = searchValue; // Guardar el último valor de búsqueda
+        }
+        searchInput.value = ""; // Limpiar el input
         if (searchValue.length < 3) {
             showMessage("Search value must be at least 3 characters long.", 2000);
             return;
         }
         const requestBody = { keyword: searchValue };
+        console.log("searchValue antes del try :", searchValue);
+        console.log("requestBody antes del try :", requestBody);
+        ;
         try {
-            console.log("searchValue:", searchValue);
             const response = yield fetch("https://localhost:8443/back/get_all_users_coincidences", {
                 method: "POST",
                 credentials: "include",

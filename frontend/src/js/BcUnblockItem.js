@@ -44,7 +44,7 @@ export class BcUnblockItem extends BasicComponent {
                 });
                 if (response.ok) {
                     showMessage(`User unblocked successfully:`, null);
-                    searchUsersFriends();
+                    searchUsersFriends('codigo');
                 }
                 else {
                     const errorMessage = yield response.json();

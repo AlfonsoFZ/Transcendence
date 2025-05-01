@@ -33,7 +33,7 @@ export class BcCancelFriendRequest extends BasicComponent {
 	        	});
 			if (response.ok) {
 				showMessage(`Friend request Cancelled successfully:`, null);
-				searchUsersFriends();
+				searchUsersFriends('codigo');
 			}
 			else {
 				const errorMessage = await response.json();

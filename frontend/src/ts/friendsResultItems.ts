@@ -19,7 +19,7 @@ export class SearchResultItem {
 	protected container: HTMLElement;
 	protected user: [string, string] | null = null; // Almacena el id y nombre de usuario autenticado
 	protected userStatus: number; // Almacena una función como manejador
-
+	
 	constructor(containerId: string, user: [string, string], userStatus: number, ) {
 		this.container = document.getElementById(containerId) as HTMLElement;
 		this.user = user;
@@ -55,7 +55,7 @@ export class SearchResultItem {
 			} else {
 				console.error("Component is undefined for userStatus:", this.userStatus);
 			}
-	
+		console.log("Justo despues de renderizar el componente en SearchResultItem");	
 		} catch (error) {
 			console.error("Error loading HTML file:", error);
 		}

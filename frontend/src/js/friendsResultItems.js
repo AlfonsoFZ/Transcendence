@@ -64,6 +64,7 @@ export class SearchResultItem {
                 else {
                     console.error("Component is undefined for userStatus:", this.userStatus);
                 }
+                console.log("Justo despues de renderizar el componente en SearchResultItem");
             }
             catch (error) {
                 console.error("Error loading HTML file:", error);

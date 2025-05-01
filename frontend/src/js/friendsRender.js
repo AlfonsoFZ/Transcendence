@@ -24,7 +24,7 @@ export default class Friends extends Step {
                 appElement.innerHTML = htmlContent;
                 const btnSearch = document.getElementById("btnSearch");
                 if (btnSearch) {
-                    btnSearch.addEventListener("click", searchUsersFriends);
+                    btnSearch.addEventListener("click", () => searchUsersFriends('boton'));
                 }
             }
             catch (error) {

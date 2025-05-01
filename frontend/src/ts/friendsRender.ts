@@ -18,7 +18,7 @@ export default class Friends extends Step {
 			
 			const btnSearch =  document.getElementById("btnSearch");
 			if (btnSearch) {
-				btnSearch.addEventListener("click", searchUsersFriends);
+				btnSearch.addEventListener("click", () => searchUsersFriends('boton'));
 			}
 		}catch (error) {
 				console.error("Error loading HTML file:", error);
