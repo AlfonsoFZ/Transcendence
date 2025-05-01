@@ -12,7 +12,7 @@ export async function searchUsersFriends(origen: 'boton' | 'codigo', event?: Eve
 	let searchValue = searchInput.value.trim();
 
 	// Si llamamos a la función para actualizar la lista despues de pulsar un boton de un cbccomponent
-	if (searchValue.trim() === "" && lastSearch.textContent!.length > 0 && origen === 'codigo') {
+	if (lastSearch.textContent!.length > 0 && origen === 'codigo') {
 		searchValue = lastSearch.textContent!.trim();
 	}
 

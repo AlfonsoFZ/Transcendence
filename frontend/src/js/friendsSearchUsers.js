@@ -18,7 +18,7 @@ export function searchUsersFriends(origen, event) {
         const lastSearch = document.getElementById("friendLastSearch");
         let searchValue = searchInput.value.trim();
         // Si llamamos a la función para actualizar la lista despues de pulsar un boton de un cbccomponent
-        if (searchValue.trim() === "" && lastSearch.textContent.length > 0 && origen === 'codigo') {
+        if (lastSearch.textContent.length > 0 && origen === 'codigo') {
             searchValue = lastSearch.textContent.trim();
         }
         if (searchValue !== "") {
