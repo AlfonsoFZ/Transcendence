@@ -46,7 +46,7 @@ export default class Chat extends Step {
 		try {
 			
 			const socket = await initWebsocket();
-			const htmlContent = await formatMessage("https://localhost:8443/back/images/default-avatar.png", "Ismael", "Hello, world!", "sent");
+			const htmlContent = await formatMessage("https://localhost:8443/back/images/default-avatar.png", "Ismael", "Hey, how are you? Is everything fine! I'm testing this with a very very very very very very very very very very very long message.", "sent");
 			appElement.innerHTML = htmlContent;
 			handleChat();
 		}
