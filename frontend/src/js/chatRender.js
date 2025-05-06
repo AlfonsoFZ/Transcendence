@@ -49,8 +49,9 @@ export default class Chat extends Step {
         const messagesContainer = document.getElementById("messages");
         const chatInput = document.getElementById("chat-input");
         const sendButton = document.getElementById("send-button");
+        console.log(`CLIENT: Setting up WebSocket connection...${clientId}`);
         // Conectar al servidor WebSocket
-        const socket = new WebSocket(`ws://localhost:8443/chat?clientId=${clientId}`);
+        const socket = new WebSocket(`https://localhost:8443/back/chat`);
         socket.onopen = () => {
             console.log("CLIENT: Connected to WebSocket server");
             const welcomeMessage = document.createElement("div");
@@ -71,7 +72,12 @@ export default class Chat extends Step {
         };
         sendButton.addEventListener("click", () => {
             const message = chatInput.value.trim();
-            if (message) {
+            if (message && socket.readyState === WebSocket.OPEN) {
+                const messageElement = document.createElement("div");
+                messageElement.textContent = `You: ${message}`;
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll automático
+                // Enviar el mensaje al servidor
                 socket.send(message);
                 chatInput.value = ""; // Limpiar el campo de entrada
             }

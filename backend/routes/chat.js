@@ -5,7 +5,9 @@ export async function configureChatRoutes(fastify) {
 	const clients = new Map();
 	
 	fastify.get('/chat', { websocket: true }, (socket, request) => {
+		console.log(`WebSocket connection attempt: ${request.query.clientId}`);
 		const clientId = request.query.clientId;
+		console
 		if (!clientId) {
 			socket.close(4000, 'Client ID is required');
 			return;
