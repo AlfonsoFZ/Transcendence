@@ -1,41 +1,46 @@
-import {parse} from 'cookie';
+// import {parse} from 'cookie';
+// import fastifyWebsocket from '@fastify/websocket';
 
-export async function configureChatRoutes(fastify) {
 
-	const clients = new Map();
-	
-	fastify.get('/chat', { websocket: true }, (socket, req) => {
+export function configureChatRoutes(fastify) {
 
-		const cookies = parse(req.request.headers.cookie || '');
-		const token = cookies.token;
 
-		console.log('Token extraído: ', token);
+	// fastify.get('/ws', { websocket: true }, (socket, req) => {
+	// 	console.log("socket", socket);
+	// 	socket.on('message', message => {
+	// 		fastify.log.info(`SERVER: Message from the client: ${message.toString()}`);
+	// 		socket.send(`SERVER: ${message.toString()} de vuelta para Alfonsete`)
+	// 		socket.send('SERVER: HAKUNAMATATA')
+	// 	})
+	// })
 
-		// const clientId = request.query.clientId;
-		// if (!clientId) {
-		// 	socket.close(4000, 'Client ID is required');
-		// 	return;
-		// }
-		// clients.set(clientId, socket);
-		// console.log(`Client ${clientId} connected`);
-		
-		// socket.on('message', message => {
-		// 	console.log(`Received message from ${clientId}: ${message}`);
-		// 	// Broadcast the message to all connected clients
-		// 	for (const [id, client] of clients) {
-		// 		if (id !== clientId) {
-		// 			client.send(`Message from ${clientId}: ${message}`);
-		// 		}
-		// 	}
-		// })
-		// socket.on('close', () => {
-		// 	clients.delete(clientId);
-		// 	console.log(`Client ${clientId} disconnected`);
-		// });
-		// socket.on('error', error => {
-		// 	console.error(`WebSocket error for client ${clientId}:`, error);
-		// });
-		// socket.send(`Welcome to the chat, ${clientId}!`);
-
+	// fastify.register(fastifyWebsocket)
+	fastify.register(async function (fastify) {
+	  fastify.get('/ws/chat', { websocket: true }, (socket, req) => {
+		console.log("HOLA ESTOTY EN EL SOCKET");
+		socket.on('message', message => {
+		  // message.toString() === 'hi from client'
+		  socket.send('hi from server')
+		})
+	  })
 	})
+
+
 }
+
+
+
+
+
+
+// const clients = new Map();
+
+// fastify.get('/chat', { websocket: true }, async (connection, req) => {
+// 	const socket = connection.socket;
+// 	const cookies = parse(req.request.headers.cookie || '');
+// 	const token = cookies.token;
+// 	console.log('Token extraído: ', token);
+// 	socket.on('message', (message) => {
+// 		console.log('Mensaje recibido: ', message);
+// 	})
+// })

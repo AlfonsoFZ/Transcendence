@@ -33,8 +33,6 @@ export function configureAuthRoutes(fastify, sequelize) {
 	});
 
 	fastify.get('/auth/verify-token', async (request, reply) => {
-		console.log('Verificando token');
-		console.log(request.cookies.token);
 	    try {
 	        const token = request.cookies.token;
 	        if (!token) {
@@ -80,5 +78,5 @@ export function configureAuthRoutes(fastify, sequelize) {
 			fastify.log.error(err);
 			reply.status(500).send({ error: 'Error changing password: ' + err.message });
 		}
-	});	
+	});
 }

@@ -1,22 +1,13 @@
 import { Step } from './stepRender.js';
-import { getTimeStamp, handleChat } from './handleChat.js';
 
-async function initWebsocket(): Promise<WebSocket> {
-	const socket = new WebSocket("wss://localhost:8443/back/chat");
-	socket.onopen = () => {
-		console.log("New client connected");
-	};
-	socket.onmessage = (event) => {
-		console.log("Client message:", event.data);
-	};
-	socket.onclose = (event: CloseEvent) => {
-		console.log(`Client connection closed - Code: ${event.code}, Reason: ${event.reason}`);
-	};
-	socket.onerror = (event) => {
-		console.error("Websocket error:", event);
-	};
-	return socket;
+function getTimeStamp(): string {
+	const now = new Date();
+	const hours = now.getHours().toString().padStart(2, '0');
+	const minutes = now.getMinutes().toString().padStart(2, '0');
+	return `${hours}:${minutes}`;
 }
+
+
 
 async function formatMessage(imagePath:string, username:string, message:string, messageStatus:string): Promise<string> {
 	const response = await fetch("../html/chat.html");
@@ -34,16 +25,47 @@ async function formatMessage(imagePath:string, username:string, message:string, 
 	return htmlContent;
 }
 
+async function initWebsocket(): Promise<WebSocket> {
+	const socket = new WebSocket("wss://localhost:8443/back/chat");
+	socket.onopen = () => {
+		console.log("NEW CLIENT CONNECTED");
+	};
+	socket.onmessage = (event) => {
+		console.log("CLIENT MESSAGE:", event.data);
+	};
+	socket.onclose = (event: CloseEvent) => {
+		console.log(`CLIENT CONNECTION CLOSED - Code: ${event.code}, Reason: ${event.reason}`);
+	};
+	socket.onerror = (event) => {
+		console.error("WEBSOCKET ERROR:", event);
+	};
+	return socket;
+}
+
 export default class Chat extends Step {
 	async render(appElement: HTMLElement): Promise<void> {
 		if (!this.username) {
 			this.username = await this.checkAuth();
 		}
 		try {
-			const socket = await initWebsocket();
-			const htmlContent = await formatMessage("https://localhost:8443/back/images/default-avatar.png", "Ismael", "Hey, how are you? Is everything fine! I'm testing this with a very very very very very very very very very very very long message.", "sent");
-			appElement.innerHTML = htmlContent;
-			handleChat();
+			const socket = new WebSocket("https://localhost:8443/back/ws/chat");
+			socket.onopen = () => {
+				console.log("CLIENT: Connected to Websocket-server");
+				socket.send("Hi server!");
+			};
+			socket.onmessage = (event) => {
+				console.log("CLIENT: Message from server:", event.data);
+			};
+			socket.onclose = (event: CloseEvent) => {
+				console.log(`CLIENT: Connection closed - Code: ${event.code}, Reason: ${event.reason}`);
+			};
+			socket.onerror = (event) => {
+				console.error("CLIENT: WebSocket error:", event);
+			};
+
+		
+			// const htmlContent = await formatMessage("https://localhost:8443/back/images/default-avatar.png", "Ismael", "Hey, how are you? Is everything fine! I'm testing this with a very very very very very very very very very very very long message.", "sent");
+			// appElement.innerHTML = htmlContent;
 		}
 		catch (error) {
 				appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
