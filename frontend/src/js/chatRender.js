@@ -11,7 +11,7 @@ import { Step } from './stepRender.js';
 import { getTimeStamp, handleChat } from './handleChat.js';
 function initWebsocket() {
     return __awaiter(this, void 0, void 0, function* () {
-        const socket = new WebSocket("https://localhost:8443/back/chat");
+        const socket = new WebSocket("wss://localhost:8443/back/chat");
         socket.onopen = () => {
             console.log("New client connected");
         };

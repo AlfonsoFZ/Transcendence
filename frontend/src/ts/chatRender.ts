@@ -2,7 +2,7 @@ import { Step } from './stepRender.js';
 import { getTimeStamp, handleChat } from './handleChat.js';
 
 async function initWebsocket(): Promise<WebSocket> {
-	const socket = new WebSocket("https://localhost:8443/back/chat");
+	const socket = new WebSocket("wss://localhost:8443/back/chat");
 	socket.onopen = () => {
 		console.log("New client connected");
 	};
@@ -18,8 +18,7 @@ async function initWebsocket(): Promise<WebSocket> {
 	return socket;
 }
 
-
-async function formatMessage(imagePath:string , username:string, message:string, messageStatus:string): Promise<string> {
+async function formatMessage(imagePath:string, username:string, message:string, messageStatus:string): Promise<string> {
 	const response = await fetch("../html/chat.html");
 	if (!response.ok) {
 		throw new Error("Failed to load the HTML file");
@@ -35,16 +34,12 @@ async function formatMessage(imagePath:string , username:string, message:string,
 	return htmlContent;
 }
 
-
-
-
 export default class Chat extends Step {
 	async render(appElement: HTMLElement): Promise<void> {
 		if (!this.username) {
 			this.username = await this.checkAuth();
 		}
 		try {
-			
 			const socket = await initWebsocket();
 			const htmlContent = await formatMessage("https://localhost:8443/back/images/default-avatar.png", "Ismael", "Hey, how are you? Is everything fine! I'm testing this with a very very very very very very very very very very very long message.", "sent");
 			appElement.innerHTML = htmlContent;

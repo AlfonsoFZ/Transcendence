@@ -1,13 +1,12 @@
-import cookie from 'cookie';
+import {parse} from 'cookie';
 
 export async function configureChatRoutes(fastify) {
 
 	const clients = new Map();
 	
-	fastify.get('/chat', { websocket: true }, (socket, request) => {
+	fastify.get('/chat', { websocket: true }, (socket, req) => {
 
-		const rawCookie = request.headers.cookie || '';
-		const cookies = cookie.parse(rawCookie);
+		const cookies = parse(req.request.headers.cookie || '');
 		const token = cookies.token;
 
 		console.log('Token extraído: ', token);
@@ -37,5 +36,6 @@ export async function configureChatRoutes(fastify) {
 		// 	console.error(`WebSocket error for client ${clientId}:`, error);
 		// });
 		// socket.send(`Welcome to the chat, ${clientId}!`);
+
 	})
 }
