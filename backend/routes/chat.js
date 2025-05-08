@@ -6,24 +6,25 @@ export function configureChatRoutes(fastify) {
 	const clients = new Map();
 
 	fastify.register(async function (fastify) {
-	  fastify.get('/ws/chat', { websocket: true }, async (socket, req) => {
+		fastify.get('/ws/chat', { websocket: true }, async (socket, req) => {
 
-		const cookies = parse(req.headers.cookie || '');
-		const token = cookies.token;
-		const user = await extractUserFromToken(token);
-		clients.set(user.id, socket);
+			const cookies = parse(req.headers.cookie || '');
+			const token = cookies.token;
+			const user = await extractUserFromToken(token);
+			clients.set(user.id, socket);
 
-
-
-		socket.on('message', message => {
-		console.log("Mensaje del front:", message.toString())
-		//   message.toString() === 'hi from client'
-		  socket.send('hi from server')
+			socket.on('message', message => {
+			const response = {
+				type: 'message',
+				message: message.toString(),
+				imagePath: user.avatarPath,
+				username: user.username,
+				messageStatus: 'Sent',
+				timeStamp: '10:42'
+			};
+			socket.send(JSON.stringify(response));
+			})
 		})
-
-
-
-	  })
 	})
 
 
