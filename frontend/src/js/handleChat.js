@@ -21,7 +21,6 @@ function formatMsgTemplate(data, name) {
             .replace("{{ username }}", data.username.toString())
             .replace("{{ timeStamp }}", data.timeStamp.toString())
             .replace("{{ message }}", data.message.toString())
-            .replace("{{ messageStatus }}", data.messageStatus.toString())
             .replace("{{ imagePath }}", data.imagePath.toString())
             .replace("{{ usernameImage }}", data.username.toString());
         console.log(htmlText);
