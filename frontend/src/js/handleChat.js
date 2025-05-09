@@ -39,9 +39,7 @@ function handleSocketOpen(socket) {
 }
 function handleSocketMessage(socket, chatMessages, name) {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
-        console.log("name:", name);
         const data = JSON.parse(event.data);
-        console.log("CLIENT: data_received:", data);
         if (data.type === 'message') {
             const HtmlContent = yield formatMsgTemplate(data, name);
             chatMessages.insertAdjacentHTML('beforeend', HtmlContent);

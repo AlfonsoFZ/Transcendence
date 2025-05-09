@@ -1,5 +1,24 @@
-import {parse} from 'cookie';
+import { parse } from 'cookie';
 import { extractUserFromToken } from '../auth/token.js';
+
+function createMessageJSON(user, message) {
+	return {
+		type: "message",
+		imagePath: user.avatarPath,
+		username: user.username,
+		message: message,
+		timeStamp: getTimeStamp(),
+		// timeStamp: new Date().toLocaleString(),
+		messageStatus: "Sent!"
+	}
+}
+
+function getTimeStamp() {
+	const now = new Date();
+	const hours = now.getHours().toString().padStart(2, '0');
+	const minutes = now.getMinutes().toString().padStart(2, '0');
+	return `${hours}:${minutes}`;
+}
 
 export function configureChatRoutes(fastify) {
 
@@ -14,27 +33,38 @@ export function configureChatRoutes(fastify) {
 			clients.set(user.id, socket);
 
 			socket.on('message', message => {
-			const response = {
-				type: 'message',
-				message: message.toString(),
-				imagePath: user.avatarPath,
-				username: user.username,
-				messageStatus: 'Sent',
-				timeStamp: '10:42'
-			};
-			socket.send(JSON.stringify(response));
+				try {
+					let data;
+					try {
+						data = JSON.parse(message.toString());
+					} catch (error) {
+						// Si no es JSON, tratarlo como un string simple
+						data = { type: "message", message: message.toString() };
+					}
+					if (data.type === "handshake") {
+						//console.log("Handshake received:", data);
+						//socket.send(JSON.stringify({ type: "handshake", message: "Welcome to the chat!" }));
+						return;
+					}
+					if (data.type === "message") {
+						console.log("Message received:", data);
+						const response = createMessageJSON(user, data.message);
+						for (const [id, client] of clients) {
+							client.send(JSON.stringify(response));
+						}
+					}
+				} catch (error) {
+					console.error("Error parsing message:", error);
+				}
 			})
+
+			socket.on('close', () => {
+				clients.delete(user.id);
+				console.log(`Client ${user.username} disconnected`);
+			});
+
 		})
 	})
-
-
 }
 
-// Mensaje del cliente de frontend
-// Necesito que me devuelvas un JSON con estos campos:
-
-// image - Avatar del usuario
-// username - Nombre del usuario
-// message - Mensaje
-// timeStamp - Fecha y hora
-// messageStatus - Status -> Sent!
+// users {userId, username, avatarPath}

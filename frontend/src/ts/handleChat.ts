@@ -34,9 +34,7 @@ function handleSocketOpen(socket: WebSocket): void {
 
 function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, name: string): void {
 	socket.onmessage = async (event: MessageEvent) => {
-		console.log("name:", name);
 		const data = JSON.parse(event.data);
-		console.log("CLIENT: data_received:", data);
 		if (data.type === 'message') {
 			const HtmlContent = await formatMsgTemplate(data, name);
 			chatMessages.insertAdjacentHTML('beforeend', HtmlContent);

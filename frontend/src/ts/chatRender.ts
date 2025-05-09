@@ -1,12 +1,6 @@
 import { Step } from './stepRender.js';
 import { handleSocket, handleTextareaKeydown, handleFormSubmit} from './handleChat.js';
 
-function getTimeStamp(): string {
-	const now = new Date();
-	const hours = now.getHours().toString().padStart(2, '0');
-	const minutes = now.getMinutes().toString().padStart(2, '0');
-	return `${hours}:${minutes}`;
-}
 export default class Chat extends Step {
 	async render(appElement: HTMLElement): Promise<void> {
 		if (!this.username) {

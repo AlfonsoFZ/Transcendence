@@ -9,12 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from './stepRender.js';
 import { handleSocket, handleTextareaKeydown, handleFormSubmit } from './handleChat.js';
-function getTimeStamp() {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-}
 export default class Chat extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
