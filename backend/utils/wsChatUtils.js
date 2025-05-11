@@ -40,7 +40,6 @@ function updateConnectedUsers(user, isConnected, status) {
 		connected.delete(user.id);
 	}
 	const connectedArray = Array.from(connected.values());
-	console.log("Connected users:", connectedArray);
 	return {
 		type: "connectedUsers",
 		object: connectedArray
@@ -59,7 +58,6 @@ function sendStatusToAllClients(user, status) {
 function setTimer(user) {
 
 	if (firstTimer) {
-		console.log("Clearing first timer");
 		clearTimeout(firstTimer);
 		sendStatusToAllClients(user, "green");
 	}
