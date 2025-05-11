@@ -38,7 +38,9 @@ function formatConnectedUsersTemplate(data, name) {
             htmlContent = htmlContent
                 .replace("{{ username }}", user.username.toString())
                 .replace("{{ usernameImage }}", user.username.toString())
-                .replace("{{ imagePath }}", user.imagePath.toString());
+                .replace("{{ imagePath }}", user.imagePath.toString())
+                .replace("{{ bgcolor }}", user.status.toString())
+                .replace("{{ bcolor }}", user.status.toString());
             htmlText += htmlContent;
         }
         return htmlText;
@@ -69,6 +71,7 @@ function sortUsersAlphabetically(htmlContent) {
 function handleSocketMessage(socket, chatMessages, items, name) {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.type === 'message') {
             const HtmlContent = yield formatMsgTemplate(data, name);
             let stored = sessionStorage.getItem("chatHTML") || "";

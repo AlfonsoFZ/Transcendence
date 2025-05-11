@@ -23,7 +23,7 @@ async function formatConnectedUsersTemplate(data: any, name:string): Promise<str
 	let htmlText = '';
 	let htmlContent;
 	let userHtmlContent;
-	const usersConnected = Object.values(data.object) as { username: string; imagePath: string }[];
+	const usersConnected = Object.values(data.object) as { username: string; imagePath: string; status: string }[];
 
 	for (const user of usersConnected) {
 			userHtmlContent = await fetch("../html/userListItem.html");
@@ -32,6 +32,8 @@ async function formatConnectedUsersTemplate(data: any, name:string): Promise<str
 			.replace("{{ username }}", user.username.toString())
 			.replace("{{ usernameImage }}", user.username.toString())
 			.replace("{{ imagePath }}", user.imagePath.toString())
+			.replace("{{ bgcolor }}", user.status.toString())
+			.replace("{{ bcolor }}", user.status.toString());
 			htmlText += htmlContent;
 	}
 	return htmlText;
@@ -65,6 +67,7 @@ function sortUsersAlphabetically(htmlContent: string): string {
 function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, name: string): void {
 	socket.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
+		console.log(data);
 		if (data.type === 'message') {
 			const HtmlContent = await formatMsgTemplate(data, name);
 			let stored = sessionStorage.getItem("chatHTML") || "";

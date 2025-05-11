@@ -13,7 +13,6 @@ export function configureChatRoutes(fastify) {
 	})
 }
 
-// Ordenar los usuarios por orden alfabético en el frontend antes de mostrarlos
 // Controlar que el username no sea de más de 20 caracteres para evitar problemas de visualización
 // Implementar la búsqueda de usuario dinámica con el search bar
 // Implementar el puntito rojo cuando un usuario lleva tiempo sin escribir
