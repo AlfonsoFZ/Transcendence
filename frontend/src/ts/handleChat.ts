@@ -47,6 +47,21 @@ function handleSocketOpen(socket: WebSocket): void {
 	}
 }
 
+function sortUsersAlphabetically(htmlContent: string): string {
+
+	const container = document.createElement('div');
+	container.innerHTML = htmlContent;
+	const items = Array.from(container.querySelectorAll('.item'));
+
+	items.sort((a, b) => {
+		const usernameA = a.querySelector('span.text-sm')?.textContent?.trim().toLowerCase() || '';
+		const usernameB = b.querySelector('span.text-sm')?.textContent?.trim().toLowerCase() || '';        
+        return usernameA.localeCompare(usernameB);
+    });
+    const sortedHtml = items.map(item => item.outerHTML).join('');
+	return sortedHtml;
+}
+
 function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, name: string): void {
 	socket.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
@@ -59,7 +74,8 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'connectedUsers') {
-			const HtmlContent = await formatConnectedUsersTemplate(data, name);
+			let HtmlContent = await formatConnectedUsersTemplate(data, name);
+			HtmlContent = sortUsersAlphabetically(HtmlContent);
 			items.innerHTML = HtmlContent;
 		}
 	}

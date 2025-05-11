@@ -53,6 +53,19 @@ function handleSocketOpen(socket) {
         socket.send(JSON.stringify(handshake));
     };
 }
+function sortUsersAlphabetically(htmlContent) {
+    const container = document.createElement('div');
+    container.innerHTML = htmlContent;
+    const items = Array.from(container.querySelectorAll('.item'));
+    items.sort((a, b) => {
+        var _a, _b, _c, _d;
+        const usernameA = ((_b = (_a = a.querySelector('span.text-sm')) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim().toLowerCase()) || '';
+        const usernameB = ((_d = (_c = b.querySelector('span.text-sm')) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim().toLowerCase()) || '';
+        return usernameA.localeCompare(usernameB);
+    });
+    const sortedHtml = items.map(item => item.outerHTML).join('');
+    return sortedHtml;
+}
 function handleSocketMessage(socket, chatMessages, items, name) {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
@@ -65,7 +78,8 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         if (data.type === 'connectedUsers') {
-            const HtmlContent = yield formatConnectedUsersTemplate(data, name);
+            let HtmlContent = yield formatConnectedUsersTemplate(data, name);
+            HtmlContent = sortUsersAlphabetically(HtmlContent);
             items.innerHTML = HtmlContent;
         }
     });
