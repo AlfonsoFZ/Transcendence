@@ -84,6 +84,7 @@
     --color-zinc-500: oklch(55.2% 0.016 285.938);
     --color-neutral-400: oklch(70.8% 0 0);
     --color-neutral-500: oklch(55.6% 0 0);
+    --color-neutral-700: oklch(37.1% 0 0);
     --color-stone-400: oklch(70.9% 0.01 56.259);
     --color-stone-500: oklch(55.3% 0.013 58.071);
     --color-black: #000;
@@ -912,6 +913,9 @@
   .pr-2 {
     padding-right: calc(var(--spacing) * 2);
   }
+  .pr-4 {
+    padding-right: calc(var(--spacing) * 4);
+  }
   .pb-2 {
     padding-bottom: calc(var(--spacing) * 2);
   }
@@ -1684,6 +1688,145 @@
     @media (prefers-color-scheme: dark) {
       &:focus {
         --tw-ring-color: var(--color-yellow-800);
+      }
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:h-1 {
+    &::-webkit-scrollbar {
+      height: calc(var(--spacing) * 1);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:h-2 {
+    &::-webkit-scrollbar {
+      height: calc(var(--spacing) * 2);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:h-8 {
+    &::-webkit-scrollbar {
+      height: calc(var(--spacing) * 8);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:h-\[6px\] {
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:w-0 {
+    &::-webkit-scrollbar {
+      width: calc(var(--spacing) * 0);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:w-1 {
+    &::-webkit-scrollbar {
+      width: calc(var(--spacing) * 1);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:w-2 {
+    &::-webkit-scrollbar {
+      width: calc(var(--spacing) * 2);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:w-3 {
+    &::-webkit-scrollbar {
+      width: calc(var(--spacing) * 3);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:w-\[6px\] {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:rounded-full {
+    &::-webkit-scrollbar {
+      border-radius: calc(infinity * 1px);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar\]\:bg-gray-700 {
+    &::-webkit-scrollbar {
+      background-color: var(--color-gray-700);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:h-2 {
+    &::-webkit-scrollbar-thumb {
+      height: calc(var(--spacing) * 2);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:w-2 {
+    &::-webkit-scrollbar-thumb {
+      width: calc(var(--spacing) * 2);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:rounded-full {
+    &::-webkit-scrollbar-thumb {
+      border-radius: calc(infinity * 1px);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:bg-gray-300 {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-gray-300);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:bg-gray-800 {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-gray-800);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:bg-gray-900 {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-gray-900);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-thumb\]\:bg-neutral-500 {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-neutral-500);
+    }
+  }
+  .dark\:\[\&\:\:-webkit-scrollbar-thumb\]\:bg-neutral-500 {
+    @media (prefers-color-scheme: dark) {
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-neutral-500);
+      }
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:h-2 {
+    &::-webkit-scrollbar-track {
+      height: calc(var(--spacing) * 2);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:w-2 {
+    &::-webkit-scrollbar-track {
+      width: calc(var(--spacing) * 2);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:rounded-full {
+    &::-webkit-scrollbar-track {
+      border-radius: calc(infinity * 1px);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:bg-gray-100 {
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-gray-100);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:bg-gray-700 {
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-gray-700);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:bg-gray-900 {
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-gray-900);
+    }
+  }
+  .\[\&\:\:-webkit-scrollbar-track\]\:bg-neutral-700 {
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-neutral-700);
+    }
+  }
+  .dark\:\[\&\:\:-webkit-scrollbar-track\]\:bg-neutral-700 {
+    @media (prefers-color-scheme: dark) {
+      &::-webkit-scrollbar-track {
+        background-color: var(--color-neutral-700);
       }
     }
   }

@@ -4,6 +4,7 @@ import { crud } from '../crud/crud.js';
 import { comparePassword } from '../database/users/PassUtils.cjs';
 import { authenticateUser, signOutUser } from "../auth/user.js";
 import { extractUserFromToken, setTokenCookie } from "../auth/token.js";
+import { disconnectUser } from "../utils/wsChatUtils.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -29,6 +30,7 @@ export function configureAuthRoutes(fastify, sequelize) {
 	fastify.post('/auth/logout', async (request, reply) => {
 		const token = request.cookies.token
 		const user = await extractUserFromToken(token, reply);
+		disconnectUser(user);
 		await signOutUser(token, user, reply);
 	});
 

@@ -1,5 +1,3 @@
-import { SPA } from './spa.js';
-import { showMessage } from './showMessage.js';
 
 async function formatMsgTemplate(data: any, name: string): Promise<string> {
 
@@ -27,9 +25,7 @@ async function formatConnectedUsersTemplate(data: any, name:string): Promise<str
 	let userHtmlContent;
 	const usersConnected = Object.values(data.object) as { username: string; imagePath: string }[];
 
-	console.log(usersConnected)
 	for (const user of usersConnected) {
-		// if (user.username.toString() !== name.toString()) {
 			userHtmlContent = await fetch("../html/userListItem.html");
 			htmlContent = await userHtmlContent.text();
 			htmlContent = htmlContent
@@ -37,7 +33,6 @@ async function formatConnectedUsersTemplate(data: any, name:string): Promise<str
 			.replace("{{ usernameImage }}", user.username.toString())
 			.replace("{{ imagePath }}", user.imagePath.toString())
 			htmlText += htmlContent;
-		// }
 	}
 	return htmlText;
 }
@@ -57,7 +52,10 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 		const data = JSON.parse(event.data);
 		if (data.type === 'message') {
 			const HtmlContent = await formatMsgTemplate(data, name);
-			chatMessages.insertAdjacentHTML('beforeend', HtmlContent);
+			let stored = sessionStorage.getItem("chatHTML") || "";
+			stored += HtmlContent;
+			sessionStorage.setItem("chatHTML", stored);
+			chatMessages.innerHTML = stored;
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'connectedUsers') {

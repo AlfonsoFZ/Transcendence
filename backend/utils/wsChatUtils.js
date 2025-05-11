@@ -1,8 +1,11 @@
 import { parse } from 'cookie';
 import { extractUserFromToken } from '../auth/token.js';
 
+export const clients = new Map();
+export const connected = new Map();
+
 // Register a user when they connect to the WebSocket server
-export async function registerUser(request, clients, socket, connected) {
+export async function registerUser(request, socket) {
 
 	const cookies = parse(request.headers.cookie || '');
 	const token = cookies.token;
@@ -40,7 +43,7 @@ function createMsgJSON(user, message) {
 }
 
 // Update the connected users list
-function updateConnectedUsers(user, connected, status) {
+function updateConnectedUsers(user, status) {
 
 	if (status) {
 		connected.set(user.id, {username: user.username, imagePath: user.avatarPath});
@@ -49,7 +52,7 @@ function updateConnectedUsers(user, connected, status) {
 		connected.delete(user.id);
 	}
 	const connectedArray = Array.from(connected.values());
-
+	console.log(connectedArray);
 	return {
 		type: "connectedUsers",
 		object: connectedArray
@@ -57,7 +60,7 @@ function updateConnectedUsers(user, connected, status) {
 }
 
 // Handle incoming messages from the WebSocket clients and broadcast them to all connected clients
-export function handleIncomingSocketMessage(user, clients, socket) {
+export function handleIncomingSocketMessage(user, socket) {
 
 	socket.on('message', message => {
 		try {
@@ -78,11 +81,11 @@ export function handleIncomingSocketMessage(user, clients, socket) {
 }
 
 // Handle the closing of the WebSocket connection and update the connected users list
-export function handleSocketClose(user, clients, socket, connected) {
+export function handleSocketClose(user, socket) {
 
 	socket.on('close', () => {
 		clients.delete(user.id);
-		const response = updateConnectedUsers(user, connected, false);
+		const response = updateConnectedUsers(user, false);
 		for (const [id, client] of clients) {
 			client.send(JSON.stringify(response));
 		}
@@ -90,7 +93,7 @@ export function handleSocketClose(user, clients, socket, connected) {
 }
 
 // Handle errors that occur during the WebSocket connection and update the connected users list
-export function handleSocketError(user, clients, socket, connected) {
+export function handleSocketError(user, socket) {
 
 	socket.on('error', (error) => {
 		clients.delete(user.id);
@@ -100,4 +103,17 @@ export function handleSocketError(user, clients, socket, connected) {
 		}
 		console.log(`${user.id} WebSocket error :`, error);
 	});
+}
+
+export function disconnectUser(user) {
+
+	const socket = clients.get(user.id);
+	if (socket) {
+		socket.close(1000, "Server closed connection");
+		clients.delete(user.id);
+		const response = updateConnectedUsers(user, false);
+		for (const [id, client] of clients) {
+			client.send(JSON.stringify(response));
+		}
+	}
 }

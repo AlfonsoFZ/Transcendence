@@ -32,9 +32,7 @@ function formatConnectedUsersTemplate(data, name) {
         let htmlContent;
         let userHtmlContent;
         const usersConnected = Object.values(data.object);
-        console.log(usersConnected);
         for (const user of usersConnected) {
-            // if (user.username.toString() !== name.toString()) {
             userHtmlContent = yield fetch("../html/userListItem.html");
             htmlContent = yield userHtmlContent.text();
             htmlContent = htmlContent
@@ -42,7 +40,6 @@ function formatConnectedUsersTemplate(data, name) {
                 .replace("{{ usernameImage }}", user.username.toString())
                 .replace("{{ imagePath }}", user.imagePath.toString());
             htmlText += htmlContent;
-            // }
         }
         return htmlText;
     });
@@ -61,7 +58,10 @@ function handleSocketMessage(socket, chatMessages, items, name) {
         const data = JSON.parse(event.data);
         if (data.type === 'message') {
             const HtmlContent = yield formatMsgTemplate(data, name);
-            chatMessages.insertAdjacentHTML('beforeend', HtmlContent);
+            let stored = sessionStorage.getItem("chatHTML") || "";
+            stored += HtmlContent;
+            sessionStorage.setItem("chatHTML", stored);
+            chatMessages.innerHTML = stored;
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         if (data.type === 'connectedUsers') {
