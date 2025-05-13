@@ -728,6 +728,9 @@
   .border-lime-700 {
     border-color: var(--color-lime-700);
   }
+  .border-red-300 {
+    border-color: var(--color-red-300);
+  }
   .border-red-700 {
     border-color: var(--color-red-700);
   }

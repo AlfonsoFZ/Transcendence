@@ -24,11 +24,12 @@ export default class Chat extends Step {
 					chatMessages.scrollTop = chatMessages.scrollHeight;
 				}
 				if (!Step.socket || Step.socket.readyState === WebSocket.CLOSED) {
+					console.log("new socket");
 					Step.socket = new WebSocket("https://localhost:8443/back/ws/chat");
 				}
 				else {
 					retrieveConnectedUsers(Step.socket);
-				}		
+				}
 				handleSocket(Step.socket, chatMessages, items, this.username!);
 				textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
 				form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket!));
