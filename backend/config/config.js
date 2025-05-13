@@ -1,12 +1,13 @@
-import { configureCors } from './cors.js';
-import { configureGoogleAuth } from './googleAuth.js';
-import { configureStaticFiles } from './staticFiles.js';
-
+import { registerCors } from './cors.js';
+import { registerGoogleAuth } from './googleAuth.js';
+import { registerStaticFiles } from './staticFiles.js';
+import { registerWebsocket } from './websocket.js';
 
 export function configureServer(fastify) {
 
-	// configureDevTools(fastify);
-	configureStaticFiles(fastify);
-	configureCors(fastify);
-	configureGoogleAuth(fastify);
+	// registerDevTools(fastify);
+	registerStaticFiles(fastify);
+	registerCors(fastify);
+	registerGoogleAuth(fastify);
+	registerWebsocket(fastify);
 }

@@ -1,6 +1,6 @@
 import fastifyCors from "@fastify/cors";
 
-export function configureCors(fastify) {
+export function registerCors(fastify) {
 
 	// Register CORS
 	fastify.register(fastifyCors, {

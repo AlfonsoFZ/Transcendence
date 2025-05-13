@@ -21,6 +21,8 @@ export default class LoginRender extends Step {
                     throw new Error("Failed to logout");
                 console.log("User logged out successfully.");
                 document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                sessionStorage.clear();
+                sessionStorage.removeItem("chatHTML");
                 // Redirigir a la página principal
                 appElement.innerHTML = `<div id="pong-container">
 									<div class="paddle left-paddle"></div>

@@ -2,7 +2,7 @@ import fastifyPassport from "@fastify/passport";
 import fastifySecureSession from "@fastify/secure-session";
 import { authenticateUserWithGoogleStrategy } from "../auth/user.js";
 
-export function configureGoogleAuth(fastify) {
+export function registerGoogleAuth(fastify) {
 
 	// Register Fastify Secure Session
 	fastify.register(fastifySecureSession, {
