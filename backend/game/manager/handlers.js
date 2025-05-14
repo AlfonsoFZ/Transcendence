@@ -32,8 +32,6 @@ export function	handleGameMessage(client, connection)
 
 /**
  * When a player JOINs the game
- * TODO: implement GameSession class/interface
- * TODO: implement shouldStart()
  */
 function handleJoinGame(client, data)
 {
