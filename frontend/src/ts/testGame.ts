@@ -55,7 +55,8 @@ export default class Game extends Step
 		});
 	}
 
-	private connectToGame(mode: string) {
+	private connectToGame(mode: string)
+	{
 		this.socket = new WebSocket(`https://${window.location.host}/back/ws/game`);
 
 		this.socket.onmessage = (event) => {
