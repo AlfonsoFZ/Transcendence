@@ -218,16 +218,17 @@ export class GameSession
 	}
 }
 
+// TODO: Address the gameSessions map approach
 export function startGameLoop(gameSession)
 {
 	let lastUpdateTime = Date.now();
 	const gameLoop = setInterval(() => {
 		// 1. Check if game still exists
-		if (!gameSessions.has(gameSession.roomId))
-		{
-			clearInterval(gameLoop);
-			return ;
-		}
+		// if (!gameSessions.has(gameSession.roomId))
+		// {
+		// 	clearInterval(gameLoop);
+		// 	return ;
+		// }
 		// 2. Calculate time since last update
 		const now = Date.now();
 		const deltaTime = (now - lastUpdateTime) / 1000; // Convert to seconds

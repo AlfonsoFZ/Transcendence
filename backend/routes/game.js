@@ -19,6 +19,7 @@ export function configureGameRoutes(fastify)
 			handleGameMessage(client, connection);
 			handleGameDisconnect(client, connection);
 			handleGameError(client, connection);
+			console.log("All handlers registered:", Object.keys(connection._events));
 		})
 	})
 }

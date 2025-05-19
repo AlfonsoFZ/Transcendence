@@ -13,18 +13,39 @@ const clients = new Map();
  */
 export async function	registerGameClient(request, connection)
 {
-	console.log("Game Socket Connecting...");
+	console.log("STEPPED INTO -> registerGameClient");
 	// First, extract user from cookies - as in chat logic (or as I understood it)
 	const	token = request.cookies.token;
+	if (!token)
+	{
+		console.error("No auth token found");
+		connection.send(JSON.stringify({
+			type: 'ERROR',
+			message: 'Authentication required'
+		}));
+		return (null);
+	}
 	const	user = await extractUserFromToken(token);
-	// Register and track connection
-	clients.set(user.id, {
-		connection,
-		roomId: null
-	})
-	// Print websocket connection object to verify importante properties (readyState, connecting:, _connections)
-	//console.log("User registred in clients map: ", clients.get(user.id).connection);
-	return ({user, connection});
+	if (user && user.id)
+	{
+		console.log(`User authenticated: ${user.id}`);
+		// Register and track connection
+		clients.set(user.id, {
+			connection,
+			roomId: null
+		})
+		console.log("Connection socket object of registred user:\n", clients.get(user.id).connection);
+		return ({user, connection});
+	}
+	else
+	{
+		console.error("Invalid user extracted from token");
+		connection.send(JSON.stringify({
+			type: 'ERROR',
+			message: 'Invalid user authentication'
+		}));
+		return (null);
+	}
 }
 
 export function	handleGameDisconnect(client, connection)
@@ -42,21 +63,54 @@ export function	handleGameDisconnect(client, connection)
  */
 export function	handleGameMessage(client, connection)
 {
-	console.log("Launching handleGameMessage...");
+	console.log("STEPPED INTO -> handleGameMessage");
+	console.log(`Setting up message handler for user: ${client.user.id}`);
+	console.log("Connection state:", connection._readyState);
+	console.log("Current connection event listeners:", Object.keys(connection._events));
+
+	try {
+	setTimeout(() => {
+		console.log("Sending test message to client...");
+		connection.send(JSON.stringify({
+			type: 'SERVER_TEST',
+			message: 'Testing connection'
+		}));
+	}, 1000);
+	} catch (error) {
+		console.error("Error sending test message:", error);
+	}
+
 	connection.on('message', (message) => {
+		console.log("Received message from client");
+		console.log("RAW MESSAGE RECEIVED:", message);
+		console.log("Message type:", typeof message);
 		try
 		{
 			const data = JSON.parse(message.toString());
-			if (data.type === 'JOIN_GAME')
-				handleJoinGame(client, data);
-			else if (data.type === 'PLAYER_INPUT')
-				handlePlayerInput(client, data);
-			else if (data.type === 'LEAVE_GAME')
-				handleLeaveGame(client);
+			console.log("JSON message:\n", data);
+			switch (data.type)
+			{
+				case 'JOIN_GAME':
+					console.log("Launching handleJOINMessage...");
+					handleJoinGame(client, data);
+					break ;
+				case 'PLAYER_INPUT':
+					handlePlayerInput(client, data);
+					break ;
+				case 'LEAVE_GAME':
+					handleLeaveGame(client);
+					break ;
+				case 'PING':
+					connection.send(JSON.stringify({ type: 'PONG' }));
+					break ;
+				default:
+					console.log(`Unknown message type: ${data.type}`);
+			}	
 		}
 		catch (error){
 			console.error('Game message error:', error);
 		}
+		console.log("Updated connection event listeners:", Object.keys(connection._events));
 	});
 }
 
