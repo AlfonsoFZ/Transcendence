@@ -101,7 +101,7 @@ function handleSocketError(socket: WebSocket): void {
 	}
 }
 
-export function retrieveConnectedUsers(socket: WebSocket){
+export function retrieveConnectedUsers(socket: WebSocket) {
 
 	const message = {
 		type: 'status',
@@ -110,7 +110,7 @@ export function retrieveConnectedUsers(socket: WebSocket){
 	socket.send(JSON.stringify(message));
 }
 
-export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items:HTMLDivElement , username: string): WebSocket {
+export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, username: string): WebSocket {
 
 	handleSocketOpen(socket);
 	handleSocketMessage(socket, chatMessages, items, username);
@@ -168,6 +168,9 @@ export function filterSearchUsers(keyword: string): void {
 	if (filteredUsers.length > 0) {
 		filteredUsers.forEach(userElement => {
 			itemsContainer.appendChild(userElement);
+			userElement.addEventListener("click", (event) => {
+				showUserOptionsMenu(userElement, event)
+			});
 		});
 	} else {
 		const noResultsElement = document.createElement("div");
@@ -175,4 +178,108 @@ export function filterSearchUsers(keyword: string): void {
 		noResultsElement.textContent = "No users found";
 		itemsContainer.appendChild(noResultsElement);
 	}
+}
+
+function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent) {
+	const username = userElement.querySelector("span.text-sm")?.textContent?.trim();
+	if (!username) return;
+
+	const oldMenu = document.getElementById("user-options-menu");
+	if (oldMenu) {
+		oldMenu.remove();
+	}
+	const menu = document.createElement("div");
+	menu.id = "user-options-menu";
+	menu.className = "absolute bg-white border border-gray-300 rounded-lg shadow-lg p-2 z-50";
+
+	menu.innerHTML = `
+		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="add">➕ Agregar amigo</div>
+		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="msg">📩 Mensaje privado</div>
+		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="block">🚫 Bloquear</div>
+	`
+	menu.style.top = `${event.clientY + 5}px`;
+	menu.style.left = `${event.clientX + 5}px`;
+
+	document.body.appendChild(menu);
+
+	menu.querySelectorAll("div").forEach((option) => {
+		option.addEventListener("click", () => {
+			const action = option.getAttribute("data-action");
+			if (action) {
+				switch (action) {
+					case "add":
+						console.log(`Agregar amigo a ${username}`);
+						break;
+					case "msg":
+						console.log(`Mensaje privado a ${username}`);
+						openPrivateChat(username);
+						break;
+					case "block":
+						console.log(`Bloquear a ${username}`);
+						break;
+				}
+			}
+			menu.remove();
+		});
+	});
+	// Cerrar el menú al hacer clic fuera de él
+	const handleClickOutside = (e: MouseEvent) => {
+		if (!menu.contains(e.target as Node)) {
+			menu.remove();
+			document.removeEventListener("click", handleClickOutside);
+		}
+	};
+	document.addEventListener("click", handleClickOutside);
+	event.stopPropagation();
+}
+
+function openPrivateChat(username: string) {
+	let privateChat = document.getElementById("private-chat");
+	if (privateChat) {
+		privateChat.remove();
+	}
+	console.log("Abriendo chat privado con:", username);
+	// privateChat = document.createElement("div");
+	// privateChat.id = `private-chat-${username}`;
+	// privateChat.className =
+	// 	privateChat.className = "private-chat bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-4";
+	// privateChat.innerHTML = `
+	// <div class="chat-header flex justify-between items-center">
+	// 			<h3 class="text-lg font-bold">Chat con ${username}</h3>
+	// 			<button class="close-chat text-red-500">Cerrar</button>
+	// 		</div>
+	// 		<div class="chat-messages overflow-y-auto h-64 bg-white border border-gray-200 rounded p-2"></div>
+	// 		<form class="chat-form flex mt-2">
+	// 			<input type="text" class="chat-input flex-grow border border-gray-300 rounded p-2" placeholder="Escribe un mensaje...">
+	// 			<button type="submit" class="send-message bg-blue-500 text-white rounded p-2 ml-2">Enviar</button>
+	// 		</form>
+	// `;
+	// document.body.appendChild(privateChat);
+
+	// const chatForm = privateChat.querySelector(".chat-form") as HTMLFormElement;
+	// const chatInput = privateChat.querySelector(".chat-input") as HTMLInputElement;
+	// const chatMessages = privateChat.querySelector(".chat-messages") as HTMLDivElement;
+	// const closeChatButton = privateChat.querySelector(".close-chat") as HTMLButtonElement;
+
+	// chatForm.addEventListener("submit", (e) => {
+	// 	e.preventDefault();
+	// 	const message = chatInput.value.trim();
+	// 	if (message) {
+	// 		const msgData = {
+	// 			type: 'privateMessage',
+	// 			to: username,
+	// 			message: message,
+	// 		};
+	// 		console.log("Sending private message:", msgData);
+	// 		chatInput.value = '';
+	// 		const msgHtml = `<div class="msg"><strong>${username}:</strong> ${message}</div>`;
+	// 		chatMessages.innerHTML += msgHtml;
+	// 		chatMessages.scrollTop = chatMessages.scrollHeight;
+	// 	}
+	// });
+	// closeChatButton.addEventListener("click", () => {
+	// 	privateChat?.remove();
+	// }
+	// );
+	// chatMessages.scrollTop = chatMessages.scrollHeight;
 }
