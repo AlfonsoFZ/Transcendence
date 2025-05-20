@@ -1,5 +1,5 @@
 let htmlUsersConnected = '';
-let keyword = '';
+let inputKeyword = '';
 
 async function formatMsgTemplate(data: any, name: string): Promise<string> {
 
@@ -12,15 +12,15 @@ async function formatMsgTemplate(data: any, name: string): Promise<string> {
 	}
 	let htmlText = await htmlContent.text();
 	htmlText = htmlText
-	.replace("{{ username }}", data.username.toString())
-	.replace("{{ timeStamp }}", data.timeStamp.toString())
-	.replace("{{ message }}", data.message.toString())
-	.replace("{{ imagePath }}", data.imagePath.toString())
-	.replace("{{ usernameImage }}", data.username.toString());
+		.replace("{{ username }}", data.username.toString())
+		.replace("{{ timeStamp }}", data.timeStamp.toString())
+		.replace("{{ message }}", data.message.toString())
+		.replace("{{ imagePath }}", data.imagePath.toString())
+		.replace("{{ usernameImage }}", data.username.toString());
 	return htmlText;
 }
 
-async function formatConnectedUsersTemplate(data: any, name:string): Promise<string> {
+async function formatConnectedUsersTemplate(data: any, name: string): Promise<string> {
 
 	let htmlText = '';
 	let htmlContent;
@@ -31,11 +31,11 @@ async function formatConnectedUsersTemplate(data: any, name:string): Promise<str
 		userHtmlContent = await fetch("../html/userListItem.html");
 		htmlContent = await userHtmlContent.text();
 		htmlContent = htmlContent
-		.replace("{{ username }}", user.username.toString())
-		.replace("{{ usernameImage }}", user.username.toString())
-		.replace("{{ imagePath }}", user.imagePath.toString())
-		.replace("{{ bgcolor }}", user.status.toString())
-		.replace("{{ bcolor }}", user.status.toString());
+			.replace("{{ username }}", user.username.toString())
+			.replace("{{ usernameImage }}", user.username.toString())
+			.replace("{{ imagePath }}", user.imagePath.toString())
+			.replace("{{ bgcolor }}", user.status.toString())
+			.replace("{{ bcolor }}", user.status.toString());
 		htmlText += htmlContent;
 	}
 	return htmlText;
@@ -59,10 +59,10 @@ function sortUsersAlphabetically(htmlContent: string): string {
 
 	items.sort((a, b) => {
 		const usernameA = a.querySelector('span.text-sm')?.textContent?.trim().toLowerCase() || '';
-		const usernameB = b.querySelector('span.text-sm')?.textContent?.trim().toLowerCase() || '';        
-        return usernameA.localeCompare(usernameB);
-    });
-    const sortedHtml = items.map(item => item.outerHTML).join('');
+		const usernameB = b.querySelector('span.text-sm')?.textContent?.trim().toLowerCase() || '';
+		return usernameA.localeCompare(usernameB);
+	});
+	const sortedHtml = items.map(item => item.outerHTML).join('');
 	return sortedHtml;
 }
 
@@ -78,10 +78,10 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'connectedUsers') {
-			htmlUsersConnected = await formatConnectedUsersTemplate(data, name);
-			htmlUsersConnected = sortUsersAlphabetically(htmlUsersConnected);
-			items.innerHTML = htmlUsersConnected;
-			filterUsers(items);
+			let HtmlContent = await formatConnectedUsersTemplate(data, name);
+			HtmlContent = sortUsersAlphabetically(HtmlContent);
+			htmlUsersConnected = HtmlContent;
+			filterSearchUsers(inputKeyword);
 		}
 	}
 }
@@ -138,29 +138,20 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	}
 }
 
-function filterUsers(items: HTMLDivElement) {
-
+export function filterSearchUsers(keyword: string): void {
+	inputKeyword = keyword;
+	const itemsContainer = document.getElementById("item-container") as HTMLDivElement;
 	const tempContainer = document.createElement("div");
 	tempContainer.innerHTML = htmlUsersConnected;
-
 	const userElements = Array.from(tempContainer.querySelectorAll(".item")) as HTMLDivElement[];
-
 	const filteredUsers = userElements.filter(userElement => {
 		const username = userElement.querySelector("span.text-sm")?.textContent?.trim().toLowerCase() || "";
 		return username.includes(keyword.toLowerCase());
 	});
-	items.innerHTML = "";
+	itemsContainer.innerHTML = "";
 	if (filteredUsers.length > 0) {
 		filteredUsers.forEach(userElement => {
-			items.appendChild(userElement);
+			itemsContainer.appendChild(userElement);
 		});
 	}
-}
-
-export function handleSearchInput(e: Event, items: HTMLDivElement) {
-
-	const target = e.target as HTMLInputElement;
-	const value = target.value;
-	keyword = value.toLowerCase();
-	filterUsers(items);
 }

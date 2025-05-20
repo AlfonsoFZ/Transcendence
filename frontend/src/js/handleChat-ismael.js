@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 let htmlUsersConnected = '';
-let inputKeyword = '';
+let keyword = '';
 function formatMsgTemplate(data, name) {
     return __awaiter(this, void 0, void 0, function* () {
         let htmlContent;
@@ -82,10 +82,10 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         if (data.type === 'connectedUsers') {
-            let HtmlContent = yield formatConnectedUsersTemplate(data, name);
-            HtmlContent = sortUsersAlphabetically(HtmlContent);
-            htmlUsersConnected = HtmlContent;
-            filterSearchUsers(inputKeyword);
+            htmlUsersConnected = yield formatConnectedUsersTemplate(data, name);
+            htmlUsersConnected = sortUsersAlphabetically(htmlUsersConnected);
+            items.innerHTML = htmlUsersConnected;
+            filterUsers(items);
         }
     });
 }
@@ -133,9 +133,7 @@ export function handleFormSubmit(e, textarea, socket) {
         textarea.value = '';
     }
 }
-export function filterSearchUsers(keyword) {
-    inputKeyword = keyword;
-    const itemsContainer = document.getElementById("item-container");
+function filterUsers(items) {
     const tempContainer = document.createElement("div");
     tempContainer.innerHTML = htmlUsersConnected;
     const userElements = Array.from(tempContainer.querySelectorAll(".item"));
@@ -144,10 +142,16 @@ export function filterSearchUsers(keyword) {
         const username = ((_b = (_a = userElement.querySelector("span.text-sm")) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim().toLowerCase()) || "";
         return username.includes(keyword.toLowerCase());
     });
-    itemsContainer.innerHTML = "";
+    items.innerHTML = "";
     if (filteredUsers.length > 0) {
         filteredUsers.forEach(userElement => {
-            itemsContainer.appendChild(userElement);
+            items.appendChild(userElement);
         });
     }
+}
+export function handleSearchInput(e, items) {
+    const target = e.target;
+    const value = target.value;
+    keyword = value.toLowerCase();
+    filterUsers(items);
 }
