@@ -25,7 +25,6 @@ export default class Chat extends Step {
 					chatMessages.scrollTop = chatMessages.scrollHeight;
 				}
 				if (!Step.socket || Step.socket.readyState === WebSocket.CLOSED) {
-					console.log("new socket");
 					Step.socket = new WebSocket("https://localhost:8443/back/ws/chat");
 				}
 				else {
@@ -41,8 +40,3 @@ export default class Chat extends Step {
 			}
 		}
 }
-
-
-
-// Caso raro cuando uno se loguea con la misma cuenta de un navegador diferente
-// Aunque no hay fallo. Todo parece funcionar bien. Simplemente se actualiza el socket

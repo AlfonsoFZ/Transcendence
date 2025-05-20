@@ -7,6 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+let htmlUsersConnected = '';
+let keyword = '';
 function formatMsgTemplate(data, name) {
     return __awaiter(this, void 0, void 0, function* () {
         let htmlContent;
@@ -80,9 +82,10 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         if (data.type === 'connectedUsers') {
-            let HtmlContent = yield formatConnectedUsersTemplate(data, name);
-            HtmlContent = sortUsersAlphabetically(HtmlContent);
-            items.innerHTML = HtmlContent;
+            htmlUsersConnected = yield formatConnectedUsersTemplate(data, name);
+            htmlUsersConnected = sortUsersAlphabetically(htmlUsersConnected);
+            items.innerHTML = htmlUsersConnected;
+            filterUsers(items);
         }
     });
 }
@@ -129,4 +132,26 @@ export function handleFormSubmit(e, textarea, socket) {
         socket.send(JSON.stringify(message));
         textarea.value = '';
     }
+}
+function filterUsers(items) {
+    const tempContainer = document.createElement("div");
+    tempContainer.innerHTML = htmlUsersConnected;
+    const userElements = Array.from(tempContainer.querySelectorAll(".item"));
+    const filteredUsers = userElements.filter(userElement => {
+        var _a, _b;
+        const username = ((_b = (_a = userElement.querySelector("span.text-sm")) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim().toLowerCase()) || "";
+        return username.includes(keyword.toLowerCase());
+    });
+    items.innerHTML = "";
+    if (filteredUsers.length > 0) {
+        filteredUsers.forEach(userElement => {
+            items.appendChild(userElement);
+        });
+    }
+}
+export function handleSearchInput(e, items) {
+    const target = e.target;
+    const value = target.value;
+    keyword = value.toLowerCase();
+    filterUsers(items);
 }

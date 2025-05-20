@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from './stepRender.js';
-import { retrieveConnectedUsers, handleSocket, handleTextareaKeydown, handleFormSubmit } from './handleChat.js';
+import { retrieveConnectedUsers, handleSocket, handleTextareaKeydown, handleFormSubmit, handleSearchInput } from './handleChat.js';
 export default class Chat extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,13 +26,13 @@ export default class Chat extends Step {
                 const textarea = document.getElementById("chat-textarea");
                 const chatMessages = document.getElementById("chat-messages");
                 const items = document.getElementById("item-container");
+                const search = document.getElementById("search-input");
                 const stored = sessionStorage.getItem("chatHTML") || "";
                 if (stored) {
                     chatMessages.innerHTML = stored;
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
                 if (!Step.socket || Step.socket.readyState === WebSocket.CLOSED) {
-                    console.log("new socket");
                     Step.socket = new WebSocket("https://localhost:8443/back/ws/chat");
                 }
                 else {
@@ -41,6 +41,7 @@ export default class Chat extends Step {
                 handleSocket(Step.socket, chatMessages, items, this.username);
                 textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
+                search.addEventListener('input', (e) => handleSearchInput(e, items));
             }
             catch (error) {
                 appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
@@ -48,5 +49,3 @@ export default class Chat extends Step {
         });
     }
 }
-// Caso raro cuando uno se loguea con la misma cuenta de un navegador diferente
-// Aunque no hay fallo. Todo parece funcionar bien. Simplemente se actualiza el socket
