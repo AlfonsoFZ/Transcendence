@@ -1,7 +1,7 @@
 import fastifyStatic from "@fastify/static";
 import fastifyMultipart from "@fastify/multipart";
 
-export function configureStaticFiles(fastify) {
+export function registerStaticFiles(fastify) {
 
 	// Register Fastify Multipart
 	fastify.register(fastifyMultipart);
