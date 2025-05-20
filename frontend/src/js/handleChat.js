@@ -226,45 +226,4 @@ function openPrivateChat(username) {
         privateChat.remove();
     }
     console.log("Abriendo chat privado con:", username);
-    // privateChat = document.createElement("div");
-    // privateChat.id = `private-chat-${username}`;
-    // privateChat.className =
-    // 	privateChat.className = "private-chat bg-gray-100 border border-gray-300 rounded-lg shadow-lg p-4";
-    // privateChat.innerHTML = `
-    // <div class="chat-header flex justify-between items-center">
-    // 			<h3 class="text-lg font-bold">Chat con ${username}</h3>
-    // 			<button class="close-chat text-red-500">Cerrar</button>
-    // 		</div>
-    // 		<div class="chat-messages overflow-y-auto h-64 bg-white border border-gray-200 rounded p-2"></div>
-    // 		<form class="chat-form flex mt-2">
-    // 			<input type="text" class="chat-input flex-grow border border-gray-300 rounded p-2" placeholder="Escribe un mensaje...">
-    // 			<button type="submit" class="send-message bg-blue-500 text-white rounded p-2 ml-2">Enviar</button>
-    // 		</form>
-    // `;
-    // document.body.appendChild(privateChat);
-    // const chatForm = privateChat.querySelector(".chat-form") as HTMLFormElement;
-    // const chatInput = privateChat.querySelector(".chat-input") as HTMLInputElement;
-    // const chatMessages = privateChat.querySelector(".chat-messages") as HTMLDivElement;
-    // const closeChatButton = privateChat.querySelector(".close-chat") as HTMLButtonElement;
-    // chatForm.addEventListener("submit", (e) => {
-    // 	e.preventDefault();
-    // 	const message = chatInput.value.trim();
-    // 	if (message) {
-    // 		const msgData = {
-    // 			type: 'privateMessage',
-    // 			to: username,
-    // 			message: message,
-    // 		};
-    // 		console.log("Sending private message:", msgData);
-    // 		chatInput.value = '';
-    // 		const msgHtml = `<div class="msg"><strong>${username}:</strong> ${message}</div>`;
-    // 		chatMessages.innerHTML += msgHtml;
-    // 		chatMessages.scrollTop = chatMessages.scrollHeight;
-    // 	}
-    // });
-    // closeChatButton.addEventListener("click", () => {
-    // 	privateChat?.remove();
-    // }
-    // );
-    // chatMessages.scrollTop = chatMessages.scrollHeight;
 }
