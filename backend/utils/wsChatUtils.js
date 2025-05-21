@@ -33,7 +33,7 @@ function createMsgJSON(user, message) {
 function updateConnectedUsers(user, isConnected, status) {
 
 	if (isConnected) {
-		connected.set(user.id, {username: user.username, imagePath: user.avatarPath, status: status});
+		connected.set(user.id, {userId: user.id, username: user.username, imagePath: user.avatarPath, status: status});
 	}
 	if (!isConnected) {
 		connected.delete(user.id);
