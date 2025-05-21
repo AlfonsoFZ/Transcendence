@@ -34,26 +34,11 @@ export default class Chat extends Step {
 				handleSocket(Step.socket, chatMessages, items, this.username!);
 				textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
 				form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket!));
-				if (searchInput) {
-					searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							filterSearchUsers(searchInput.value);
-						}
-					});
-                    searchInput.addEventListener('input', () => {
-                        filterSearchUsers(searchInput.value);
-                	});
-                }
+				searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
+                searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
 			}
 		catch (error) {
 				appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
 			}
 		}
 }
-
-
-
-
-// Caso raro cuando uno se loguea con la misma cuenta de un navegador diferente
-// Aunque no hay fallo. Todo parece funcionar bien. Simplemente se actualiza el socket

@@ -88,7 +88,6 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             HtmlContent = sortUsersAlphabetically(HtmlContent);
             htmlUsersConnected = HtmlContent;
             filterSearchUsers(inputKeyword);
-            //items.innerHTML = HtmlContent;
         }
     });
 }
@@ -136,18 +135,9 @@ export function handleFormSubmit(e, textarea, socket) {
         textarea.value = '';
     }
 }
-/**
- * Take the keyword from the search input and filter the list of connected users.
- * @param keyword - The keyword to search for in the list of connected users.
- * @returns
- */
 export function filterSearchUsers(keyword) {
     inputKeyword = keyword;
     const itemsContainer = document.getElementById("item-container");
-    if (!itemsContainer) {
-        console.error("Items container not found");
-        return;
-    }
     const tempContainer = document.createElement("div");
     tempContainer.innerHTML = htmlUsersConnected;
     const userElements = Array.from(tempContainer.querySelectorAll(".item"));

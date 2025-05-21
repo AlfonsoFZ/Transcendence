@@ -83,7 +83,6 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 			HtmlContent = sortUsersAlphabetically(HtmlContent);
 			htmlUsersConnected = HtmlContent;
 			filterSearchUsers(inputKeyword);
-			//items.innerHTML = HtmlContent;
 		}
 	}
 }
@@ -111,7 +110,7 @@ export function retrieveConnectedUsers(socket: WebSocket) {
 	socket.send(JSON.stringify(message));
 }
 
-export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, username: string): WebSocket {
+export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items:HTMLDivElement , username: string): WebSocket {
 
 	handleSocketOpen(socket);
 	handleSocketMessage(socket, chatMessages, items, username);
@@ -140,25 +139,12 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	}
 }
 
-/**
- * Take the keyword from the search input and filter the list of connected users.
- * @param keyword - The keyword to search for in the list of connected users.
- * @returns 
- */
 export function filterSearchUsers(keyword: string): void {
 	inputKeyword = keyword;
 	const itemsContainer = document.getElementById("item-container") as HTMLDivElement;
-	if (!itemsContainer) {
-		console.error("Items container not found");
-		return;
-	}
-
 	const tempContainer = document.createElement("div");
 	tempContainer.innerHTML = htmlUsersConnected;
-
-
 	const userElements = Array.from(tempContainer.querySelectorAll(".item")) as HTMLDivElement[];
-
 	const filteredUsers = userElements.filter(userElement => {
 		const username = userElement.querySelector("span.text-sm")?.textContent?.trim().toLowerCase() || "";
 		return username.includes(keyword.toLowerCase());
