@@ -3,31 +3,32 @@ import { Step } from "./stepRender.js";
 export default class Game extends Step
 {
 	private socket: WebSocket | null = null;
-	private currentState: any = null;
+	//private currentState: any = null;
 	private connectionStat: boolean = false;
 
 	async render(appElement: HTMLElement): Promise<void> {
 		appElement.innerHTML = `
-			<div class="game-container">
+			<!-- Game setup - config -->
+			<div class="select-game" id="select-game" style="display: block;">
+				<h1 class="text-center text-white mb-4 text-4xl font-bold font-[Tektur]">Select Game Mode</h1>
+				<div class="flex flex-col gap-4 items-center">
+					<button id="play-ai" style="width: 200px" class="h-12 py-3 bg-blue-500 text-white border-none rounded hover:bg-blue-600 font-bold cursor-pointer text-base flex justify-center items-center">Play vs AI</button>
+					<button id="play-online" style="width: 200px" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Play Online</button>
+				</div>
+			</div>
+			<div class="game-container" id="game-container" style="display: none;">
 				<!-- Paddles -->
 				<div id="left-paddle" class="paddle"></div>
 				<div id="right-paddle" class="paddle"></div>
 				
 				<!-- Ball -->
 				<div id="ball" class="ball"></div>
-				
+	
 				<!-- Score -->
-				<div id="score" class="score">0 - 0</div>
-				
-				<!-- Controls -->
-				<div class="controls">
-					<button id="play-ai" disabled>Play vs AI</button>
-					<button id="play-online" disabled>Play Online</button>
-				</div>
+				<div id="score" class="text-center text-white mb-4 text-4xl font-bold font-[Tektur]">0 - 0</div>
 			</div>
 		`;
 		await this.establishConnection();
-		
 		this.setupEventListeners();
 	}
 
@@ -49,8 +50,6 @@ export default class Game extends Step
 					timestamp: Date.now()
 				}));
 				this.connectionStat = true;
-				document.getElementById('play-ai')?.removeAttribute('disabled');
-				document.getElementById('play-online')?.removeAttribute('disabled');
 				resolve();
 			};
 		
@@ -96,8 +95,6 @@ export default class Game extends Step
 			this.socket.onclose = (event) => {
 				console.log(`WebSocket connection closed: Code ${event.code}${event.reason ? ' - ' + event.reason : ''}`);
 				this.connectionStat = false;
-				document.getElementById('play-ai')?.setAttribute('disabled', 'disabled');
-				document.getElementById('play-online')?.setAttribute('disabled', 'disabled');
 			};
 		})
 	}
@@ -141,6 +138,12 @@ export default class Game extends Step
 			type: 'JOIN_GAME',
 			mode: mode
 		}));
+		const	selectGame = document.getElementById('select-game');
+		const	gameDiv = document.getElementById('game-container');
+		if (selectGame)
+			selectGame.style.display = "none";
+		if (gameDiv)
+			gameDiv.style.display = "block";
 	}
 
 	private renderGameState(state: any)

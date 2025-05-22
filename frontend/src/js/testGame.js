@@ -12,28 +12,30 @@ export default class Game extends Step {
     constructor() {
         super(...arguments);
         this.socket = null;
-        this.currentState = null;
+        //private currentState: any = null;
         this.connectionStat = false;
     }
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
             appElement.innerHTML = `
-			<div class="game-container">
+			<!-- Game setup - config -->
+			<div class="select-game" id="select-game" style="display: block;">
+				<h1 class="text-center text-white mb-4 text-4xl font-bold font-[Tektur]">Select Game Mode</h1>
+				<div class="flex flex-col gap-4 items-center">
+					<button id="play-ai" style="width: 200px" class="h-12 py-3 bg-blue-500 text-white border-none rounded hover:bg-blue-600 font-bold cursor-pointer text-base flex justify-center items-center">Play vs AI</button>
+					<button id="play-online" style="width: 200px" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Play Online</button>
+				</div>
+			</div>
+			<div class="game-container" id="game-container" style="display: none;">
 				<!-- Paddles -->
 				<div id="left-paddle" class="paddle"></div>
 				<div id="right-paddle" class="paddle"></div>
 				
 				<!-- Ball -->
 				<div id="ball" class="ball"></div>
-				
+	
 				<!-- Score -->
-				<div id="score" class="score">0 - 0</div>
-				
-				<!-- Controls -->
-				<div class="controls">
-					<button id="play-ai" disabled>Play vs AI</button>
-					<button id="play-online" disabled>Play Online</button>
-				</div>
+				<div id="score" class="text-center text-white mb-4 text-4xl font-bold font-[Tektur]">0 - 0</div>
 			</div>
 		`;
             yield this.establishConnection();
@@ -51,7 +53,7 @@ export default class Game extends Step {
                 this.socket = new WebSocket(`https://${window.location.host}/back/ws/game`);
                 // 1.1 Set what we want to happen on open socket (at first connected)
                 this.socket.onopen = () => {
-                    var _a, _b, _c;
+                    var _a;
                     console.log('Connected to game server');
                     // Send ping to test connection
                     (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({
@@ -59,8 +61,6 @@ export default class Game extends Step {
                         timestamp: Date.now()
                     }));
                     this.connectionStat = true;
-                    (_b = document.getElementById('play-ai')) === null || _b === void 0 ? void 0 : _b.removeAttribute('disabled');
-                    (_c = document.getElementById('play-online')) === null || _c === void 0 ? void 0 : _c.removeAttribute('disabled');
                     resolve();
                 };
                 // 2. Setting message received handler for all desired cases
@@ -100,11 +100,8 @@ export default class Game extends Step {
                 };
                 // 4. Connection closed handler: set bool flag to false and hide play buttons
                 this.socket.onclose = (event) => {
-                    var _a, _b;
                     console.log(`WebSocket connection closed: Code ${event.code}${event.reason ? ' - ' + event.reason : ''}`);
                     this.connectionStat = false;
-                    (_a = document.getElementById('play-ai')) === null || _a === void 0 ? void 0 : _a.setAttribute('disabled', 'disabled');
-                    (_b = document.getElementById('play-online')) === null || _b === void 0 ? void 0 : _b.setAttribute('disabled', 'disabled');
                 };
             });
         });
@@ -142,6 +139,12 @@ export default class Game extends Step {
             type: 'JOIN_GAME',
             mode: mode
         }));
+        const selectGame = document.getElementById('select-game');
+        const gameDiv = document.getElementById('game-container');
+        if (selectGame)
+            selectGame.style.display = "none";
+        if (gameDiv)
+            gameDiv.style.display = "block";
     }
     renderGameState(state) {
         // Update paddles
