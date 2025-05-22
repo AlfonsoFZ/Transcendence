@@ -12,8 +12,8 @@ export class BasicComponent {
         this.templatePath = templatePath;
         this.scriptHandler = scriptHandler;
     }
-    render(target, placeholders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
+    render(target_1) {
+        return __awaiter(this, arguments, void 0, function* (target, placeholders = {}) {
             const html = yield this.loadTemplate();
             const parsed = this.replacePlaceholders(html, placeholders);
             const wrapper = document.createElement('div');
