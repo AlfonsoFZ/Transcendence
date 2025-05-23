@@ -63,7 +63,7 @@ function sortUsersAlphabetically(htmlContent: string): string {
 		return usernameA.localeCompare(usernameB);
 	});
 	if (items.length > 0) {
-		const target = items[0].querySelector('.wrapper');
+		const target = items[0].querySelector('.item-wrapper');
 		if (target) {
 			target.classList.add("border-t");
 		}

@@ -7,8 +7,8 @@
 		<div id= "messages-container"
 			class="flex flex-col items-center justify-start w-full lg:flex-[2] h-[50vh] lg:h-full rounded-tl-xl rounded-bl-xl bg-gray-800 border border-gray-500">
 			<!-- Chats div -->
-			<div id="messages-container-title" class="w-full px-4 py-4 bg-gray-800 rounded-tl-xl">
-				<h2 class="text-white text-xl mb-2">Chats</h2>
+			<div id="messages-container-title" class="w-full px-4 py-4 bg-gray-800 rounded-tl-xl border-b border-gray-500">
+				<h2 class="text-white text-xl mb-2 ">Chats</h2>
 			</div>
 			<!-- Chats List Container -->
 			<div id="chat-item-container"
@@ -23,11 +23,19 @@
 		<!-- Chat Container -->
 		<div id="chat-container" class="flex flex-col items-center justify-start w-full lg:flex-[5] h-[50vh] lg:h-full border-t border-b border-gray-500">
 		<!-- User info Container -->
-			<div id="user-info-container" class="py-4 px-4 bg-gray-800 border-b border-gray-500 w-full">
-				<!-- User info will be dynamically inserted here -->
-				 <div>
-					<h2 class="text-white text-xl mb-2 flex"><svg class="w-6 h-6" fill="#6a7282" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&amp;ns_extend;" xmlns:i="&amp;ns_ai;" xmlns:graph="&amp;ns_graphs;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" viewBox="-4.2 -4.2 50.40 50.40" xml:space="preserve" stroke="#6a7282" stroke-width="1.008"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="1.4280000000000002"></g><g id="SVGRepo_iconCarrier"> <polygon fill-rule="evenodd" points="27.066,1 7,21.068 26.568,40.637 31.502,35.704 16.865,21.068 32,5.933 "></polygon> </g></svg>User info here</h2>
-				 </div>
+			<div id="user-info-container" class="py-4 px-4 bg-gray-800 border-b border-gray-500 w-full flex justify-start items-center gap-4">
+					<!-- User info will be dynamically inserted here -->
+			
+			
+    			<!-- Imagen del usuario -->
+    			<img src="https://localhost:8443/back/images/avatar-2.png" alt="Ismael" class="w-14 h-14 rounded-full border border-gray-600" />
+						
+    			<!-- Nombre del usuario -->
+    			<h2 class="text-white text-xl font-semibold">Ismael</h2>
+
+
+
+
 			</div>
 			<div id="chat-messages"
 				class="overflow-y-auto flex flex-col items-center justify-start px-6 py-1 pr-2 h-[50vh] lg:h-full w-full border-b border-gray-500 bg-gray-800 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
