@@ -35,7 +35,7 @@ async function formatConnectedUsersTemplate(data: any, name: string): Promise<st
 			.replace("{{ usernameImage }}", user.username.toString())
 			.replace("{{ imagePath }}", user.imagePath.toString())
 			.replace("{{ bgcolor }}", user.status.toString())
-			.replace("{{ bcolor }}", user.status.toString());
+			.replace("{{ bcolor }}", user.status.toString())
 		htmlText += htmlContent;
 	}
 	return htmlText;
@@ -62,6 +62,12 @@ function sortUsersAlphabetically(htmlContent: string): string {
 		const usernameB = b.querySelector('span.text-sm')?.textContent?.trim().toLowerCase() || '';
 		return usernameA.localeCompare(usernameB);
 	});
+	if (items.length > 0) {
+		const target = items[0].querySelector('.wrapper');
+		if (target) {
+			target.classList.add("border-t");
+		}
+	}
 	const sortedHtml = items.map(item => item.outerHTML).join('');
 	return sortedHtml;
 }

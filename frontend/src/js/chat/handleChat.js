@@ -67,6 +67,12 @@ function sortUsersAlphabetically(htmlContent) {
         const usernameB = ((_d = (_c = b.querySelector('span.text-sm')) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim().toLowerCase()) || '';
         return usernameA.localeCompare(usernameB);
     });
+    if (items.length > 0) {
+        const target = items[0].querySelector('.wrapper');
+        if (target) {
+            target.classList.add("border-t");
+        }
+    }
     const sortedHtml = items.map(item => item.outerHTML).join('');
     return sortedHtml;
 }
