@@ -38,6 +38,7 @@ function formatConnectedUsersTemplate(data, name) {
             userHtmlContent = yield fetch("../../html/chat/userListItem.html");
             htmlContent = yield userHtmlContent.text();
             htmlContent = htmlContent
+                .replace("{{ id }}", user.id.toString())
                 .replace("{{ username }}", user.username.toString())
                 .replace("{{ usernameImage }}", user.username.toString())
                 .replace("{{ imagePath }}", user.imagePath.toString())

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from '../spa/stepRender.js';
 import { retrieveConnectedUsers, handleSocket, handleTextareaKeydown, handleFormSubmit, filterSearchUsers } from './handleChat.js';
+import { openPrivate } from './privateMsg.js';
 export default class Chat extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,6 +45,7 @@ export default class Chat extends Step {
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
+                items.addEventListener('dblclick', (e) => openPrivate(e, items, this.username, Step.socket));
             }
             catch (error) {
                 appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;

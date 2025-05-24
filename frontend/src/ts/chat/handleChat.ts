@@ -25,12 +25,13 @@ async function formatConnectedUsersTemplate(data: any, name: string): Promise<st
 	let htmlText = '';
 	let htmlContent;
 	let userHtmlContent;
-	const usersConnected = Object.values(data.object) as { username: string; imagePath: string; status: string }[];
+	const usersConnected = Object.values(data.object) as { id: string; username: string; imagePath: string; status: string }[];
 
 	for (const user of usersConnected) {
 		userHtmlContent = await fetch("../../html/chat/userListItem.html");
 		htmlContent = await userHtmlContent.text();
 		htmlContent = htmlContent
+			.replace("{{ id }}", user.id.toString())
 			.replace("{{ username }}", user.username.toString())
 			.replace("{{ usernameImage }}", user.username.toString())
 			.replace("{{ imagePath }}", user.imagePath.toString())
