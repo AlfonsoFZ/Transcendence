@@ -3,6 +3,7 @@
 	<div class="flex flex-col lg:flex-row lg:flex-wrap h-auto lg:h-[65vh] w-full max-w-screen-xl mx-auto">
 
 
+
 		<!-- Messages Container -->
 		<div id= "messages-container"
 			class="flex flex-col items-center justify-start w-full lg:flex-[3] lg:max-w-[30%] h-[50vh] lg:h-full rounded-tl-xl rounded-bl-xl bg-gray-800 border border-gray-500">
@@ -14,62 +15,45 @@
 			<div id="chat-item-container"
 				class="w-full overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
 				<div id="chat-item-list-container"
-					class="overflow-y-auto flex-1 flex flex-col items-center justify-start px-6 py-1 pr-2 w-full border-2 border-red-500 border-b border-gray-500 bg-gray-800 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
-
-
-
-
-					<div id="chat-item" class="flex items-center w-full px-4 py-3 hover:bg-gray-800 rounded-lg cursor-pointer">
-						<!-- Avatar -->
+					class="overflow-y-auto flex-1 flex flex-col items-center justify-start w-full border-gray-500 bg-gray-800 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
+					<!-- Chat users will be dynamically inserted here -->
+					<div id="chat-item"
+						class="flex items-center w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 transition-colors duration-400 cursor-pointer">
 						<img src="https://localhost:8443/back/images/avatar-2.png" alt="avatar"
 							class="w-12 h-12 rounded-full mr-4 border border-gray-600" />
-						<!-- Chat content -->
 						<div class="flex-1 min-w-0">
-							<!-- Username -->
 							<div class="text-white font-semibold text-sm truncate">ismael</div>
-							<!-- Last message -->
-							<div class="text-gray-400 text-sm truncate">Este es un mensaje de forwejfjrweijfirejifjrweifjiwejifjweirfjiwejrifjifjweirfj</div>
+							<div class="flex justify-between items-center">
+								<div class="text-gray-400 text-sm truncate">This is an example message truncated to test it</div>
+								<div class="text-gray-500 text-xs ml-4 whitespace-nowrap flex-shrink-0">14:37</div>
+							</div>
 						</div>
-						<!-- Time -->
-						<div class="text-gray-500 text-xs ml-4 whitespace-nowrap">14:37</div>
 					</div>
-					
-
-
-
-					<!-- Chat users will be dynamically inserted here -->
+					<!-- End of chat users -->
 				</div>
 			</div>
 		</div>
 
 
+
 		<!-- Chat Container -->
 		<div id="chat-container" class="flex flex-col items-center justify-start w-full lg:flex-[5] lg:max-w-[50%] h-[50vh] lg:h-full border-t border-b border-gray-500">
 		<!-- User info Container -->
-			<div id="user-info-container" class="px-2 h-[80px] bg-gray-800 border-b border-gray-500 w-full flex justify-start items-center">
+			<div id="user-info-container" class="px-2 h-[80px] bg-slate-700 w-full border-b border-gray-500 flex justify-start items-center">
 					<!-- User info will be dynamically inserted here -->
-			
-			
 					<button id="back-group-chat" type="button" class="cursor-pointer group">
 						<svg viewBox="0 0 1024 1024"
 							class="w-9 h-9 mr-2 fill-gray-500 stroke-gray-500 group-hover:fill-gray-300 group-hover:stroke-gray-300 transition-colors duration-200"
 							xmlns="http://www.w3.org/2000/svg" stroke-width="102.4">
 							<path d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z" />
 						</svg>
-					</button>
-					
-					
+					</button>			
 					<img src="https://localhost:8443/back/images/avatar-2.png" alt="ismael" class="w-13 h-13 rounded-full border border-gray-600 mr-4" />
-					
 					<h2 class="text-white text-xl font-semibold truncate">ismael</h2>
-					
-
-
-
-
+					<!-- End of user info -->
 			</div>
 			<div id="chat-messages"
-				class="overflow-y-auto flex-1 flex flex-col items-center justify-start px-6 py-1 pr-2 w-full border-b border-gray-500 bg-gray-800 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
+				class="overflow-y-auto flex-1 flex flex-col items-center justify-start px-6 py-4 pr-2 w-full border-b border-gray-500 bg-gray-800 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
 				<!-- Chat messages will be dynamically inserted here -->
 			</div>
 			<!-- Chat input area -->
@@ -81,17 +65,12 @@
 						<textarea id="chat-textarea" rows="1"
 							class="block mx-4 p-2.5 w-full text-sm text-gray-900 rounded-lg border bg-gray-800 border-gray-600 placeholder-gray-400 text-white min-h-[2.5rem] max-h-[8rem] focus:outline focus:outline-2 focus:outline-gray-400"
 							placeholder="Your message..."></textarea>
+						<!-- Button send message -->
 						<button type="submit"
-							class="inline-flex justify-center p-2 rounded-full cursor-pointer text-blue-500 hover:bg-gray-600">
-							<svg class="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 20">
-								<defs>
-									<linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-										<stop offset="0%" style="stop-color:#00bcff; stop-opacity:1" />
-										<stop offset="100%" style="stop-color:#00bc7d; stop-opacity:1" />
-									</linearGradient>
-								</defs>
-								<path fill="url(#grad)"
+							class="inline-flex justify-center p-2 rounded-full cursor-pointer text-blue-500 hover:bg-gray-600">					
+							<svg class="w-5 h-5 rotate-90 rtl:-rotate-90 text-sky-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 18 20">
+								<path fill="currentColor"
 									d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
 							</svg>
 							<span class="sr-only">Send message</span>
@@ -100,6 +79,7 @@
 				</form>
 			</div>
 		</div>
+
 
 		
 		<!-- Users Container -->
