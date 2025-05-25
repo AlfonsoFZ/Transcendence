@@ -39,7 +39,6 @@ function updateConnectedUsers(user, isConnected, status) {
 		connected.delete(user.id);
 	}
 	const connectedArray = Array.from(connected.values());
-	console.log("Connected users: ", connectedArray);
 	return {
 		type: "connectedUsers",
 		object: connectedArray
@@ -48,9 +47,12 @@ function updateConnectedUsers(user, isConnected, status) {
 
 function sendStatusToAllClients(user, status) {
 
-	const response = updateConnectedUsers(user, true, status);
-	for (const [id, client] of clients) {
-		client.send(JSON.stringify(response));
+	if (clients.has(user.id))
+	{
+		const response = updateConnectedUsers(user, true, status);
+		for (const [id, client] of clients) {
+			client.send(JSON.stringify(response));
+		}
 	}
 }
 
@@ -75,7 +77,6 @@ function setTimer(user) {
 // Register a user when they connect to the WebSocket server
 export async function registerUser(request, socket) {
 
-	console.log("Nuevo Socket Conectado");
 	const cookies = parse(request.headers.cookie || '');
 	const token = cookies.token;
 	const user = await extractUserFromToken(token);
@@ -114,7 +115,6 @@ export function handleIncomingSocketMessage(user, socket) {
 export function handleSocketClose(user, socket) {
 
 	socket.on('close', () => {
-		console.log("Socket cerrado: ", user.username);
 		clients.delete(user.id);
 		usersTimeout.delete(user.id);
 		const response = updateConnectedUsers(user, false);
