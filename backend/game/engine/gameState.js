@@ -8,7 +8,6 @@
 export function resetState()
 {
 	return {
-		// TODO: if resetBall in constructor is not working fine, make ball.dy random here
 		ball: { x: 0.5, y: 0.5, dx: 0.20, dy: 0.06 },
 		paddles: {
 			player1: { y: 0.5 },

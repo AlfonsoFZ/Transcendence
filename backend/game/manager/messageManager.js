@@ -36,13 +36,12 @@ export function handleJoinGame(client, data)
 	// 3. Send initial game data
 	connection.send(JSON.stringify({
 		type: 'GAME_INIT',
-		playerNumber, // "player1" or "player2" - "playerLeft" or "playerRight"
+		playerNumber,
 		config: gameSession.getConfig()
 	}));
 	// 5. Start game if ready (e.g., 2 players connected + online mode, 1 player connected + 1vAI mode...)
-	if (gameSession.shouldStart()) {
+	if (gameSession.shouldStart())
 		startGameLoop(gameSession, gamesList);
-	}
 }
 
 /**

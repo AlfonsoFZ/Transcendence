@@ -12,7 +12,6 @@ export default class GameSession
 		this.gameMode = gameMode;
 		this.players = new Map();
 		this.state = this.resetState();
-		// TODO: check if resetBall is working properly here
 		this.resetBall();
 		this.gameLoop = null;
 		this.aiInterval = null;
