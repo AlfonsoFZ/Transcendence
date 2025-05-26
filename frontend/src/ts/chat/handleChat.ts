@@ -85,8 +85,8 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, na
 			sessionStorage.setItem("public-chat", stored);
 			if (sessionStorage.getItem("current-room") === "") {
 				chatMessages.innerHTML = stored;
+				chatMessages.scrollTop = chatMessages.scrollHeight;
 			}
-			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'private') {
 			if (!data.message) {
@@ -102,8 +102,8 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, na
 			sessionStorage.setItem("private-chat", JSON.stringify(privateChat));
 			if (sessionStorage.getItem("current-room") === data.roomId) {
 				chatMessages.innerHTML = stored || "";
+				chatMessages.scrollTop = chatMessages.scrollHeight;
 			}
-			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'connectedUsers') {
 			HtmlContent = await formatConnectedUsersTemplate(data, name);

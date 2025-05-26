@@ -18,7 +18,6 @@ export default class Chat extends Step {
 				const chatMessages = document.getElementById("chat-messages") as HTMLDivElement;
 				const items = document.getElementById("user-item-container") as HTMLDivElement;
 				const searchInput = document.getElementById("search-users-input") as HTMLInputElement;
-				const chatContainer = document.getElementById("chat-container") as HTMLDivElement;
 
 				Step.socket = handleSessionStorage(chatMessages, Step.socket);
 				handleSocket(Step.socket!, chatMessages, this.username!);
