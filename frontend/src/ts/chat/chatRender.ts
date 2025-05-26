@@ -35,7 +35,7 @@ export default class Chat extends Step {
 				textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
 				form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket!));
 				searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
-                searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
+                searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value, this.username!));
 			}
 		catch (error) {
 				appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;

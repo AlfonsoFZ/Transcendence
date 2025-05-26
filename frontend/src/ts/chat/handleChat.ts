@@ -26,7 +26,6 @@ async function formatConnectedUsersTemplate(data: any, name: string): Promise<st
 	let htmlContent;
 	let userHtmlContent;
 	const usersConnected = Object.values(data.object) as { userId: string; username: string; imagePath: string; status: string }[];
-	console.log("Connected users:", usersConnected);
 	for (const user of usersConnected) {
 		userHtmlContent = await fetch("../../html/chat/userListItem.html");
 		htmlContent = await userHtmlContent.text();
@@ -82,7 +81,7 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 			let HtmlContent = await formatConnectedUsersTemplate(data, name);
 			HtmlContent = sortUsersAlphabetically(HtmlContent);
 			htmlUsersConnected = HtmlContent;
-			filterSearchUsers(inputKeyword);
+			filterSearchUsers(inputKeyword, name);
 		}
 	}
 }
@@ -139,7 +138,7 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	}
 }
 
-export function filterSearchUsers(keyword: string): void {
+export function filterSearchUsers(keyword: string, currentUserName: string): void {
 	inputKeyword = keyword;
 	const itemsContainer = document.getElementById("item-container") as HTMLDivElement;
 	const tempContainer = document.createElement("div");
@@ -155,15 +154,27 @@ export function filterSearchUsers(keyword: string): void {
 		if (filteredUsers.length > 0) {
 			filteredUsers.forEach(userElement => {
 				itemsContainer.appendChild(userElement);
+				const userName = userElement.querySelector("span.text-sm")?.textContent?.trim();
+				if (userName !== currentUserName) {			
+					userElement.addEventListener("click", (event) => {
+						showUserOptionsMenu(userElement, event as MouseEvent);
+					});
+					userElement.addEventListener("dblclick", (event) => {
+						const username = userElement.querySelector("span.text-sm")?.textContent?.trim();
+						if (username) {
+							openPrivateChat(username);
+						}
+					});
+				}
 			});
 		}
 	}
 }
 
 function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent) {
-	console.log(userElement);
 	const username = userElement.querySelector("span.text-sm")?.textContent?.trim();
 	if (!username) return;
+
 	const userId = userElement.id.replace("item-", "");
 	console.log("userId", userId);
 	if (!userId) return;
@@ -179,7 +190,7 @@ function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent) {
 	menu.innerHTML = `
 		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="add">➕ Add Friend</div>
 		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="msg">📩 Private Message</div>
-		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="block">🚫 Block</div>
+		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="show-more"> ≡ Show More</div>
 	`
 	menu.style.top = `${event.clientY + 5}px`;
 	menu.style.left = `${event.clientX + 5}px`;
@@ -199,8 +210,8 @@ function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent) {
 						console.log(`Mensaje privado a ${username}`);
 						openPrivateChat(username);
 						break;
-					case "block":
-						console.log(`Bloquear a ${username}`);
+					case "show-more":
+						console.log(`Mostrar más opciones para ${username}`);						
 						break;
 				}
 			}
@@ -231,7 +242,6 @@ async function sendFriendRequest(userId: string): Promise<void> {
 	console.log("Enviando solicitud de amistad a:", userId);
 	try {
 		const requestBody = { friendId: userId };
-		console.log("Request body:", requestBody);
 		const response = await fetch("https://localhost:8443/back/send_friend_request", {
 			method: "POST",
 			credentials: 'include',
@@ -240,7 +250,6 @@ async function sendFriendRequest(userId: string): Promise<void> {
 			},
 			body: JSON.stringify(requestBody),
 		});
-		console.log("Response---------------D:", response);
 		if (response.ok) {
 			const data = await response.json();
 			console.log("Friend request sent successfully:", data);

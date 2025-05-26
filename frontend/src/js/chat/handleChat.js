@@ -34,7 +34,6 @@ function formatConnectedUsersTemplate(data, name) {
         let htmlContent;
         let userHtmlContent;
         const usersConnected = Object.values(data.object);
-        console.log("Connected users:", usersConnected);
         for (const user of usersConnected) {
             userHtmlContent = yield fetch("../../html/chat/userListItem.html");
             htmlContent = yield userHtmlContent.text();
@@ -87,7 +86,7 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             let HtmlContent = yield formatConnectedUsersTemplate(data, name);
             HtmlContent = sortUsersAlphabetically(HtmlContent);
             htmlUsersConnected = HtmlContent;
-            filterSearchUsers(inputKeyword);
+            filterSearchUsers(inputKeyword, name);
         }
     });
 }
@@ -135,7 +134,7 @@ export function handleFormSubmit(e, textarea, socket) {
         textarea.value = '';
     }
 }
-export function filterSearchUsers(keyword) {
+export function filterSearchUsers(keyword, currentUserName) {
     inputKeyword = keyword;
     const itemsContainer = document.getElementById("item-container");
     const tempContainer = document.createElement("div");
@@ -150,14 +149,27 @@ export function filterSearchUsers(keyword) {
         itemsContainer.innerHTML = "";
         if (filteredUsers.length > 0) {
             filteredUsers.forEach(userElement => {
+                var _a, _b;
                 itemsContainer.appendChild(userElement);
+                const userName = (_b = (_a = userElement.querySelector("span.text-sm")) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim();
+                if (userName !== currentUserName) {
+                    userElement.addEventListener("click", (event) => {
+                        showUserOptionsMenu(userElement, event);
+                    });
+                    userElement.addEventListener("dblclick", (event) => {
+                        var _a, _b;
+                        const username = (_b = (_a = userElement.querySelector("span.text-sm")) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim();
+                        if (username) {
+                            openPrivateChat(username);
+                        }
+                    });
+                }
             });
         }
     }
 }
 function showUserOptionsMenu(userElement, event) {
     var _a, _b;
-    console.log(userElement);
     const username = (_b = (_a = userElement.querySelector("span.text-sm")) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim();
     if (!username)
         return;
@@ -175,7 +187,7 @@ function showUserOptionsMenu(userElement, event) {
     menu.innerHTML = `
 		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="add">➕ Add Friend</div>
 		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="msg">📩 Private Message</div>
-		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="block">🚫 Block</div>
+		<div class="text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded" data-action="show-more"> ≡ Show More</div>
 	`;
     menu.style.top = `${event.clientY + 5}px`;
     menu.style.left = `${event.clientX + 5}px`;
@@ -193,8 +205,8 @@ function showUserOptionsMenu(userElement, event) {
                         console.log(`Mensaje privado a ${username}`);
                         openPrivateChat(username);
                         break;
-                    case "block":
-                        console.log(`Bloquear a ${username}`);
+                    case "show-more":
+                        console.log(`Mostrar más opciones para ${username}`);
                         break;
                 }
             }
@@ -223,7 +235,6 @@ function sendFriendRequest(userId) {
         console.log("Enviando solicitud de amistad a:", userId);
         try {
             const requestBody = { friendId: userId };
-            console.log("Request body:", requestBody);
             const response = yield fetch("https://localhost:8443/back/send_friend_request", {
                 method: "POST",
                 credentials: 'include',
@@ -232,7 +243,6 @@ function sendFriendRequest(userId) {
                 },
                 body: JSON.stringify(requestBody),
             });
-            console.log("Response---------------D:", response);
             if (response.ok) {
                 const data = yield response.json();
                 console.log("Friend request sent successfully:", data);
