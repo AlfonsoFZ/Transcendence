@@ -77,7 +77,7 @@ function sortUsersAlphabetically(htmlContent) {
     const sortedHtml = items.map(item => item.outerHTML).join('');
     return sortedHtml;
 }
-function handleSocketMessage(socket, chatMessages, items, name) {
+function handleSocketMessage(socket, chatMessages, name) {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
         let HtmlContent = "";
@@ -87,12 +87,15 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             stored = sessionStorage.getItem("public-chat") || "";
             stored += HtmlContent;
             sessionStorage.setItem("public-chat", stored);
-            sessionStorage.setItem("current-room", "");
-            chatMessages.innerHTML = stored;
+            if (sessionStorage.getItem("current-room") === "") {
+                chatMessages.innerHTML = stored;
+            }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         if (data.type === 'private') {
-            console.log(data);
+            if (!data.message) {
+                handleUserInfo(chatMessages, data, name);
+            }
             if (data.message) {
                 HtmlContent = yield formatMsgTemplate(data, name);
             }
@@ -101,8 +104,9 @@ function handleSocketMessage(socket, chatMessages, items, name) {
             stored += HtmlContent || "";
             privateChat[data.roomId] = stored || "";
             sessionStorage.setItem("private-chat", JSON.stringify(privateChat));
-            sessionStorage.setItem("current-room", data.roomId);
-            chatMessages.innerHTML = stored || "";
+            if (sessionStorage.getItem("current-room") === data.roomId) {
+                chatMessages.innerHTML = stored || "";
+            }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         if (data.type === 'connectedUsers') {
@@ -142,6 +146,9 @@ export function handleSessionStorage(chatMessages, socket) {
     if (currentRoom) {
         chatMessages.innerHTML = privateChat[currentRoom];
     }
+    if (!currentRoom) {
+        sessionStorage.setItem("current-room", "");
+    }
     chatMessages.scrollTop = chatMessages.scrollHeight;
     if (!socket || socket.readyState === WebSocket.CLOSED) {
         socket = new WebSocket("https://localhost:8443/back/ws/chat");
@@ -151,9 +158,9 @@ export function handleSessionStorage(chatMessages, socket) {
     }
     return socket;
 }
-export function handleSocket(socket, chatMessages, items, username) {
+export function handleSocket(socket, chatMessages, username) {
     handleSocketOpen(socket);
-    handleSocketMessage(socket, chatMessages, items, username);
+    handleSocketMessage(socket, chatMessages, username);
     handleSocketClose(socket);
     handleSocketError(socket);
     return socket;
@@ -207,7 +214,7 @@ export function filterSearchUsers(keyword) {
         }
     }
 }
-export function handlePrivateMsg(e, items, username, socket) {
+export function handlePrivateMsg(e, socket) {
     const target = e.target;
     const userDiv = target.closest('[data-id]');
     if (!userDiv)
@@ -219,3 +226,28 @@ export function handlePrivateMsg(e, items, username, socket) {
     };
     socket.send(JSON.stringify(message));
 }
+export function handleUserInfo(chatMessages, data, name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (name === data.username) {
+            sessionStorage.setItem("current-room", data.roomId);
+            const htmlContent = yield fetch("../../html/chat/userInfo.html");
+            let htmlText = yield htmlContent.text();
+            htmlText = htmlText
+                .replace("{{ username }}", data.partnerUsername.toString())
+                .replace("{{ usernameImage }}", data.partnerUsername.toString())
+                .replace("{{ imagePath }}", data.partnerImagePath.toString());
+            const UserInfo = document.getElementById("user-info-container");
+            UserInfo.innerHTML = htmlText;
+            const button = UserInfo.querySelector("#back-group-chat");
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.setItem("current-room", "");
+                const stored = sessionStorage.getItem("public-chat") || "";
+                chatMessages.innerHTML = stored;
+                chatMessages.scrollTop = UserInfo.scrollHeight;
+                UserInfo.innerHTML = "";
+            });
+        }
+    });
+}
+// GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.

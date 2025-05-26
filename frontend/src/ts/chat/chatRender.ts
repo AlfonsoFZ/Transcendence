@@ -1,5 +1,5 @@
 import { Step } from '../spa/stepRender.js';
-import { handleSessionStorage, handleSocket, handleTextareaKeydown, handleFormSubmit, filterSearchUsers, handlePrivateMsg} from './handleChat.js';
+import { handleSessionStorage, handleSocket, handleTextareaKeydown, handleFormSubmit, filterSearchUsers, handlePrivateMsg, handleUserInfo } from './handleChat.js';
 export default class Chat extends Step {
 
 	async render(appElement: HTMLElement): Promise<void> {
@@ -18,15 +18,16 @@ export default class Chat extends Step {
 				const chatMessages = document.getElementById("chat-messages") as HTMLDivElement;
 				const items = document.getElementById("user-item-container") as HTMLDivElement;
 				const searchInput = document.getElementById("search-users-input") as HTMLInputElement;
+				const chatContainer = document.getElementById("chat-container") as HTMLDivElement;
 
 				Step.socket = handleSessionStorage(chatMessages, Step.socket);
-				handleSocket(Step.socket!, chatMessages, items, this.username!);
+				handleSocket(Step.socket!, chatMessages, this.username!);
 
 				textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
 				form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket!));
 				searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
-				items.addEventListener('dblclick', (e) => handlePrivateMsg(e, items, this.username!, Step.socket!));
+				items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket!));
 			}
 		catch (error) {
 				console.log(error);

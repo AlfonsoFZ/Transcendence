@@ -5,10 +5,11 @@
 
 
 		<!-- Messages Container -->
-		<div id= "messages-container"
+		<div id="messages-container"
 			class="flex flex-col items-center justify-start w-full lg:flex-[3] lg:max-w-[30%] h-[50vh] lg:h-full rounded-tl-xl rounded-bl-xl bg-gray-800 border border-gray-500">
 			<!-- Chats div -->
-			<div id="messages-title-container" class="px-4 h-[80px] bg-gray-800 rounded-tl-xl border-b border-gray-500 w-full flex items-center">
+			<div id="messages-title-container"
+				class="px-4 h-[80px] bg-gray-800 rounded-tl-xl border-b border-gray-500 w-full flex items-center">
 				<h2 class="text-white text-xl font-semibold mb-2 ">Chats</h2>
 			</div>
 			<!-- Chats List Container -->
@@ -24,7 +25,8 @@
 						<div class="flex-1 min-w-0">
 							<div class="text-white font-semibold text-sm truncate">ismael</div>
 							<div class="flex justify-between items-center">
-								<div class="text-gray-400 text-sm truncate">This is an example message truncated to test it</div>
+								<div class="text-gray-400 text-sm truncate">This is an example message truncated to test
+									it</div>
 								<div class="text-gray-500 text-xs ml-4 whitespace-nowrap flex-shrink-0">14:37</div>
 							</div>
 						</div>
@@ -37,28 +39,17 @@
 
 
 		<!-- Chat Container -->
-		<div id="chat-container" class="flex flex-col items-center justify-start w-full lg:flex-[5] lg:max-w-[50%] h-[50vh] lg:h-full border-t border-b border-gray-500">
-		<!-- User info Container -->
-			<div id="user-info-container" class="px-2 h-[80px] bg-slate-700 w-full border-b border-gray-500 flex justify-start items-center">
-					<!-- User info will be dynamically inserted here -->
-					<button id="back-group-chat" type="button" class="cursor-pointer group">
-						<svg viewBox="0 0 1024 1024"
-							class="w-9 h-9 mr-2 fill-gray-500 stroke-gray-500 group-hover:fill-gray-300 group-hover:stroke-gray-300 transition-colors duration-200"
-							xmlns="http://www.w3.org/2000/svg" stroke-width="102.4">
-							<path d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z" />
-						</svg>
-					</button>			
-					<img src="https://localhost:8443/back/images/avatar-2.png" alt="ismael" class="w-13 h-13 rounded-full border border-gray-600 mr-4" />
-					<h2 class="text-white text-xl font-semibold truncate">ismael</h2>
-					<!-- End of user info -->
+		<div id="chat-container"
+			class="flex flex-col items-center justify-start w-full lg:flex-[5] lg:max-w-[50%] h-[50vh] lg:h-full border-t border-b border-gray-500">
+			<div id="user-info-container" class = "w-full">
+				<!-- User info will be dynamically replace here -->
 			</div>
 			<div id="chat-messages"
 				class="overflow-y-auto flex-1 flex flex-col items-center justify-start px-6 py-4 pr-2 w-full border-b border-gray-500 bg-gray-800 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
 				<!-- Chat messages will be dynamically inserted here -->
 			</div>
 			<!-- Chat input area -->
-			<div id="input-container"
-				class="flex flex-col items-center justify-start w-full bg-gray-800">
+			<div id="input-container" class="flex flex-col items-center justify-start w-full bg-gray-800">
 				<form id="chat-form" class="w-full">
 					<label for="chat" class="sr-only">Your message</label>
 					<div class="flex items-center px-3 py-2 bg-gray-700">
@@ -67,9 +58,9 @@
 							placeholder="Your message..."></textarea>
 						<!-- Button send message -->
 						<button type="submit"
-							class="inline-flex justify-center p-2 rounded-full cursor-pointer text-blue-500 hover:bg-gray-600">					
-							<svg class="w-5 h-5 rotate-90 rtl:-rotate-90 text-sky-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 18 20">
+							class="inline-flex justify-center p-2 rounded-full cursor-pointer text-blue-500 hover:bg-gray-600">
+							<svg class="w-5 h-5 rotate-90 rtl:-rotate-90 text-sky-500" aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 20">
 								<path fill="currentColor"
 									d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
 							</svg>
@@ -81,9 +72,9 @@
 		</div>
 
 
-		
+
 		<!-- Users Container -->
-		<div id = "users-container"
+		<div id="users-container"
 			class="flex flex-col items-center justify-start w-full lg:flex-[2] lg:max-w-[20%] h-[50vh] lg:h-full rounded-tr-xl rounded-br-xl bg-gray-800 border border-gray-500">
 			<!-- Search div -->
 			<div id="search-users-container">
@@ -92,7 +83,7 @@
 					<div class="flex items-center bg-gray-800 ">
 						<input id="search-users-input" type="text"
 							class="block mx-4 p-2 w-full text-sm text-gray-900 rounded-lg border bg-gray-700 border-gray-900 placeholder-gray-400 text-white resize-none focus:outline focus:outline-2 focus:outline-gray-400"
-							placeholder="Search users..."/>
+							placeholder="Search users..." />
 					</div>
 				</form>
 			</div>

@@ -42,7 +42,7 @@ async function formatConnectedUsersTemplate(data: any, name: string): Promise<st
 	return htmlText;
 }
 
-function handleSocketOpen(socket: WebSocket): void {
+function handleSocketOpen(socket: WebSocket) {
 	socket.onopen = () => {
 		const handshake = {
 			type: 'handshake',
@@ -73,7 +73,7 @@ function sortUsersAlphabetically(htmlContent: string): string {
 	return sortedHtml;
 }
 
-function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, name: string): void {
+function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, name: string) {
 	socket.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
 		let HtmlContent = "";
@@ -83,12 +83,15 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 			stored = sessionStorage.getItem("public-chat") || "";
 			stored += HtmlContent;
 			sessionStorage.setItem("public-chat", stored);
-			sessionStorage.setItem("current-room", "");
-			chatMessages.innerHTML = stored;
+			if (sessionStorage.getItem("current-room") === "") {
+				chatMessages.innerHTML = stored;
+			}
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'private') {
-			console.log(data)
+			if (!data.message) {
+				handleUserInfo(chatMessages, data, name);
+			}
 			if (data.message) {
 				HtmlContent = await formatMsgTemplate(data, name);
 			}
@@ -97,8 +100,9 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 			stored += HtmlContent || "";
 			privateChat[data.roomId] = stored || "";
 			sessionStorage.setItem("private-chat", JSON.stringify(privateChat));
-			sessionStorage.setItem("current-room", data.roomId);
-			chatMessages.innerHTML = stored || "";
+			if (sessionStorage.getItem("current-room") === data.roomId) {
+				chatMessages.innerHTML = stored || "";
+			}
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		}
 		if (data.type === 'connectedUsers') {
@@ -111,14 +115,14 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, it
 }
 
 // TODO: Handle the case when the Socket close.
-function handleSocketClose(socket: WebSocket): void {
+function handleSocketClose(socket: WebSocket) {
 	socket.onclose = (event: CloseEvent) => {
 		console.log(`CLIENT: Connection closed - Code: ${event.code}`);
 	}
 }
 
 // TODO: Handle the case when the Socket gets an error.
-function handleSocketError(socket: WebSocket): void {
+function handleSocketError(socket: WebSocket) {
 	socket.onerror = (event) => {
 		console.error("CLIENT: WebSocket error:", event);
 	}
@@ -145,6 +149,9 @@ export function handleSessionStorage(chatMessages: HTMLDivElement, socket: WebSo
 	if (currentRoom) {
 		chatMessages.innerHTML = privateChat[currentRoom];
 	}
+	if (!currentRoom) {
+		sessionStorage.setItem("current-room", "");
+	}
 	chatMessages.scrollTop = chatMessages.scrollHeight;
 	if (!socket || socket.readyState === WebSocket.CLOSED) {
 		socket = new WebSocket("https://localhost:8443/back/ws/chat");
@@ -155,10 +162,10 @@ export function handleSessionStorage(chatMessages: HTMLDivElement, socket: WebSo
 	return socket!;
 }
 
-export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items:HTMLDivElement , username: string): WebSocket {
+export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, username: string): WebSocket {
 
 	handleSocketOpen(socket);
-	handleSocketMessage(socket, chatMessages, items, username);
+	handleSocketMessage(socket, chatMessages, username);
 	handleSocketClose(socket);
 	handleSocketError(socket);
 	return socket;
@@ -197,7 +204,7 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	}
 }
 
-export function filterSearchUsers(keyword: string): void {
+export function filterSearchUsers(keyword: string) {
 	inputKeyword = keyword;
 	const itemsContainer = document.getElementById("user-item-container") as HTMLDivElement;
 	const tempContainer = document.createElement("div");
@@ -218,7 +225,7 @@ export function filterSearchUsers(keyword: string): void {
 	}
 }
 
-export function handlePrivateMsg(e:MouseEvent, items:HTMLDivElement, username:string, socket:WebSocket):void {
+export function handlePrivateMsg(e:MouseEvent, socket:WebSocket) {
 
 	const target = e.target as HTMLElement;
 	const userDiv = target.closest('[data-id]') as HTMLElement | null;
@@ -231,3 +238,31 @@ export function handlePrivateMsg(e:MouseEvent, items:HTMLDivElement, username:st
 	};
 	socket.send(JSON.stringify(message));
 }
+
+export async function handleUserInfo(chatMessages: HTMLDivElement, data:any, name: string) {
+
+	if (name === data.username) {
+		sessionStorage.setItem("current-room", data.roomId);
+		const htmlContent = await fetch("../../html/chat/userInfo.html");
+		let htmlText = await htmlContent.text();
+		htmlText = htmlText
+			.replace("{{ username }}", data.partnerUsername.toString())
+			.replace("{{ usernameImage }}", data.partnerUsername.toString())
+			.replace("{{ imagePath }}", data.partnerImagePath.toString());
+		const UserInfo = document.getElementById("user-info-container") as HTMLDivElement;
+		UserInfo.innerHTML = htmlText;
+
+		const button = UserInfo.querySelector("#back-group-chat") as HTMLButtonElement;
+		button.addEventListener('click', (e) => {
+			e.preventDefault();
+			sessionStorage.setItem("current-room", "");
+			const stored = sessionStorage.getItem("public-chat") || "";
+			chatMessages.innerHTML = stored;
+			chatMessages.scrollTop = UserInfo.scrollHeight;
+			UserInfo.innerHTML = "";
+		});
+	}
+}
+
+
+// GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.

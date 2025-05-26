@@ -27,13 +27,14 @@ export default class Chat extends Step {
                 const chatMessages = document.getElementById("chat-messages");
                 const items = document.getElementById("user-item-container");
                 const searchInput = document.getElementById("search-users-input");
+                const chatContainer = document.getElementById("chat-container");
                 Step.socket = handleSessionStorage(chatMessages, Step.socket);
-                handleSocket(Step.socket, chatMessages, items, this.username);
+                handleSocket(Step.socket, chatMessages, this.username);
                 textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
-                items.addEventListener('dblclick', (e) => handlePrivateMsg(e, items, this.username, Step.socket));
+                items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket));
             }
             catch (error) {
                 console.log(error);
