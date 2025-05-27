@@ -109,7 +109,7 @@ export function retrieveConnectedUsers(socket: WebSocket) {
 	socket.send(JSON.stringify(message));
 }
 
-export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items:HTMLDivElement , username: string): WebSocket {
+export function handleSocket(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, username: string): WebSocket {
 
 	handleSocketOpen(socket);
 	handleSocketMessage(socket, chatMessages, items, username);
@@ -148,14 +148,13 @@ export function filterSearchUsers(keyword: string, currentUserName: string): voi
 		const username = userElement.querySelector("span.text-sm")?.textContent?.trim().toLowerCase() || "";
 		return username.includes(keyword.toLowerCase());
 	});
-	if (itemsContainer)
-	{
+	if (itemsContainer) {
 		itemsContainer.innerHTML = "";
 		if (filteredUsers.length > 0) {
 			filteredUsers.forEach(userElement => {
 				itemsContainer.appendChild(userElement);
 				const userName = userElement.querySelector("span.text-sm")?.textContent?.trim();
-				if (userName !== currentUserName) {			
+				if (userName !== currentUserName) {
 					userElement.addEventListener("click", (event) => {
 						showUserOptionsMenu(userElement, event as MouseEvent);
 					});
@@ -211,7 +210,8 @@ function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent) {
 						openPrivateChat(username);
 						break;
 					case "show-more":
-						console.log(`Mostrar más opciones para ${username}`);						
+						showUserProfile(userId, username, event);
+						console.log(`Mostrar más opciones para ${username}`);
 						break;
 				}
 			}
@@ -261,4 +261,81 @@ async function sendFriendRequest(userId: string): Promise<void> {
 	} catch (error) {
 		console.error("Error sending friend request:", error);
 	}
+}
+
+async function showUserProfile(userId: string, username: string, event?: MouseEvent) {
+	const existingProfile = document.getElementById("user-profile-modal-backdrop");
+	if (existingProfile) existingProfile.remove();
+
+	const userRes = await fetch(`https://localhost:8443/back/get_user_by_id/?id=${userId}`, {
+		method: "GET",
+		credentials: 'include',
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	const userData = await userRes.json();
+
+	const statsRes = await fetch(`https://localhost:8443/back/get_user_gamelogs/${userId}`, {
+		method: "GET",
+		credentials: 'include',
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	const userStats = await statsRes.json();
+
+	// Fondo semitransparente que NO cubre el header (ajusta top-[64px] si tu header es más alto o bajo)
+	const backdrop = document.createElement("div");
+	backdrop.id = "user-profile-modal-backdrop";
+	backdrop.className = "fixed left-0 right-0 bottom-0 top-[64px] bg-black/50 flex items-center justify-center z-40";
+	backdrop.style.animation = "fadeIn 0.2s";
+
+	// Modal centrado con transparencia
+	const modal = document.createElement("div");
+	modal.className = "bg-gray/900 backdrop-blur-md rounded-xl shadow-2xl p-10 w-full max-w-2xl border-1 border-slate-200 relative scale-95 opacity-0";
+	modal.style.transition = "opacity 0.5s, transform 0.5s";
+
+	modal.innerHTML = `
+		<button id="close-profile-modal" class="absolute top-4 right-6 text-blue-500 hover:text-blue-700 text-4xl font-bold">&times;</button>
+		<div class="flex flex-col items-center text-white">
+			<img src="${userData.avatarPath}" alt="Avatar" class="w-40 h-40 rounded-full mb-6 border-4 border-blue-500 shadow">
+			<h2 class="text-3xl font-extrabold mb-2 text-blue-500">${username}</h2>
+			<ul class="mb-8 text-lg">
+				<li><span class="font-semibold">🎮  Partidas jugadas:</span> ${userStats.totalGames}</li>
+				<li><span class="font-semibold">🏆  Victorias:</span> ${userStats.wins}</li>
+				<li><span class="font-semibold">❌  Derrotas:</span> ${userStats.losses}</li>
+			</ul>
+			<div class="flex gap-4 mt-2">
+				<button id="add-friend-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow">➕ Add Friend</button>
+				<button id="block-user-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold shadow">🚫 Block User</button>
+			</div>
+		</div>
+	`;
+
+	backdrop.appendChild(modal);
+	document.body.appendChild(backdrop);
+
+	setTimeout(() => {
+		modal.style.opacity = "1";
+		modal.style.transform = "scale(1)";
+	}, 10);
+
+	document.getElementById("close-profile-modal")?.addEventListener("click", () => {
+		backdrop.remove();
+	});
+
+	document.getElementById("add-friend-btn")?.addEventListener("click", () => {
+		sendFriendRequest(userId);
+		backdrop.remove();
+	});
+
+	document.getElementById("block-user-btn")?.addEventListener("click", () => {
+		alert(`Usuario ${username} bloqueado (demo)`);
+		backdrop.remove();
+	});
+
+	backdrop.addEventListener("click", (e) => {
+		if (e.target === backdrop) backdrop.remove();
+	});
 }

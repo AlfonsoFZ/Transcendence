@@ -206,6 +206,7 @@ function showUserOptionsMenu(userElement, event) {
                         openPrivateChat(username);
                         break;
                     case "show-more":
+                        showUserProfile(userId, username, event);
                         console.log(`Mostrar más opciones para ${username}`);
                         break;
                 }
@@ -255,5 +256,75 @@ function sendFriendRequest(userId) {
         catch (error) {
             console.error("Error sending friend request:", error);
         }
+    });
+}
+function showUserProfile(userId, username, event) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b, _c;
+        const existingProfile = document.getElementById("user-profile-modal-backdrop");
+        if (existingProfile)
+            existingProfile.remove();
+        const userRes = yield fetch(`https://localhost:8443/back/get_user_by_id/?id=${userId}`, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const userData = yield userRes.json();
+        const statsRes = yield fetch(`https://localhost:8443/back/get_user_gamelogs/${userId}`, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const userStats = yield statsRes.json();
+        // Fondo semitransparente que NO cubre el header (ajusta top-[64px] si tu header es más alto o bajo)
+        const backdrop = document.createElement("div");
+        backdrop.id = "user-profile-modal-backdrop";
+        backdrop.className = "fixed left-0 right-0 bottom-0 top-[64px] bg-black/50 flex items-center justify-center z-40";
+        backdrop.style.animation = "fadeIn 0.2s";
+        // Modal centrado con transparencia
+        const modal = document.createElement("div");
+        modal.className = "bg-gray/900 backdrop-blur-md rounded-xl shadow-2xl p-10 w-full max-w-2xl border-1 border-slate-200 relative scale-95 opacity-0";
+        modal.style.transition = "opacity 0.5s, transform 0.5s";
+        modal.innerHTML = `
+		<button id="close-profile-modal" class="absolute top-4 right-6 text-blue-500 hover:text-blue-700 text-4xl font-bold">&times;</button>
+		<div class="flex flex-col items-center text-white">
+			<img src="${userData.avatarPath}" alt="Avatar" class="w-40 h-40 rounded-full mb-6 border-4 border-blue-500 shadow">
+			<h2 class="text-3xl font-extrabold mb-2 text-blue-500">${username}</h2>
+			<ul class="mb-8 text-lg">
+				<li><span class="font-semibold">🎮  Partidas jugadas:</span> ${userStats.totalGames}</li>
+				<li><span class="font-semibold">🏆  Victorias:</span> ${userStats.wins}</li>
+				<li><span class="font-semibold">❌  Derrotas:</span> ${userStats.losses}</li>
+			</ul>
+			<div class="flex gap-4 mt-2">
+				<button id="add-friend-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow">➕ Add Friend</button>
+				<button id="block-user-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold shadow">🚫 Block User</button>
+			</div>
+		</div>
+	`;
+        backdrop.appendChild(modal);
+        document.body.appendChild(backdrop);
+        setTimeout(() => {
+            modal.style.opacity = "1";
+            modal.style.transform = "scale(1)";
+        }, 10);
+        (_a = document.getElementById("close-profile-modal")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+            backdrop.remove();
+        });
+        (_b = document.getElementById("add-friend-btn")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+            sendFriendRequest(userId);
+            backdrop.remove();
+        });
+        (_c = document.getElementById("block-user-btn")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
+            alert(`Usuario ${username} bloqueado (demo)`);
+            backdrop.remove();
+        });
+        backdrop.addEventListener("click", (e) => {
+            if (e.target === backdrop)
+                backdrop.remove();
+        });
     });
 }
