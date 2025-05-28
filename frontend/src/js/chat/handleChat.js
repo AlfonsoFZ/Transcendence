@@ -174,7 +174,6 @@ function showUserOptionsMenu(userElement, event) {
     if (!username)
         return;
     const userId = userElement.id.replace("item-", "");
-    console.log("userId", userId);
     if (!userId)
         return;
     const oldMenu = document.getElementById("user-options-menu");
@@ -213,12 +212,10 @@ function addMenuOptionsListeners(menu, userId, username, event) {
             if (action) {
                 switch (action) {
                     case "msg":
-                        console.log(`Mensaje privado a ${username}`);
                         openPrivateChat(username);
                         break;
                     case "show-more":
                         showUserProfile(userId, username, event);
-                        console.log(`Mostrar más opciones para ${username}`);
                         break;
                 }
             }
@@ -235,7 +232,6 @@ function openPrivateChat(username) {
 }
 function sendFriendRequest(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("Enviando solicitud de amistad a:", userId);
         try {
             const requestBody = { friendId: userId };
             const response = yield fetch("https://localhost:8443/back/send_friend_request", {
