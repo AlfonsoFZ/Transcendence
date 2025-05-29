@@ -183,8 +183,6 @@ function showUserOptionsMenu(userElement, event) {
     const menu = createOptionMenu(event, userElement);
     document.body.appendChild(menu);
     addMenuOptionsListeners(menu, userId, username, event);
-    // Cerrar el menú al hacer clic fuera de él
-    // Cerrar el menú cuando el cursor sale del menú
     menu.addEventListener("mouseleave", () => {
         menu.remove();
     });
@@ -196,6 +194,7 @@ function createOptionMenu(event, userElement) {
     menu.className = "absolute bg-gray-900/95 border border-slate-200 rounded-xl shadow-2xl p-2 z-50";
     menu.innerHTML = `
 		<div class="text-gray-300 cursor-pointer hover:bg-sky-700/80 p-2 rounded" data-action="msg"> • Private Message</div>
+		<div class="text-gray-300 cursor-pointer hover:bg-sky-700/80 p-2 rounded" data-action="play-game"> ▶ Play Game</div>
 		<div class="text-gray-300 cursor-pointer hover:bg-sky-700/80 p-2 rounded" data-action="show-more"> ≡ Show More</div>
 	`;
     const rect = userElement.getBoundingClientRect();
@@ -238,6 +237,8 @@ function addMenuOptionsListeners(menu, userId, username, event) {
                     case "msg":
                         openPrivateChat(username);
                         break;
+                    case "play-game":
+                        alert("Feature not implemented yet: Play Game with " + username);
                     case "show-more":
                         showUserProfile(userId, username, event);
                         break;
@@ -294,6 +295,9 @@ function showUserProfile(userId, username, event) {
         }
         const { isFriend, isPending, isBlocked } = yield checkFriendStatus(userId, friendsEntries);
         const friendButton = getFriendButton(isFriend, isPending, isBlocked);
+        const playButton = !isBlocked
+            ? `<button id="play-btn" class="bg-green-600 hover:bg-green-400 text-white px-6 py-2 rounded-lg font-semibold shadow">🎮 Play Game</button>`
+            : "";
         const blockUserButton = getBlockUserButton(isBlocked, userId);
         // Fondo semitransparente que NO cubre el header (ajusta top-[64px] si tu header es más alto o bajo)
         const backdrop = createBackdrop();
@@ -312,6 +316,7 @@ function showUserProfile(userId, username, event) {
 				<li><span class="font-semibold">❌  Derrotas:</span> ${userStats.losses}</li>
 			</ul>
 			<div class="flex gap-4 mt-2">
+				${playButton}
 				${friendButton}
 				${blockUserButton}
 			</div>
@@ -323,6 +328,7 @@ function showUserProfile(userId, username, event) {
             modal.style.opacity = "1";
             modal.style.transform = "scale(1)";
         }, 10);
+        window.history.pushState({ modalOpen: true }, "");
         addProfileModalListeners(userId, backdrop);
     });
 }
@@ -440,27 +446,46 @@ function createBackdrop() {
     return backdrop;
 }
 function addProfileModalListeners(userId, backdrop) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
+    const closeModal = () => {
+        backdrop.remove();
+        window.removeEventListener("popstate", onPopState);
+        if (window.history.state && window.history.state.modalOpen) {
+            window.history.back();
+        }
+    };
+    const onPopState = () => {
+        closeModal();
+    };
+    window.addEventListener("popstate", onPopState);
+    backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop)
+            closeModal();
+    });
     (_a = document.getElementById("close-profile-modal")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
         backdrop.remove();
     });
-    (_b = document.getElementById("add-friend-btn")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+    (_b = document.getElementById("play-btn")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+        alert("Feature not implemented yet: Play Game with this user");
+        backdrop.remove();
+    });
+    (_c = document.getElementById("add-friend-btn")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
         sendFriendRequest(userId);
         backdrop.remove();
     });
-    (_c = document.getElementById("cancel-friend-btn")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
+    (_d = document.getElementById("cancel-friend-btn")) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
         yield rejectFriendRequest(userId);
         backdrop.remove();
     }));
-    (_d = document.getElementById("del-friend-btn")) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => {
+    (_e = document.getElementById("del-friend-btn")) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => {
         deleteFriend(userId);
         backdrop.remove();
     });
-    (_e = document.getElementById("block-user-btn")) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => {
+    (_f = document.getElementById("block-user-btn")) === null || _f === void 0 ? void 0 : _f.addEventListener("click", () => {
         blockUser(userId);
         backdrop.remove();
     });
-    (_f = document.getElementById("unblock-user-btn")) === null || _f === void 0 ? void 0 : _f.addEventListener("click", () => {
+    (_g = document.getElementById("unblock-user-btn")) === null || _g === void 0 ? void 0 : _g.addEventListener("click", () => {
         unblockUser(userId);
         backdrop.remove();
     });

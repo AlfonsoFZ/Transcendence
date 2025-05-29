@@ -187,8 +187,6 @@ function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent) {
 
 	addMenuOptionsListeners(menu, userId, username, event);
 
-	// Cerrar el menú al hacer clic fuera de él
-	// Cerrar el menú cuando el cursor sale del menú
 	menu.addEventListener("mouseleave", () => {
 		menu.remove();
 	});
@@ -201,6 +199,7 @@ function createOptionMenu(event: MouseEvent, userElement: HTMLElement): HTMLDivE
 	menu.className = "absolute bg-gray-900/95 border border-slate-200 rounded-xl shadow-2xl p-2 z-50";
 	menu.innerHTML = `
 		<div class="text-gray-300 cursor-pointer hover:bg-sky-700/80 p-2 rounded" data-action="msg"> • Private Message</div>
+		<div class="text-gray-300 cursor-pointer hover:bg-sky-700/80 p-2 rounded" data-action="play-game"> ▶ Play Game</div>
 		<div class="text-gray-300 cursor-pointer hover:bg-sky-700/80 p-2 rounded" data-action="show-more"> ≡ Show More</div>
 	`;
 	const rect = userElement.getBoundingClientRect();
@@ -249,6 +248,8 @@ function addMenuOptionsListeners(menu: HTMLDivElement, userId: string, username:
 					case "msg":
 						openPrivateChat(username);
 						break;
+					case "play-game":
+						alert("Feature not implemented yet: Play Game with " + username);
 					case "show-more":
 						showUserProfile(userId, username, event);
 						break;
@@ -307,6 +308,10 @@ async function showUserProfile(userId: string, username: string, event?: MouseEv
 
 	const friendButton = getFriendButton(isFriend, isPending, isBlocked);
 
+	const playButton = !isBlocked
+    ? `<button id="play-btn" class="bg-green-600 hover:bg-green-400 text-white px-6 py-2 rounded-lg font-semibold shadow">🎮 Play Game</button>`
+    : "";
+
 	const blockUserButton = getBlockUserButton(isBlocked, userId);
 
 	// Fondo semitransparente que NO cubre el header (ajusta top-[64px] si tu header es más alto o bajo)
@@ -327,6 +332,7 @@ async function showUserProfile(userId: string, username: string, event?: MouseEv
 				<li><span class="font-semibold">❌  Derrotas:</span> ${userStats.losses}</li>
 			</ul>
 			<div class="flex gap-4 mt-2">
+				${playButton}
 				${friendButton}
 				${blockUserButton}
 			</div>
@@ -340,6 +346,8 @@ async function showUserProfile(userId: string, username: string, event?: MouseEv
 		modal.style.opacity = "1";
 		modal.style.transform = "scale(1)";
 	}, 10);
+
+	window.history.pushState({ modalOpen: true }, "");
 
 	addProfileModalListeners(userId, backdrop);
 }
@@ -460,10 +468,31 @@ function createBackdrop(): HTMLDivElement {
 }
 
 function addProfileModalListeners(userId: string, backdrop: HTMLDivElement) {
+	const closeModal = () => {
+		backdrop.remove();
+		window.removeEventListener("popstate", onPopState);
+		if (window.history.state && window.history.state.modalOpen) {
+			window.history.back();
+		}
+	};
+
+    const onPopState = () => {
+        closeModal();
+    };
+	
+	window.addEventListener("popstate", onPopState);
+
+	backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) closeModal();
+    });
+
 	document.getElementById("close-profile-modal")?.addEventListener("click", () => {
 		backdrop.remove();
 	});
-
+	document.getElementById("play-btn")?.addEventListener("click", () => {
+		alert("Feature not implemented yet: Play Game with this user");
+		backdrop.remove();
+	});
 	document.getElementById("add-friend-btn")?.addEventListener("click", () => {
 		sendFriendRequest(userId);
 		backdrop.remove();
@@ -486,7 +515,6 @@ function addProfileModalListeners(userId: string, backdrop: HTMLDivElement) {
 		unblockUser(userId);
 		backdrop.remove();
 	});
-
 	backdrop.addEventListener("click", (e) => {
 		if (e.target === backdrop) backdrop.remove();
 	});
