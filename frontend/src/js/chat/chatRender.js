@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from '../spa/stepRender.js';
-import { handleSessionStorage, handleSocket, handleTextareaKeydown, handleFormSubmit, filterSearchUsers, handlePrivateMsg } from './handleChat.js';
+import { verifySocket } from './verifySocket.js';
+import { filterSearchUsers } from './filterSearch.js';
+import { handleSocketEvents } from './handleSocketEvents.js';
+import { handleContentStorage } from './handleContentStorage.js';
+import { handleFormSubmit, handlePrivateMsg } from './handleSenders.js';
 export default class Chat extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -27,18 +31,20 @@ export default class Chat extends Step {
                 const chatMessages = document.getElementById("chat-messages");
                 const items = document.getElementById("user-item-container");
                 const searchInput = document.getElementById("search-users-input");
-                Step.socket = handleSessionStorage(chatMessages, Step.socket);
-                handleSocket(Step.socket, chatMessages, this.username);
-                textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
+                handleContentStorage(chatMessages);
+                Step.socket = verifySocket(Step.socket);
+                handleSocketEvents(Step.socket, chatMessages, this.username);
+                textarea.addEventListener('keydown', e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), form.requestSubmit()));
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
                 items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket));
             }
             catch (error) {
-                console.log(error);
+                console.log("Error loading chat content:", error);
                 appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
             }
         });
     }
 }
+// GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.
