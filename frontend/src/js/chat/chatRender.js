@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from '../spa/stepRender.js';
 import { retrieveConnectedUsers, handleSocket, handleTextareaKeydown, handleFormSubmit, filterSearchUsers } from './handleChat.js';
+import { showUserOptionsMenu } from './handleUserOptionsMenu.js';
 export default class Chat extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,6 +45,18 @@ export default class Chat extends Step {
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value, this.username));
+                items.addEventListener("click", (event) => {
+                    var _a;
+                    const target = event.target;
+                    const userItem = target.closest(".item");
+                    if (!userItem)
+                        return;
+                    const usernameSpan = userItem.querySelector("span.text-sm");
+                    const clickedUsername = (_a = usernameSpan === null || usernameSpan === void 0 ? void 0 : usernameSpan.textContent) === null || _a === void 0 ? void 0 : _a.trim();
+                    if (clickedUsername && clickedUsername !== this.username) {
+                        showUserOptionsMenu(userItem, event);
+                    }
+                });
             }
             catch (error) {
                 appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
