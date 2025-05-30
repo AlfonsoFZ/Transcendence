@@ -3,6 +3,7 @@ import { verifySocket } from './verifySocket.js';
 import { filterSearchUsers } from './filterSearch.js';
 import { handleSocketEvents } from './handleSocketEvents.js';
 import { handleContentStorage } from './handleContentStorage.js';
+import { showUserOptionsMenu } from './handleUserOptionsMenu.js';
 import { handleFormSubmit, handlePrivateMsg } from './handleSenders.js';
 
 export default class Chat extends Step {
@@ -33,6 +34,21 @@ export default class Chat extends Step {
 				searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
 				items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket!));
+
+
+
+				items.addEventListener("click", (event) => {
+					const target = event.target as HTMLElement;
+					const userItem = target.closest(".item") as HTMLDivElement;
+					if (!userItem) return;
+
+					const usernameSpan = userItem.querySelector("span.text-sm");
+					const clickedUsername = usernameSpan?.textContent?.trim();
+
+					if (clickedUsername && clickedUsername !== this.username) {
+						showUserOptionsMenu(userItem, event as MouseEvent);
+					}
+				});
 			}
 		catch (error) {
 				console.log("Error loading chat content:", error);
@@ -42,3 +58,5 @@ export default class Chat extends Step {
 }
 
 // GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.
+
+// Problema con la recarga de la página, se actualizan los contactos demasiadas veces y parpadea la foto, el hover y la luz del chat. Ver si se puede solucioanr.

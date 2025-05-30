@@ -103,30 +103,35 @@ function setTimer(user) {
 async function handlePrivate(user, data) {
 
 	let partner;
-	if (data.id) {
-		const partnerId = parseInt(data.id, 10);
-		if (user.id !== partnerId) {
-			const [a, b] = [user.id, partnerId].sort((x, y) => x - y);
-			const roomId = `${a}:${b}`;
-			if (!rooms.has(roomId)) {
-				rooms.set(roomId, {
-					userSocket: clients.get(user.id),
-					partnerSocket: clients.get(partnerId)
-				})
+	try {
+		if (data.id) {
+			const partnerId = parseInt(data.id, 10);
+			if (user.id !== partnerId) {
+				const [a, b] = [user.id, partnerId].sort((x, y) => x - y);
+				const roomId = `${a}:${b}`;
+				if (!rooms.has(roomId)) {
+					rooms.set(roomId, {
+						userSocket: clients.get(user.id),
+						partnerSocket: clients.get(partnerId)
+					})
+				}
+				partner = await crud.user.getUserById(partnerId);
+				sendJSON(user, partner, null, roomId);
 			}
-			partner = await crud.user.getUserById(partnerId);
-			sendJSON(user, partner, null, roomId);
-		}
-	}
-	else {
-		const ids = data.roomId.split(":");
-		if (parseInt(ids[0], 10) === user.id) {
-			partner = await crud.user.getUserById(parseInt(ids[1], 10));
 		}
 		else {
-			partner = await crud.user.getUserById(parseInt(ids[0], 10));
+			const ids = data.roomId.split(":");
+			if (parseInt(ids[0], 10) === user.id) {
+				partner = await crud.user.getUserById(parseInt(ids[1], 10));
+			}
+			else {
+				partner = await crud.user.getUserById(parseInt(ids[0], 10));
+			}
+			sendJSON(user, partner, data.message, data.roomId);
 		}
-		sendJSON(user, partner, data.message, data.roomId);
+	} catch (error) {
+		console.error("Error opening private message:", error);
+		return;
 	}
 }
 

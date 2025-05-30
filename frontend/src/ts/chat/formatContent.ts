@@ -29,6 +29,7 @@ export async function formatConnectedUsersTemplate(data: any): Promise<string> {
 		userHtmlContent = await fetch("../../html/chat/userListItem.html");
 		htmlContent = await userHtmlContent.text();
 		htmlContent = htmlContent
+			.replace("{{ userId }}", user.id.toString())
 			.replace("{{ id }}", user.id.toString())
 			.replace("{{ username }}", user.username.toString())
 			.replace("{{ usernameImage }}", user.username.toString())
