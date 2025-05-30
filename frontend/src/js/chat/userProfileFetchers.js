@@ -36,6 +36,7 @@ export function sendFriendRequest(userId) {
 export function fetchUserData(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            console.log("userId = ", userId);
             const response = yield fetch(`https://localhost:8443/back/get_user_by_id/?id=${userId}`, {
                 method: "GET",
                 credentials: 'include',

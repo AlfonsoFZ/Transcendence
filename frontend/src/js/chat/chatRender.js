@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from '../spa/stepRender.js';
-import { handleFormSubmit, filterSearchUsers } from './handleChat.js';
+import { verifySocket } from './verifySocket.js';
+import { filterSearchUsers } from './filterSearch.js';
+import { handleSocketEvents } from './handleSocketEvents.js';
+import { handleContentStorage } from './handleContentStorage.js';
 import { showUserOptionsMenu } from './handleUserOptionsMenu.js';
+import { handleFormSubmit, handlePrivateMsg } from './handleSenders.js';
 export default class Chat extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,7 +38,8 @@ export default class Chat extends Step {
                 textarea.addEventListener('keydown', e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), form.requestSubmit()));
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
-                searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value, this.username));
+                searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
+                items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket));
                 items.addEventListener("click", (event) => {
                     var _a;
                     const target = event.target;
