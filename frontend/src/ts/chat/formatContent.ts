@@ -60,3 +60,21 @@ export function sortUsersAlphabetically(htmlContent: string): string {
 	const sortedHtml = items.map(item => item.outerHTML).join('');
 	return sortedHtml;
 }
+
+export async function formatUserInfo(data:any, name: string): Promise<string> {
+
+	const usersConnected = JSON.parse(sessionStorage.getItem("JSONusers") || "{}");
+	const user = usersConnected.object.find((user: any) => user.username === data.partnerUsername) || {};
+	const color = user.status || "gray";
+	sessionStorage.setItem("current-room", data.roomId);
+	const htmlContent = await fetch("../../html/chat/userInfo.html");
+	let htmlText = await htmlContent.text();
+	htmlText = htmlText
+		.replace("{{ username }}", data.partnerUsername.toString())
+		.replace("{{ usernameImage }}", data.partnerUsername.toString())
+		.replace("{{ imagePath }}", data.partnerImagePath.toString())
+		.replace("{{ bgcolor }}", color)
+		.replace("{{ bcolor }}", color)
+		.replace("{{ gcolor }}", color);
+	return htmlText;
+}

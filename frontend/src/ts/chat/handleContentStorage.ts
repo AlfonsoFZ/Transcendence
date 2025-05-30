@@ -1,9 +1,10 @@
+import { handleUserInfo } from "./handleUserInfo.js";
 
-export function handleContentStorage(chatMessages: HTMLDivElement) {
+export function handleContentStorage(chatMessages: HTMLDivElement, username: string) {
 
 	const currentRoom = sessionStorage.getItem("current-room") || "";
 	const publicChat = sessionStorage.getItem("public-chat") || "";
-	const privateChat: Record<string, string> = JSON.parse(sessionStorage.getItem("private-chat") || "{}");
+	const data = JSON.parse(sessionStorage.getItem("JSONdata") || "{}");
 
 	if (!currentRoom && publicChat) {
 		chatMessages.innerHTML = publicChat;
@@ -12,8 +13,7 @@ export function handleContentStorage(chatMessages: HTMLDivElement) {
 		sessionStorage.setItem("current-room", "");
 	}
 	if (currentRoom) {
-		chatMessages.innerHTML = privateChat[currentRoom];
-		// Need to add the user info.
+		handleUserInfo(chatMessages, data, username);
 	}
 	chatMessages.scrollTop = chatMessages.scrollHeight;
 }

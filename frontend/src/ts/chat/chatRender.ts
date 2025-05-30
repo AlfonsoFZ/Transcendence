@@ -3,7 +3,7 @@ import { verifySocket } from './verifySocket.js';
 import { filterSearchUsers } from './filterSearch.js';
 import { handleSocketEvents } from './handleSocketEvents.js';
 import { handleContentStorage } from './handleContentStorage.js';
-import { retrieveConnectedUsers, handleFormSubmit, handlePrivateMsg } from './handleSenders.js';
+import { handleFormSubmit, handlePrivateMsg } from './handleSenders.js';
 
 export default class Chat extends Step {
 
@@ -24,7 +24,7 @@ export default class Chat extends Step {
 				const items = document.getElementById("user-item-container") as HTMLDivElement;
 				const searchInput = document.getElementById("search-users-input") as HTMLInputElement;
 
-				handleContentStorage(chatMessages);
+				handleContentStorage(chatMessages, this.username!);
 				Step.socket = verifySocket(Step.socket);
 				handleSocketEvents(Step.socket!, chatMessages, this.username!);
 

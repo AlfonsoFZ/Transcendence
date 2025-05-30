@@ -1,19 +1,36 @@
+import { formatUserInfo } from "./formatContent.js";
+
+export function updatePartnerStatus() {
+	
+	const data = JSON.parse(sessionStorage.getItem("JSONdata") || "{}");
+	const usersConnected = JSON.parse(sessionStorage.getItem("JSONusers") || "{}");
+	const user = usersConnected.object.find((user: any) => user.username === data.partnerUsername) || {};
+	const baseColor = user.status || "zinc";
+	const bgCode = baseColor === "zinc" ? "950" : "500";
+	const bgColor = `${baseColor}-${bgCode}`;
+
+	const span = document.querySelector('#user-info span');
+	if (span) {
+		let classes = span.className;
+		classes = classes
+			.replace(/bg-[\w-]+/, `bg-${bgColor}`)
+			.replace(/border-[\w-]+-50/, `border-${baseColor}-50`)
+			.replace(/glow-[\w-]+/, `glow-${baseColor}`);
+		span.className = classes;
+	}
+}
+
 export async function handleUserInfo(chatMessages: HTMLDivElement, data:any, name: string) {
 
 	if (name === data.username) {
-		sessionStorage.setItem("current-room", data.roomId);
-		const htmlContent = await fetch("../../html/chat/userInfo.html");
-		let htmlText = await htmlContent.text();
-		htmlText = htmlText
-			.replace("{{ username }}", data.partnerUsername.toString())
-			.replace("{{ usernameImage }}", data.partnerUsername.toString())
-			.replace("{{ imagePath }}", data.partnerImagePath.toString());
+
 		const UserInfo = document.getElementById("user-info-container") as HTMLDivElement;
-		UserInfo.innerHTML = htmlText;
+		UserInfo.innerHTML = await formatUserInfo(data, name);
 
 		const privateChat = JSON.parse(sessionStorage.getItem("private-chat") || "{}") as Record<string, string>;
 		const stored = privateChat[data.roomId] || "";
 		chatMessages.innerHTML = stored || "";
+		// Scroll to the bottom of the chat messages BUT it should be done after the content is read by the user.
 		requestAnimationFrame(() => {
 			chatMessages.scrollTop = chatMessages.scrollHeight;
 		});
