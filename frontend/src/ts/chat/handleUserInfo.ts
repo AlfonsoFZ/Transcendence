@@ -5,8 +5,8 @@ export function updatePartnerStatus() {
 	const data = JSON.parse(sessionStorage.getItem("JSONdata") || "{}");
 	const usersConnected = JSON.parse(sessionStorage.getItem("JSONusers") || "{}");
 	const user = usersConnected.object.find((user: any) => user.username === data.partnerUsername) || {};
-	const baseColor = user.status || "zinc";
-	const bgCode = baseColor === "zinc" ? "950" : "500";
+	const baseColor = user.status || "slate";
+	const bgCode = baseColor === "slate" ? "700" : "500";
 	const bgColor = `${baseColor}-${bgCode}`;
 
 	const span = document.querySelector('#user-info span');
@@ -23,9 +23,8 @@ export function updatePartnerStatus() {
 export async function handleUserInfo(chatMessages: HTMLDivElement, data:any, name: string) {
 
 	if (name === data.username) {
-
 		const UserInfo = document.getElementById("user-info-container") as HTMLDivElement;
-		UserInfo.innerHTML = await formatUserInfo(data, name);
+		UserInfo.innerHTML = await formatUserInfo(data);
 
 		const privateChat = JSON.parse(sessionStorage.getItem("private-chat") || "{}") as Record<string, string>;
 		const stored = privateChat[data.roomId] || "";

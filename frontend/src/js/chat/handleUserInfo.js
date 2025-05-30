@@ -12,8 +12,8 @@ export function updatePartnerStatus() {
     const data = JSON.parse(sessionStorage.getItem("JSONdata") || "{}");
     const usersConnected = JSON.parse(sessionStorage.getItem("JSONusers") || "{}");
     const user = usersConnected.object.find((user) => user.username === data.partnerUsername) || {};
-    const baseColor = user.status || "zinc";
-    const bgCode = baseColor === "zinc" ? "950" : "500";
+    const baseColor = user.status || "slate";
+    const bgCode = baseColor === "slate" ? "700" : "500";
     const bgColor = `${baseColor}-${bgCode}`;
     const span = document.querySelector('#user-info span');
     if (span) {
@@ -29,7 +29,7 @@ export function handleUserInfo(chatMessages, data, name) {
     return __awaiter(this, void 0, void 0, function* () {
         if (name === data.username) {
             const UserInfo = document.getElementById("user-info-container");
-            UserInfo.innerHTML = yield formatUserInfo(data, name);
+            UserInfo.innerHTML = yield formatUserInfo(data);
             const privateChat = JSON.parse(sessionStorage.getItem("private-chat") || "{}");
             const stored = privateChat[data.roomId] || "";
             chatMessages.innerHTML = stored || "";

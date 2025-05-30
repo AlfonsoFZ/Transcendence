@@ -1,6 +1,6 @@
 import { handleUserInfo, updatePartnerStatus } from "./handleUserInfo.js";
 import { filterSearchUsers } from "./filterSearch.js";
-import { inputKeyword, setHtmlUsersConnected, htmlUsersConnected } from "./state.js";
+import { inputKeyword, setHtmlUsersConnected } from "./state.js";
 import { formatMsgTemplate, formatConnectedUsersTemplate, sortUsersAlphabetically } from "./formatContent.js";
 
 function handleSocketOpen(socket: WebSocket) {

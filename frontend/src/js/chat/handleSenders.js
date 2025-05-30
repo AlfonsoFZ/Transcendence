@@ -9,6 +9,7 @@ export function handleFormSubmit(e, textarea, socket) {
     e.preventDefault();
     let message = {};
     const currentRoom = sessionStorage.getItem("current-room") || "";
+    // const msg = textarea.value;
     const msg = textarea.value.trim();
     // const msg = textarea.value.replace(/^[ \t]+|[ \t]+$/g, '');
     if (msg) {

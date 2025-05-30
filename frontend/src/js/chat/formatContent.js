@@ -7,6 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+function formatTextToHtml(text) {
+    let htmlText = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    htmlText = htmlText.replace(/\n/g, "<br>");
+    htmlText = htmlText.replace(/  /g, " &nbsp;");
+    return htmlText;
+}
 export function formatMsgTemplate(data, name) {
     return __awaiter(this, void 0, void 0, function* () {
         let htmlContent;
@@ -17,10 +28,11 @@ export function formatMsgTemplate(data, name) {
             htmlContent = yield fetch("../../html/chat/msgTemplatePartner.html");
         }
         let htmlText = yield htmlContent.text();
+        const message = formatTextToHtml(data.message.toString());
         htmlText = htmlText
             .replace("{{ username }}", data.username.toString())
             .replace("{{ timeStamp }}", data.timeStamp.toString())
-            .replace("{{ message }}", data.message.toString())
+            .replace("{{ message }}", message)
             .replace("{{ imagePath }}", data.imagePath.toString())
             .replace("{{ usernameImage }}", data.username.toString());
         return htmlText;
@@ -67,11 +79,11 @@ export function sortUsersAlphabetically(htmlContent) {
     const sortedHtml = items.map(item => item.outerHTML).join('');
     return sortedHtml;
 }
-export function formatUserInfo(data, name) {
+export function formatUserInfo(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const usersConnected = JSON.parse(sessionStorage.getItem("JSONusers") || "{}");
         const user = usersConnected.object.find((user) => user.username === data.partnerUsername) || {};
-        const color = user.status || "gray";
+        const color = user.status;
         sessionStorage.setItem("current-room", data.roomId);
         const htmlContent = yield fetch("../../html/chat/userInfo.html");
         let htmlText = yield htmlContent.text();

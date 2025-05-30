@@ -1,4 +1,18 @@
 
+function formatTextToHtml(text: string) {
+
+	let htmlText = text
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+	htmlText = htmlText.replace(/\n/g, "<br>");
+	htmlText = htmlText.replace(/  /g, " &nbsp;");
+	return htmlText;
+}
+
+
 export async function formatMsgTemplate(data: any, name: string): Promise<string> {
 
 	let htmlContent;
@@ -9,10 +23,11 @@ export async function formatMsgTemplate(data: any, name: string): Promise<string
 		htmlContent = await fetch("../../html/chat/msgTemplatePartner.html");
 	}
 	let htmlText = await htmlContent.text();
+	const message = formatTextToHtml(data.message.toString());
 	htmlText = htmlText
 		.replace("{{ username }}", data.username.toString())
 		.replace("{{ timeStamp }}", data.timeStamp.toString())
-		.replace("{{ message }}", data.message.toString())
+		.replace("{{ message }}", message)
 		.replace("{{ imagePath }}", data.imagePath.toString())
 		.replace("{{ usernameImage }}", data.username.toString());
 	return htmlText;
@@ -62,11 +77,11 @@ export function sortUsersAlphabetically(htmlContent: string): string {
 	return sortedHtml;
 }
 
-export async function formatUserInfo(data:any, name: string): Promise<string> {
+export async function formatUserInfo(data:any): Promise<string> {
 
 	const usersConnected = JSON.parse(sessionStorage.getItem("JSONusers") || "{}");
 	const user = usersConnected.object.find((user: any) => user.username === data.partnerUsername) || {};
-	const color = user.status || "gray";
+	const color = user.status;
 	sessionStorage.setItem("current-room", data.roomId);
 	const htmlContent = await fetch("../../html/chat/userInfo.html");
 	let htmlText = await htmlContent.text();

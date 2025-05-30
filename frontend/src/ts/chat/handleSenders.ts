@@ -13,6 +13,7 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	e.preventDefault();
 	let message = {};
 	const currentRoom = sessionStorage.getItem("current-room") || "";
+	// const msg = textarea.value;
 	const msg = textarea.value.trim();
 	// const msg = textarea.value.replace(/^[ \t]+|[ \t]+$/g, '');
 	

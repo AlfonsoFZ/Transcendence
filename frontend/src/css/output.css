@@ -76,6 +76,7 @@
     --color-gray-700: oklch(37.3% 0.034 259.733);
     --color-gray-800: oklch(27.8% 0.033 256.848);
     --color-gray-900: oklch(21% 0.034 264.665);
+    --color-zinc-950: oklch(14.1% 0.005 285.823);
     --color-neutral-500: oklch(55.6% 0 0);
     --color-neutral-700: oklch(37.1% 0 0);
     --color-black: #000;
@@ -1049,6 +1050,9 @@
   }
   .bg-yellow-700 {
     background-color: var(--color-yellow-700);
+  }
+  .bg-zinc-950 {
+    background-color: var(--color-zinc-950);
   }
   .fill-gray-500 {
     fill: var(--color-gray-500);
