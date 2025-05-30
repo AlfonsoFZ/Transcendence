@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from '../spa/stepRender.js';
-import { retrieveConnectedUsers, handleSocket, handleTextareaKeydown, handleFormSubmit, filterSearchUsers } from './handleChat.js';
+import { handleFormSubmit, filterSearchUsers } from './handleChat.js';
 import { showUserOptionsMenu } from './handleUserOptionsMenu.js';
 export default class Chat extends Step {
     render(appElement) {
@@ -26,22 +26,12 @@ export default class Chat extends Step {
                 const form = document.getElementById("chat-form");
                 const textarea = document.getElementById("chat-textarea");
                 const chatMessages = document.getElementById("chat-messages");
-                const items = document.getElementById("item-container");
-                const searchInput = document.getElementById("search-input");
-                const stored = sessionStorage.getItem("chatHTML") || "";
-                if (stored) {
-                    chatMessages.innerHTML = stored;
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-                if (!Step.socket || Step.socket.readyState === WebSocket.CLOSED) {
-                    console.log("new socket");
-                    Step.socket = new WebSocket("https://localhost:8443/back/ws/chat");
-                }
-                else {
-                    retrieveConnectedUsers(Step.socket);
-                }
-                handleSocket(Step.socket, chatMessages, items, this.username);
-                textarea.addEventListener('keydown', (e) => handleTextareaKeydown(e, form));
+                const items = document.getElementById("user-item-container");
+                const searchInput = document.getElementById("search-users-input");
+                handleContentStorage(chatMessages, this.username);
+                Step.socket = verifySocket(Step.socket);
+                handleSocketEvents(Step.socket, chatMessages, this.username);
+                textarea.addEventListener('keydown', e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), form.requestSubmit()));
                 form.addEventListener('submit', (e) => handleFormSubmit(e, textarea, Step.socket));
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value, this.username));
@@ -59,8 +49,11 @@ export default class Chat extends Step {
                 });
             }
             catch (error) {
+                console.log("Error loading chat content:", error);
                 appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
             }
         });
     }
 }
+// GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.
+// Problema con la recarga de la página, se actualizan los contactos demasiadas veces y parpadea la foto, el hover y la luz del chat. Ver si se puede solucioanr.

@@ -1,0 +1,12 @@
+<div id="chat-item"
+	class="flex items-center w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 transition-colors duration-400 cursor-pointer">
+	<img src="{{ chat-item-img }}" alt="{{ chat-item-img-username }}"
+		class="w-12 h-12 rounded-full mr-4 border border-gray-600" />
+	<div class="flex-1 min-w-0">
+		<div class="text-white font-semibold text-sm truncate">{{ chat-item-username}}</div>
+		<div class="flex justify-between items-center">
+			<div class="text-gray-400 text-sm truncate">{{ chat-item-message }}</div>
+			<div class="text-gray-500 text-xs ml-4 whitespace-nowrap flex-shrink-0">{{ chat-item-timestamp }}</div>
+		</div>
+	</div>
+</div>

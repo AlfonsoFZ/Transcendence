@@ -1,0 +1,100 @@
+import { handleUserInfo, updatePartnerStatus } from "./handleUserInfo.js";
+import { filterSearchUsers } from "./filterSearch.js";
+import { inputKeyword, setHtmlUsersConnected, htmlUsersConnected } from "./state.js";
+import { formatMsgTemplate, formatConnectedUsersTemplate, sortUsersAlphabetically } from "./formatContent.js";
+
+function handleSocketOpen(socket: WebSocket) {
+	socket.onopen = () => {
+		const handshake = {
+			type: 'handshake',
+			message: ''
+		};
+		socket.send(JSON.stringify(handshake));
+	}
+}
+
+async function handlePublicChatMsg(chatMessages: HTMLDivElement, data: any, name: string) {
+
+	const HtmlContent = await formatMsgTemplate(data, name);
+	let stored = sessionStorage.getItem("public-chat") || "";
+	stored += HtmlContent;
+	sessionStorage.setItem("public-chat", stored);
+	if (sessionStorage.getItem("current-room") === "") {
+		chatMessages.innerHTML = stored || "";
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+}
+
+async function handlePrivateChatMsg(chatMessages: HTMLDivElement, data: any, name: string) {
+
+	const HtmlContent = await formatMsgTemplate(data, name);
+	const privateChat = JSON.parse(sessionStorage.getItem("private-chat") || "{}");
+	let stored = privateChat[data.roomId] || "";
+	stored += HtmlContent || "";
+	privateChat[data.roomId] = stored || "";
+	sessionStorage.setItem("private-chat", JSON.stringify(privateChat));
+	if (sessionStorage.getItem("current-room") === data.roomId) {
+		chatMessages.innerHTML = stored || "";
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+}
+
+async function handleConnectedUsers(data: any) {
+
+	let HtmlContent = await formatConnectedUsersTemplate(data);
+	HtmlContent = sortUsersAlphabetically(HtmlContent);
+	setHtmlUsersConnected(HtmlContent);
+	filterSearchUsers(inputKeyword);
+}
+
+function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, name: string) {
+
+	socket.onmessage = async (event: MessageEvent) => {
+		const data = JSON.parse(event.data);
+		if (data.type === 'message') {
+			sessionStorage.setItem("JSONdata", JSON.stringify(data));
+			handlePublicChatMsg(chatMessages, data, name);
+		}
+		if (data.type === 'private') {
+			if (name === data.username) {
+				sessionStorage.setItem("JSONdata", JSON.stringify(data));
+			}
+			if (!data.message) {
+				handleUserInfo(chatMessages, data, name);
+			}
+			else {
+				handlePrivateChatMsg(chatMessages, data, name)
+			}
+		}
+		if (data.type === 'connectedUsers') {
+			sessionStorage.setItem("JSONusers", JSON.stringify(data));	
+			handleConnectedUsers(data);
+			if (sessionStorage.getItem("current-room") !== "") {
+				updatePartnerStatus();
+			}
+		}
+	}
+}
+
+function handleSocketClose(socket: WebSocket) {
+	socket.onclose = (event: CloseEvent) => {
+		console.log(`CLIENT: Connection closed - Code: ${event.code}`);
+		// throw new Error("WebSocket connection closed unexpectedly.");
+	}
+}
+
+function handleSocketError(socket: WebSocket) {
+	socket.onerror = (event) => {
+		console.error("CLIENT: WebSocket error:", event);
+		// throw new Error("WebSocket error occurred.");
+	}
+}
+
+export function handleSocketEvents(socket: WebSocket, chatMessages: HTMLDivElement, username: string): WebSocket {
+
+	handleSocketOpen(socket);
+	handleSocketMessage(socket, chatMessages, username);
+	handleSocketClose(socket);
+	handleSocketError(socket);
+	return socket;
+}

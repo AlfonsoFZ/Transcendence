@@ -1,3 +1,4 @@
+import { handlePrivateMsg } from "./handleSenders.js";
 import { showUserProfile } from "./handleUserProfile.js";
 import {openPrivateChat} from "./userProfileActions.js";
 

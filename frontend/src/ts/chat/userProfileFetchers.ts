@@ -26,6 +26,7 @@ export async function sendFriendRequest(userId: string): Promise<void> {
 
 export async function fetchUserData(userId: string) {
 	try {
+		console.log("userId = ", userId)
 		const response = await fetch(`https://localhost:8443/back/get_user_by_id/?id=${userId}`, {
 			method: "GET",
 			credentials: 'include',
