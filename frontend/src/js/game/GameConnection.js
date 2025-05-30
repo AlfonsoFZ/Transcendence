@@ -105,7 +105,6 @@ export class GameConnection {
             console.error("Cannot join game: connection not ready");
             return;
         }
-        this.game.setGameMode(mode);
         if (tournamentId)
             this.game.setTournamentId(tournamentId);
         const joinMsg = {

@@ -9,7 +9,6 @@ export class GameUI
 {
 	private	game: any;
 	public	controllers: GameControllers;
-	private selectedGameMode: string = '';
 
 	constructor(game: any)
 	{
@@ -17,14 +16,19 @@ export class GameUI
 		this.controllers = new GameControllers(game);
 	}
 
-	showOnly(divId: string) : void
+	showOnly(divId: string, displayStyle: string = "block") : void
 	{
 		const divIndex = [
 			'select-game',
 			'config-panel',
-			'game-canvas',
-			'game-results-overlay'
+			'game-container',
+			'game-results'
 		];
+		divIndex.forEach(id => {
+			const	checkDiv = document.getElementById(id);
+			if (checkDiv)
+				checkDiv.style.display = (id === divId) ? displayStyle : "none";
+		});
 	}
 
 	async initializeUI(appElement: HTMLElement): Promise<void>
@@ -49,26 +53,26 @@ export class GameUI
 	{
 		// Game mode buttons
 		document.getElementById('play-ai')?.addEventListener('click', () => {
-			this.selectedGameMode = '1vAI';
-			this.showConfigPanel('AI Game');
+			this.game.setGameMode('1vAI');
+			this.showOnly('config-panel');
 			this.controllers.setupControllers('1vAI');
 		});
 	
 		document.getElementById('play-1v1')?.addEventListener('click', () => {
-			this.selectedGameMode = '1v1';
-			this.showConfigPanel('Local 1v1');
+			this.game.setGameMode('1v1');
+			this.showOnly('config-panel');
 			this.controllers.setupControllers('1v1');
 		});
 		
 		document.getElementById('play-online')?.addEventListener('click', () => {
-			this.selectedGameMode = 'remote';
-			this.showConfigPanel('Online Game');
+			this.game.setGameMode('remote');
+			this.showOnly('config-panel');
 			this.controllers.setupControllers('remote');
 		});
 		
 		document.getElementById('play-tournament')?.addEventListener('click', () => {
-			this.selectedGameMode = 'tournament';
-			this.showConfigPanel('Tournament Game');
+			this.game.setGameMode('tournament');
+			this.showOnly('config-panel');
 			this.controllers.setupControllers('tournament');
 		});
 		
@@ -77,12 +81,12 @@ export class GameUI
 		
 		// Start game button
 		document.getElementById('start-game')?.addEventListener('click', () => {
-			this.launchGame(this.selectedGameMode);
+			this.launchGame(this.game.log.mode);
 		});
 	
 		// Back button - returns to lobby
 		document.getElementById('back-button')?.addEventListener('click', () => {
-			window.location.reload();
+			this.showOnly('select-game');
 		});
 	}
 	
@@ -128,23 +132,6 @@ export class GameUI
 		}
 	}
 	
-	/**
-	 * Set up and show the game configuration panel
-	 * @param modeTitle The title to display in the configuration panel
-	 */
-	private showConfigPanel(modeTitle: string): void
-	{
-		const configPanel = document.getElementById('config-panel');
-		const configTitle = document.getElementById('config-title');
-		const selectGameDiv = document.getElementById('select-game');
-		if (selectGameDiv)
-			selectGameDiv.style.display = 'none';
-		if (configTitle)
-			configTitle.textContent = `Select configuration for ${modeTitle}`;
-		if (configPanel)
-			configPanel.style.display = 'block';
-	}
-
 	launchGame(mode: string, tournamentId?: number): void 
 	{
 		if (!this.game.connection.socket || !this.game.connection.connectionStat)
@@ -156,16 +143,7 @@ export class GameUI
 		this.controllers.setupControllers(mode);
 		this.game.connection.joinGame(mode, tournamentId);
 	
-		const	selectGame = document.getElementById('select-game');
-		if (selectGame)
-			selectGame.style.display = "none";
-		const	gameDiv = document.getElementById('game-container');
-		if (gameDiv)
-			gameDiv.style.display = "block";
-		const	configPanel = document.getElementById('config-panel');
-		if (configPanel)
-			configPanel.style.display = "none";
-	
+		this.showOnly('game-container');
 		this.game.renderer.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 		if (this.game.renderer.canvas)
 			this.game.renderer.ctx = this.game.renderer.canvas.getContext('2d');
@@ -177,16 +155,8 @@ export class GameUI
 	 */
 	public showGameResults(gameData: GameData): void
 	{
-		console.log("Showing game results:", gameData);
-		
-		// Get the game results overlay element
-		const resultsContainer = document.getElementById('game-results');
-		if (!resultsContainer)
-		{
-			console.error("Game results container not found!");
-			return;
-		}
-		
+		console.log("GAME ENDED, LOG: ", this.game.log);
+
 		// Update the HTML content with actual game data logs
 		const winnerElement = document.getElementById('winner-name');
 		const scoreElement = document.getElementById('final-score');
@@ -205,18 +175,15 @@ export class GameUI
 		}
 		
 		// Show the results overlay
-		resultsContainer.style.display = "flex";
+		this.showOnly('game-results', 'flex');
 		// Add event listeners for the buttons (these need to be set each time)
 		document.getElementById('play-again-btn')?.addEventListener('click', () => {
-			if (resultsContainer)
-				resultsContainer.style.display = "none";
+			this.showOnly('game-container')
 			this.rematchGame();
 		});
 		
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
-			if (resultsContainer)
-				resultsContainer.style.display = "none";
-			window.location.reload();
+			this.showOnly('select-game');
 		});
 	}
 	

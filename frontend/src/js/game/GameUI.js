@@ -13,17 +13,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { GameControllers } from './GameControllers.js';
 export class GameUI {
     constructor(game) {
-        this.selectedGameMode = '';
         this.game = game;
         this.controllers = new GameControllers(game);
     }
-    showOnly(divId) {
+    showOnly(divId, displayStyle = "block") {
         const divIndex = [
             'select-game',
             'config-panel',
-            'game-canvas',
-            'game-results-overlay'
+            'game-container',
+            'game-results'
         ];
+        divIndex.forEach(id => {
+            const checkDiv = document.getElementById(id);
+            if (checkDiv)
+                checkDiv.style.display = (id === divId) ? displayStyle : "none";
+        });
     }
     initializeUI(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -45,34 +49,34 @@ export class GameUI {
         var _a, _b, _c, _d, _e, _f;
         // Game mode buttons
         (_a = document.getElementById('play-ai')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => {
-            this.selectedGameMode = '1vAI';
-            this.showConfigPanel('AI Game');
+            this.game.setGameMode('1vAI');
+            this.showOnly('config-panel');
             this.controllers.setupControllers('1vAI');
         });
         (_b = document.getElementById('play-1v1')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => {
-            this.selectedGameMode = '1v1';
-            this.showConfigPanel('Local 1v1');
+            this.game.setGameMode('1v1');
+            this.showOnly('config-panel');
             this.controllers.setupControllers('1v1');
         });
         (_c = document.getElementById('play-online')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => {
-            this.selectedGameMode = 'remote';
-            this.showConfigPanel('Online Game');
+            this.game.setGameMode('remote');
+            this.showOnly('config-panel');
             this.controllers.setupControllers('remote');
         });
         (_d = document.getElementById('play-tournament')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', () => {
-            this.selectedGameMode = 'tournament';
-            this.showConfigPanel('Tournament Game');
+            this.game.setGameMode('tournament');
+            this.showOnly('config-panel');
             this.controllers.setupControllers('tournament');
         });
         // Configuration panel elements
         this.setupConfigPanelListeners();
         // Start game button
         (_e = document.getElementById('start-game')) === null || _e === void 0 ? void 0 : _e.addEventListener('click', () => {
-            this.launchGame(this.selectedGameMode);
+            this.launchGame(this.game.log.mode);
         });
         // Back button - returns to lobby
         (_f = document.getElementById('back-button')) === null || _f === void 0 ? void 0 : _f.addEventListener('click', () => {
-            window.location.reload();
+            this.showOnly('select-game');
         });
     }
     /**
@@ -110,21 +114,6 @@ export class GameUI {
             });
         }
     }
-    /**
-     * Set up and show the game configuration panel
-     * @param modeTitle The title to display in the configuration panel
-     */
-    showConfigPanel(modeTitle) {
-        const configPanel = document.getElementById('config-panel');
-        const configTitle = document.getElementById('config-title');
-        const selectGameDiv = document.getElementById('select-game');
-        if (selectGameDiv)
-            selectGameDiv.style.display = 'none';
-        if (configTitle)
-            configTitle.textContent = `Select configuration for ${modeTitle}`;
-        if (configPanel)
-            configPanel.style.display = 'block';
-    }
     launchGame(mode, tournamentId) {
         if (!this.game.connection.socket || !this.game.connection.connectionStat) {
             console.error("Cannot join game: connection not ready");
@@ -133,15 +122,7 @@ export class GameUI {
         this.game.setGameConfig(this.game.gameConfig);
         this.controllers.setupControllers(mode);
         this.game.connection.joinGame(mode, tournamentId);
-        const selectGame = document.getElementById('select-game');
-        if (selectGame)
-            selectGame.style.display = "none";
-        const gameDiv = document.getElementById('game-container');
-        if (gameDiv)
-            gameDiv.style.display = "block";
-        const configPanel = document.getElementById('config-panel');
-        if (configPanel)
-            configPanel.style.display = "none";
+        this.showOnly('game-container');
         this.game.renderer.canvas = document.getElementById('game-canvas');
         if (this.game.renderer.canvas)
             this.game.renderer.ctx = this.game.renderer.canvas.getContext('2d');
@@ -152,13 +133,7 @@ export class GameUI {
      */
     showGameResults(gameData) {
         var _a, _b, _c, _d;
-        console.log("Showing game results:", gameData);
-        // Get the game results overlay element
-        const resultsContainer = document.getElementById('game-results');
-        if (!resultsContainer) {
-            console.error("Game results container not found!");
-            return;
-        }
+        console.log("GAME ENDED, LOG: ", this.game.log);
         // Update the HTML content with actual game data logs
         const winnerElement = document.getElementById('winner-name');
         const scoreElement = document.getElementById('final-score');
@@ -174,17 +149,14 @@ export class GameUI {
             durationElement.textContent = duration.toString();
         }
         // Show the results overlay
-        resultsContainer.style.display = "flex";
+        this.showOnly('game-results', 'flex');
         // Add event listeners for the buttons (these need to be set each time)
         (_c = document.getElementById('play-again-btn')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => {
-            if (resultsContainer)
-                resultsContainer.style.display = "none";
+            this.showOnly('game-container');
             this.rematchGame();
         });
         (_d = document.getElementById('return-lobby-btn')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', () => {
-            if (resultsContainer)
-                resultsContainer.style.display = "none";
-            window.location.reload();
+            this.showOnly('select-game');
         });
     }
     /**
