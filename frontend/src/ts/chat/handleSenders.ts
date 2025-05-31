@@ -1,4 +1,22 @@
 
+export async function getUserId(username: string): Promise<string> {
+
+	const id = await fetch("https://localhost:8443/back/getIdByUsername", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			username: username
+		}),
+	});
+	if (!id.ok) {
+		throw new Error("Failed to fetch user ID");
+	}
+	return id.text();
+}
+
+
 export function retrieveConnectedUsers(socket: WebSocket) {
 
 	const message = {
@@ -13,9 +31,7 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	e.preventDefault();
 	let message = {};
 	const currentRoom = sessionStorage.getItem("current-room") || "";
-	// const msg = textarea.value;
 	const msg = textarea.value.trim();
-	// const msg = textarea.value.replace(/^[ \t]+|[ \t]+$/g, '');
 	
 	if (msg) {
 		if (!currentRoom) {
@@ -36,7 +52,7 @@ export function handleFormSubmit(e: SubmitEvent, textarea: HTMLTextAreaElement, 
 	}
 }
 
-export function handlePrivateMsg(e:MouseEvent, socket:WebSocket) {
+export function handlePrivateMsg(e: MouseEvent, socket: WebSocket) {
 
 	const target = e.target as HTMLElement;
 	const userDiv = target.closest('[data-id]') as HTMLElement | null;
@@ -48,4 +64,25 @@ export function handlePrivateMsg(e:MouseEvent, socket:WebSocket) {
 		id: id,
 	};
 	socket.send(JSON.stringify(message));
+}
+
+export function showPrivateChat(e: MouseEvent, socket: WebSocket, userId: string) {
+
+	const target = e.target as HTMLElement;
+	const chatDiv = target.closest('[id^="chat-item-"]') as HTMLElement | null;
+	if (!chatDiv)
+		return;
+	const roomId = (chatDiv.id).replace("chat-item-", "");
+	const currentRoom = sessionStorage.getItem("current-room") || "";
+
+	if (currentRoom !== roomId) {
+		const [id1, id2] = roomId.split("-");
+		const id = id1 === userId ? id2 : id1;
+		console.log("id", id)
+		const message = {
+			type: 'private',
+			id: id,
+		};
+		socket.send(JSON.stringify(message));
+	}
 }

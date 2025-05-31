@@ -38,6 +38,50 @@ export function formatMsgTemplate(data, name) {
         return htmlText;
     });
 }
+export function formatRecentChatTemplate(recentChats, data, name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const chats = sessionStorage.getItem("recent-chats") || "";
+        const container = document.createElement('div');
+        container.innerHTML = chats;
+        const roomId = data.roomId;
+        const existingChat = container.querySelector(`#chat-item-${roomId}`);
+        const username = (name === data.username ? data.partnerUsername : data.username).toString();
+        const imagePath = (name === data.username ? data.partnerImagePath : data.imagePath).toString();
+        if (existingChat) {
+            const messageDiv = existingChat.querySelector(".text-gray-400");
+            if (messageDiv) {
+                messageDiv.textContent = data.message;
+            }
+            const timeDiv = existingChat.querySelector(".text-gray-500");
+            if (timeDiv) {
+                timeDiv.textContent = data.timeStamp;
+            }
+            if (container.firstElementChild !== existingChat) {
+                container.removeChild(existingChat);
+                container.insertBefore(existingChat, container.firstChild);
+            }
+        }
+        else {
+            const htmlContent = yield fetch("../../html/chat/recentChatItem.html");
+            let htmlText = yield htmlContent.text();
+            htmlText = htmlText
+                .replace("{{ roomId }}", roomId)
+                .replace("{{ username }}", username)
+                .replace("{{ imagePath }}", imagePath)
+                .replace("{{ usernameImage }}", username)
+                .replace("{{ lastLine }}", data.message.toString())
+                .replace("{{ timeStamp }}", data.timeStamp.toString());
+            const tmp = document.createElement("div");
+            tmp.innerHTML = htmlText;
+            const newChatItem = tmp.firstElementChild;
+            if (newChatItem) {
+                container.insertBefore(newChatItem, container.firstChild);
+            }
+        }
+        recentChats.innerHTML = container.innerHTML || "";
+        sessionStorage.setItem("recent-chats", container.innerHTML);
+    });
+}
 export function formatConnectedUsersTemplate(data) {
     return __awaiter(this, void 0, void 0, function* () {
         let htmlText = '';

@@ -29,8 +29,8 @@ function sendJSON(user, partner, message, roomId) {
 	if (!partner) {
 		const response = {
 			type: "message",
-			imagePath: user.avatarPath,
 			username: user.username,
+			imagePath: user.avatarPath,
 			message: message,
 			timeStamp: getTimeStamp()
 		}
@@ -41,12 +41,14 @@ function sendJSON(user, partner, message, roomId) {
 	else {
 		const response = {
 			type: "private",
-			imagePath: user.avatarPath,
+			userId: user.id,
 			username: user.username,
+			imagePath: user.avatarPath,
+			partnerId: partner.id,
+			partnerUsername: partner.username,
+			partnerImagePath: partner.avatarPath,
 			message: message || null,
 			timeStamp: getTimeStamp(),
-			partnerImagePath: partner.avatarPath,
-			partnerUsername: partner.username,
 			roomId: roomId,
 		}
 		// Maybe send to differente messages can be an idea
@@ -119,7 +121,7 @@ async function handlePrivate(user, data) {
 			const partnerId = parseInt(data.id, 10);
 			if (user.id !== partnerId) {
 				const [a, b] = [user.id, partnerId].sort((x, y) => x - y);
-				const roomId = `${a}:${b}`;
+				const roomId = `${a}-${b}`;
 				if (!rooms.has(roomId)) {
 					rooms.set(roomId, {
 						userSocket: clients.get(user.id),
@@ -131,7 +133,7 @@ async function handlePrivate(user, data) {
 			}
 		}
 		else {
-			const ids = data.roomId.split(":");
+			const ids = data.roomId.split("-");
 			if (parseInt(ids[0], 10) === user.id) {
 				partner = await crud.user.getUserById(parseInt(ids[1], 10));
 			}

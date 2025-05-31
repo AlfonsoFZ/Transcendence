@@ -1,7 +1,7 @@
 import { handleUserInfo, updatePartnerStatus } from "./handleUserInfo.js";
 import { filterSearchUsers } from "./filterSearch.js";
 import { inputKeyword, setHtmlUsersConnected } from "./state.js";
-import { formatMsgTemplate, formatConnectedUsersTemplate, sortUsersAlphabetically } from "./formatContent.js";
+import { formatMsgTemplate, formatRecentChatTemplate, formatConnectedUsersTemplate, sortUsersAlphabetically } from "./formatContent.js";
 
 function handleSocketOpen(socket: WebSocket) {
 	socket.onopen = () => {
@@ -25,9 +25,10 @@ async function handlePublicChatMsg(chatMessages: HTMLDivElement, data: any, name
 	}
 }
 
-async function handlePrivateChatMsg(chatMessages: HTMLDivElement, data: any, name: string) {
+async function handlePrivateChatMsg(chatMessages: HTMLDivElement, recentChats: HTMLDivElement, data: any, name: string) {
 
 	const HtmlContent = await formatMsgTemplate(data, name);
+	await formatRecentChatTemplate(recentChats, data, name);
 	const privateChat = JSON.parse(sessionStorage.getItem("private-chat") || "{}");
 	let stored = privateChat[data.roomId] || "";
 	stored += HtmlContent || "";
@@ -47,7 +48,7 @@ async function handleConnectedUsers(data: any) {
 	filterSearchUsers(inputKeyword);
 }
 
-function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, name: string) {
+function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, recentChats: HTMLDivElement, name: string) {
 
 	socket.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
@@ -63,7 +64,7 @@ function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, na
 				handleUserInfo(chatMessages, data, name);
 			}
 			else {
-				handlePrivateChatMsg(chatMessages, data, name)
+				handlePrivateChatMsg(chatMessages, recentChats, data, name)
 			}
 		}
 		if (data.type === 'connectedUsers') {
@@ -90,10 +91,10 @@ function handleSocketError(socket: WebSocket) {
 	}
 }
 
-export function handleSocketEvents(socket: WebSocket, chatMessages: HTMLDivElement, username: string): WebSocket {
+export function handleSocketEvents(socket: WebSocket, chatMessages: HTMLDivElement, recentChats: HTMLDivElement, username: string): WebSocket {
 
 	handleSocketOpen(socket);
-	handleSocketMessage(socket, chatMessages, username);
+	handleSocketMessage(socket, chatMessages, recentChats, username);
 	handleSocketClose(socket);
 	handleSocketError(socket);
 	return socket;

@@ -12,7 +12,6 @@ function formatTextToHtml(text: string) {
 	return htmlText;
 }
 
-
 export async function formatMsgTemplate(data: any, name: string): Promise<string> {
 
 	let htmlContent;
@@ -31,6 +30,52 @@ export async function formatMsgTemplate(data: any, name: string): Promise<string
 		.replace("{{ imagePath }}", data.imagePath.toString())
 		.replace("{{ usernameImage }}", data.username.toString());
 	return htmlText;
+}
+
+export async function formatRecentChatTemplate(recentChats: HTMLDivElement, data: any, name: string) {
+
+	const chats = sessionStorage.getItem("recent-chats") || "";
+	const container = document.createElement('div');
+	container.innerHTML = chats;
+	const roomId = data.roomId;
+	const existingChat = container.querySelector(`#chat-item-${roomId}`);
+	const username = (name === data.username ? data.partnerUsername : data.username).toString();
+	const imagePath = (name === data.username ? data.partnerImagePath : data.imagePath).toString();
+	
+	if (existingChat) {
+		const messageDiv = existingChat.querySelector(".text-gray-400");
+		if (messageDiv) {
+			messageDiv!.textContent = data.message;
+		}
+		const timeDiv = existingChat.querySelector(".text-gray-500");
+		if (timeDiv) {
+			timeDiv!.textContent = data.timeStamp;
+		}
+		if (container.firstElementChild !== existingChat) {
+			container.removeChild(existingChat);
+			container.insertBefore(existingChat, container.firstChild);
+		}
+	}
+	else {
+		const htmlContent = await fetch("../../html/chat/recentChatItem.html");
+		let htmlText = await htmlContent.text();
+		htmlText = htmlText
+			.replace("{{ roomId }}", roomId)
+			.replace("{{ username }}", username)
+			.replace("{{ imagePath }}", imagePath)
+			.replace("{{ usernameImage }}", username)
+			.replace("{{ lastLine }}", data.message.toString())
+			.replace("{{ timeStamp }}", data.timeStamp.toString());
+
+		const tmp = document.createElement("div");
+		tmp.innerHTML = htmlText;
+		const newChatItem = tmp.firstElementChild;
+		if (newChatItem) {
+			container.insertBefore(newChatItem, container.firstChild);
+		}
+	}
+	recentChats.innerHTML = container.innerHTML || "";
+	sessionStorage.setItem("recent-chats", container.innerHTML);
 }
 
 export async function formatConnectedUsersTemplate(data: any): Promise<string> {

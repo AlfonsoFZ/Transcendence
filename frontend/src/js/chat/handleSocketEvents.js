@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { handleUserInfo, updatePartnerStatus } from "./handleUserInfo.js";
 import { filterSearchUsers } from "./filterSearch.js";
 import { inputKeyword, setHtmlUsersConnected } from "./state.js";
-import { formatMsgTemplate, formatConnectedUsersTemplate, sortUsersAlphabetically } from "./formatContent.js";
+import { formatMsgTemplate, formatRecentChatTemplate, formatConnectedUsersTemplate, sortUsersAlphabetically } from "./formatContent.js";
 function handleSocketOpen(socket) {
     socket.onopen = () => {
         const handshake = {
@@ -32,9 +32,10 @@ function handlePublicChatMsg(chatMessages, data, name) {
         }
     });
 }
-function handlePrivateChatMsg(chatMessages, data, name) {
+function handlePrivateChatMsg(chatMessages, recentChats, data, name) {
     return __awaiter(this, void 0, void 0, function* () {
         const HtmlContent = yield formatMsgTemplate(data, name);
+        yield formatRecentChatTemplate(recentChats, data, name);
         const privateChat = JSON.parse(sessionStorage.getItem("private-chat") || "{}");
         let stored = privateChat[data.roomId] || "";
         stored += HtmlContent || "";
@@ -54,7 +55,7 @@ function handleConnectedUsers(data) {
         filterSearchUsers(inputKeyword);
     });
 }
-function handleSocketMessage(socket, chatMessages, name) {
+function handleSocketMessage(socket, chatMessages, recentChats, name) {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
         if (data.type === 'message') {
@@ -69,7 +70,7 @@ function handleSocketMessage(socket, chatMessages, name) {
                 handleUserInfo(chatMessages, data, name);
             }
             else {
-                handlePrivateChatMsg(chatMessages, data, name);
+                handlePrivateChatMsg(chatMessages, recentChats, data, name);
             }
         }
         if (data.type === 'connectedUsers') {
@@ -93,9 +94,9 @@ function handleSocketError(socket) {
         // throw new Error("WebSocket error occurred.");
     };
 }
-export function handleSocketEvents(socket, chatMessages, username) {
+export function handleSocketEvents(socket, chatMessages, recentChats, username) {
     handleSocketOpen(socket);
-    handleSocketMessage(socket, chatMessages, username);
+    handleSocketMessage(socket, chatMessages, recentChats, username);
     handleSocketClose(socket);
     handleSocketError(socket);
     return socket;
