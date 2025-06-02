@@ -40,7 +40,7 @@ export default class Chat extends Step {
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && e.preventDefault());
                 searchInput.addEventListener('input', () => filterSearchUsers(searchInput.value));
                 items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket));
-                items.addEventListener("click", (event) => {
+                items.addEventListener("click", (event) => __awaiter(this, void 0, void 0, function* () {
                     var _a;
                     const target = event.target;
                     const userItem = target.closest(".item");
@@ -48,10 +48,12 @@ export default class Chat extends Step {
                         return;
                     const usernameSpan = userItem.querySelector("span.text-sm");
                     const clickedUsername = (_a = usernameSpan === null || usernameSpan === void 0 ? void 0 : usernameSpan.textContent) === null || _a === void 0 ? void 0 : _a.trim();
+                    const userId = yield getUserId(this.username);
+                    console.log("Clicked user:", clickedUsername, "User ID:", userId);
                     if (clickedUsername && clickedUsername !== this.username) {
-                        showUserOptionsMenu(userItem, event);
+                        showUserOptionsMenu(userItem, event, Step.socket, userId);
                     }
-                });
+                }));
             }
             catch (error) {
                 console.log("Error loading chat content:", error);
@@ -59,6 +61,22 @@ export default class Chat extends Step {
             }
         });
     }
+}
+function getUserId(username) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch(`https://localhost:8443/back/get_user_by_username/?username=${encodeURIComponent(username)}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (!response.ok) {
+            throw new Error("No se pudo obtener el userId para el username: " + username);
+        }
+        const data = yield response.json();
+        return data.id; // Ajusta si tu backend responde con otro campo
+    });
 }
 // GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.
 // Problema con la recarga de la página, se actualizan los contactos demasiadas veces y parpadea la foto, el hover y la luz del chat. Ver si se puede solucioanr.

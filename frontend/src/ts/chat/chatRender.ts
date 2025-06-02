@@ -37,16 +37,18 @@ export default class Chat extends Step {
 
 
 
-				items.addEventListener("click", (event) => {
+				items.addEventListener("click", async (event) => {
 					const target = event.target as HTMLElement;
 					const userItem = target.closest(".item") as HTMLDivElement;
 					if (!userItem) return;
 
 					const usernameSpan = userItem.querySelector("span.text-sm");
 					const clickedUsername = usernameSpan?.textContent?.trim();
+					const userId = await getUserId(this.username!);
+					console.log("Clicked user:", clickedUsername, "User ID:", userId);
 
 					if (clickedUsername && clickedUsername !== this.username) {
-						showUserOptionsMenu(userItem, event as MouseEvent);
+						showUserOptionsMenu(userItem, event as MouseEvent, Step.socket!, userId);
 					}
 				});
 			}
@@ -57,6 +59,20 @@ export default class Chat extends Step {
 		}
 }
 
+async function getUserId(username: string): Promise<string> {
+    const response = await fetch(`https://localhost:8443/back/get_user_by_username/?username=${encodeURIComponent(username)}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (!response.ok) {
+        throw new Error("No se pudo obtener el userId para el username: " + username);
+    }
+    const data = await response.json();
+    return data.id; // Ajusta si tu backend responde con otro campo
+}
 // GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.
 
 // Problema con la recarga de la página, se actualizan los contactos demasiadas veces y parpadea la foto, el hover y la luz del chat. Ver si se puede solucioanr.
