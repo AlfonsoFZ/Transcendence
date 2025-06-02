@@ -40,7 +40,6 @@ export default class Chat extends Step {
 			items.addEventListener('dblclick', (e) => handlePrivateMsg(e, Step.socket!));
 			recentChats.addEventListener('click', (e) => showPrivateChat(e, Step.socket!, recentChats, userId));
 
-
 			items.addEventListener("click", (event) => {
 				const target = event.target as HTMLElement;
 				const userItem = target.closest(".item") as HTMLDivElement;

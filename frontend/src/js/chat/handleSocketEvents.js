@@ -35,7 +35,7 @@ function handlePublicChatMsg(chatMessages, data, name) {
 }
 function handlePrivateChatMsg(chatMessages, recentChats, data, name) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (name === data.partnerUsername && sessionStorage.getItem("current-room") !== data.roomId) {
+        if (name === data.partnerUsername && (sessionStorage.getItem("current-room") !== data.roomId || sessionStorage.getItem("current-view") !== "Chat")) {
             soundNotification();
         }
         if (name === data.partnerUsername && sessionStorage.getItem("current-view") !== "Chat") {

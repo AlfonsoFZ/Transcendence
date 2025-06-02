@@ -1,7 +1,7 @@
 
 export function soundNotification() {
-	const audio = new Audio("../../sounds/privateNotification.mp3");
-	audio.volume = 1.0;
+	const audio = new Audio("../../sounds/notification.mp3");
+	audio.volume = 0.3;
 	audio.play().catch(error => {
 		console.error("Error playing notification sound:", error);
 	});

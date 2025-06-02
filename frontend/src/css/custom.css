@@ -159,7 +159,7 @@ body {
 		}
 
 		50% {
-			background-color: rgb(240, 121, 42);
+			background-color: rgb(255, 186, 0);
 		}
 	}
 
@@ -183,6 +183,6 @@ body {
 	  }
 	  
 	  .blink {
-		animation: softBlink 2s ease-in-out infinite;
+		animation: softBlink 1.5s ease-in-out infinite;
 	  }
 }

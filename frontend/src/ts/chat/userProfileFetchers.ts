@@ -22,8 +22,6 @@ export async function sendFriendRequest(userId: string): Promise<void> {
 	}
 }
 
-
-
 export async function fetchUserData(userId: string) {
 	try {
 		console.log("userId = ", userId)

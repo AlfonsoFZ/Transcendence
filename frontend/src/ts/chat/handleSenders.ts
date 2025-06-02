@@ -17,7 +17,6 @@ export async function getUserId(username: string): Promise<string> {
 	return id.text();
 }
 
-
 export function retrieveConnectedUsers(socket: WebSocket) {
 
 	const message = {

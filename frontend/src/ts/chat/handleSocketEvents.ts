@@ -28,7 +28,7 @@ async function handlePublicChatMsg(chatMessages: HTMLDivElement, data: any, name
 
 async function handlePrivateChatMsg(chatMessages: HTMLDivElement, recentChats: HTMLDivElement, data: any, name: string) {
 
-	if (name === data.partnerUsername && sessionStorage.getItem("current-room") !== data.roomId) {
+	if (name === data.partnerUsername && (sessionStorage.getItem("current-room") !== data.roomId || sessionStorage.getItem("current-view") !== "Chat")) {
 		soundNotification();
 	}
 	if (name === data.partnerUsername && sessionStorage.getItem("current-view") !== "Chat") {
