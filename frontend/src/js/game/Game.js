@@ -24,7 +24,10 @@ export default class Game extends Step {
         this.connection = new GameConnection(this);
         this.renderer = new GameRender(this);
         this.ui = new GameUI(this);
+        this.playerDataGetter = null;
+        this.connection.parseUserInfo(null);
         this.log = {
+            id: "game " + Date.now(),
             mode: '',
             player1: null,
             player2: null,
@@ -32,7 +35,8 @@ export default class Game extends Step {
             config: undefined,
             result: { winner: '', loser: '', score: [0, 0] },
             duration: 0,
-            tournamentId: null
+            tournamentId: null,
+            readyState: false
         };
     }
     render(appElement) {
@@ -62,7 +66,11 @@ export default class Game extends Step {
      * @param playerKey 'player1' or 'player2'
      * @param playerData Player data object
      */
-    setPlayerInfo(playerKey, playerData) {
+    setPlayerInfo(playerKey, data = null) {
+        this.connection.parseUserInfo(data);
+        this.log[playerKey] = this.playerDataGetter;
+    }
+    setTempPlayerInfo(playerKey, playerData) {
         this.log[playerKey] = playerData;
     }
     /**

@@ -6,18 +6,19 @@ import { GameConnection } from './GameConnection.js';
 import { GameRender } from './GameRender.js';
 import { GameUI } from './GameUI.js';
 import { Step } from "../spa/stepRender.js";
-import { GameData, GameConfig} from './types.js';
+import { GameData, GameConfig, GamePlayer} from './types.js';
 
 // Default container ID (must match your HTML)
 const DEFAULT_CONTAINER_ID = "game-container"; 
 
 export default class Game extends Step
 {
-	protected connection: GameConnection;
-	protected renderer: GameRender;
-	protected ui: GameUI;
-	protected log: GameData;
-	protected gameConfig: GameConfig = {scoreLimit: 5, difficulty: 'medium'};
+	protected	connection: GameConnection;
+	protected	renderer: GameRender;
+	protected	ui: GameUI;
+	protected	log: GameData;
+	protected	gameConfig: GameConfig = {scoreLimit: 5, difficulty: 'medium'};
+	protected	playerDataGetter: GamePlayer | null;
 
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
 	{
@@ -26,7 +27,10 @@ export default class Game extends Step
 		this.connection = new GameConnection(this);
 		this.renderer = new GameRender(this);
 		this.ui = new GameUI(this);
+		this.playerDataGetter = null;
+		this.connection.parseUserInfo(null);
 		this.log = {
+			id: "game " + Date.now(),
 			mode: '',
 			player1: null,
 			player2: null,
@@ -34,7 +38,8 @@ export default class Game extends Step
 			config: undefined,
 			result: {winner: '', loser: '', score: [0,0]},
 			duration: 0,
-			tournamentId: null
+			tournamentId: null,
+			readyState: false
 		};
 	}
 
@@ -69,7 +74,13 @@ export default class Game extends Step
 	 * @param playerKey 'player1' or 'player2'
 	 * @param playerData Player data object
 	 */
-	public setPlayerInfo(playerKey: 'player1' | 'player2', playerData: any): void
+	public setPlayerInfo(playerKey: 'player1' | 'player2', data: {email: string, password: string} | null = null): void
+	{
+		this.connection.parseUserInfo(data);
+		this.log[playerKey] = this.playerDataGetter;
+	}
+
+	public setTempPlayerInfo(playerKey: 'player1' | 'player2', playerData: GamePlayer): void
 	{
 		this.log[playerKey] = playerData;
 	}

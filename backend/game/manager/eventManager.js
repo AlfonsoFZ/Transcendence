@@ -3,7 +3,7 @@
  * Functions to set up the socket event listeners/handlers when connection is established
  */
 import { extractUserFromToken } from "../../auth/token.js";
-import { handleJoinGame, handlePlayerInput, handleLeaveGame } from "./messageManager.js";
+import { handleJoinGame, handlePlayerInput, handleLeaveGame, handlePlayerInfo } from "./messageManager.js";
 export const gamesList = new Map();
 export const clients = new Map();
 
@@ -97,6 +97,9 @@ export function	messageManager(client, connection)
 					break ;
 				case 'PING':
 					connection.send(JSON.stringify({ type: 'PONG' }));
+					break ;
+				case 'GET_USER':
+					handlePlayerInfo(client, data);
 					break ;
 				default:
 					console.log(`Unknown message type: ${data.type}`);

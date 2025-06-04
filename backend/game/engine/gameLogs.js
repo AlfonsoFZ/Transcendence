@@ -2,8 +2,6 @@
  * gameLogs.js file to gather game logs and CRUD DB related methods
  */
 
-import { crud } from '../../crud/crud.js';
-
 // Method to finalize the game and prepare data for storage
 export function finalizeGame()
 {
@@ -41,24 +39,4 @@ export function getGamelogData()
 		duration: this.metadata.duration,
 		tournamentId: this.metadata.tournamentId
 	};
-}
-
-// Function to save game data to database using the existing CRUD methods
-export async function saveGameToDatabase(gameData)
-{
-	try
-	{
-		await crud.gamelog.createGamelog(
-			gameData.user1,
-			gameData.user2, 
-			gameData.winner,
-			gameData.loser,
-			gameData.duration,
-			gameData.tournamentId
-		);
-		console.log("Game saved to database successfully");
-	}
-	catch (error) {
-		console.error("Failed to save game to database:", error);
-	}
 }

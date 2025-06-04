@@ -127,3 +127,49 @@ export function handleRestartGame(client, data)
 		config: config
 	});
 }
+
+
+export async function	handlePlayerInfo(client, data)
+{
+	let 	user = null;
+	if (data.mode && data.mode === 'local')
+	{
+		user = {
+			id: client.user.id,
+			username: client.user.username,
+			tournamentUsername: client.user.tournamentUsername,
+			email: client.user.email,
+			avatarPath: client.user.avatarPath
+		};
+	}
+	else if (data.mode && data.mode === 'external' && data.email)
+	{
+		try
+		{
+			const response = await fetch(`https://localhost:8443/back/get_user_by_email/?email=${encodeURIComponent(data.email)}`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			});
+			if (response.ok)
+				user = await response.json();
+			else
+			{
+				const result = await response.json();
+				console.log(`Error: ${result.message || result.error}`);
+				user = null;
+				return ;
+			}
+		}
+		catch (error){
+			console.error("Error while fetching user by email:", error);
+		}
+	}
+	client.connection.send(JSON.stringify({
+			type: 'USER_INFO',
+			mode: data.mode,
+			user: user
+	}));
+}

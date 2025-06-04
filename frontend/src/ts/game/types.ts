@@ -14,12 +14,12 @@ export interface    GameState
 }
 
 // GameData refers later to gameLogs on backend
-// TODO: Implement GameID - join, rematch... 
 export interface	GameData
 {
+	id: string;
 	mode: string;
-	player1: any;
-	player2: any;
+	player1?: GamePlayer | null;
+	player2?: GamePlayer | null;
 	startTime: number;
 	config?: GameConfig;
 	result?: {
@@ -29,6 +29,7 @@ export interface	GameData
 	};
 	duration?: number;
 	tournamentId?: number | null;
+	readyState: boolean;
 }
 
 // Basic game configuration settings, may need to add more later
@@ -38,3 +39,13 @@ export interface	GameConfig
 	difficulty: 'easy' | 'medium' | 'hard';
 }
 
+// Player data object, not using it much in front yet, 
+// but keeping it similar to backend just in case
+export interface GamePlayer
+{
+	id: string;
+	username: string;
+	tournamentUsername: string;
+	email: string;
+	avatarPath: string;
+}

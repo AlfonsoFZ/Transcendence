@@ -22,7 +22,8 @@ export class GameUI
 			'select-game',
 			'config-panel',
 			'game-container',
-			'game-results'
+			'game-results',
+			'player2-login-panel'
 		];
 		divIndex.forEach(id => {
 			const	checkDiv = document.getElementById(id);
@@ -52,28 +53,26 @@ export class GameUI
 	setupEventListeners()
 	{
 		// Game mode buttons
+		document.getElementById('play-1v1')?.addEventListener('click', () => {
+			this.game.setPlayerInfo('player1', null);
+			this.game.setGameMode('1v1');
+			this.showOnly('player2-login-panel');
+			this.setupPlayer2LoginPanel();
+			this.controllers.setupControllers('1v1');
+		});
+		
 		document.getElementById('play-ai')?.addEventListener('click', () => {
+			this.game.setPlayerInfo('player1', null);
 			this.game.setGameMode('1vAI');
 			this.showOnly('config-panel');
 			this.controllers.setupControllers('1vAI');
 		});
 	
-		document.getElementById('play-1v1')?.addEventListener('click', () => {
-			this.game.setGameMode('1v1');
-			this.showOnly('config-panel');
-			this.controllers.setupControllers('1v1');
-		});
-		
 		document.getElementById('play-online')?.addEventListener('click', () => {
+			// Lobby + diff player entry assignation
 			this.game.setGameMode('remote');
 			this.showOnly('config-panel');
 			this.controllers.setupControllers('remote');
-		});
-		
-		document.getElementById('play-tournament')?.addEventListener('click', () => {
-			this.game.setGameMode('tournament');
-			this.showOnly('config-panel');
-			this.controllers.setupControllers('tournament');
 		});
 		
 		// Configuration panel elements
@@ -132,6 +131,57 @@ export class GameUI
 		}
 	}
 	
+	private setupPlayer2LoginPanel(): void
+	{
+		const	loginPanel = document.getElementById('player2-login-panel');
+		const	configPanel = document.getElementById('config-panel');
+		const	loginForm = document.getElementById('player2-login-form') as HTMLFormElement;
+		const	guestBtn = document.getElementById('player2-guest-btn');
+		const	errorMsg = document.getElementById('player2-login-error');
+
+		if (!loginPanel || !loginForm || !guestBtn || !configPanel)
+			return;
+
+		// Handle registered user login
+		loginForm.onsubmit = async (e) => {
+			e.preventDefault();
+			const email = (document.getElementById('player2-email') as HTMLInputElement).value;
+			const password = (document.getElementById('player2-password') as HTMLInputElement).value;
+			const success = await this.game.connection.checkPlayer({ email, password });
+			
+			if (!email || !password)
+			{
+				if (errorMsg)
+					errorMsg.textContent = 'Please enter both email and password';
+				return;
+			}
+
+			if (success)
+			{
+				this.game.setPlayerInfo('player2', { email, password });
+				this.showOnly('config-panel');
+				if (errorMsg) errorMsg.textContent = '';
+			}
+			else
+				if (errorMsg) errorMsg.textContent = 'Invalid email or password. Please try again';
+		};
+
+		// Handle guest
+		guestBtn.onclick = () => {
+			const guestUser = {
+				id: `guest-${Date.now()}`,
+				username: 'Guest',
+				tournamentUsername: 'Guest',
+				email: 'guest@example.com',
+				avatarPath: '/images/default-avatar.png'
+			};
+			this.game.setTempPlayerInfo('player2', guestUser);
+			this.showOnly('config-panel');
+			if (errorMsg)
+				errorMsg.textContent = '';
+		};
+	}
+
 	launchGame(mode: string, tournamentId?: number): void 
 	{
 		if (!this.game.connection.socket || !this.game.connection.connectionStat)
@@ -155,8 +205,6 @@ export class GameUI
 	 */
 	public showGameResults(gameData: GameData): void
 	{
-		console.log("GAME ENDED, LOG: ", this.game.log);
-
 		// Update the HTML content with actual game data logs
 		const winnerElement = document.getElementById('winner-name');
 		const scoreElement = document.getElementById('final-score');

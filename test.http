@@ -61,7 +61,7 @@ GET https://localhost:8443/back/get_users  HTTP/1.1
 //	    La siguiente petición Obtiene el usuario por username:    //
 // ***************************************************************//
 
-GET https://localhost:8443/back/get_user_by_username/?username=pepe@gmail.com  HTTP/1.1
+GET https://localhost:8443/back/get_user_by_username/	  HTTP/1.1
 Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBlcGU0MEBnbWFpbC5jb20iLCJpYXQiOjE3NDM5MzU2NDksImV4cCI6MTc0MzkzOTI0OX0.2E92SxCN2sF2XPYUEFjtetkQFbHozaYb20gFHJANOoY
 
 

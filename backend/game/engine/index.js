@@ -8,7 +8,7 @@ import { resetState, update, checkScoring, endGame, setDifficulty } from './game
 import { resetBall, checkPaddleCollision } from './physics.js';
 import { addPlayer, removePlayer, getPlayerView, movePlayerPaddle, startAI, setPlayerDetails } from './players.js';
 import { broadcastState, getConnections } from './network.js';
-import { finalizeGame, getGamelogData, saveGameToDatabase } from './gameLogs.js';
+import { finalizeGame, getGamelogData } from './gameLogs.js';
 
 // From gameState.js
 GameSession.prototype.resetState = resetState;
@@ -36,6 +36,5 @@ GameSession.prototype.broadcastState = broadcastState;
 // From gameLogs.js
 GameSession.prototype.finalizeGame = finalizeGame;
 GameSession.prototype.getGamelogData = getGamelogData;
-GameSession.prototype.saveGameToDatabase = saveGameToDatabase;
 
 export default GameSession;

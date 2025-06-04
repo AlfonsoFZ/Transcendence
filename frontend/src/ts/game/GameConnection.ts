@@ -39,21 +39,16 @@ export class GameConnection
 					console.log("Parsed server message:", data);
 					switch(data.type)
 					{
+						case 'USER_INFO':
+							this.game.playerDataGetter = data.user;
+							break ;
 						case 'GAME_INIT':
 							console.log("Game initialized:", data);
-							// if (data.playerNumber)
-							// 	this.playerNumber = data.playerNumber;
-							// if (data.config)
-							// 	console.log("Server confirmed game config:", data.config);
 							break ;
 						case 'GAME_STATE':
 							this.game.renderer.renderGameState(data.state);
 							break ;
 						case 'GAME_START':
-							// if (data.players && data.players.player1)
-							// 	this.game.setPlayerInfo('player1', data.players.player1);
-							// if (data.players && data.players.player2)
-							// 	this.game.setPlayerInfo('player2', data.players.player2);
 							console.log("Game started:", data);
 							this.game.startGameSession();
 							break ;
@@ -119,6 +114,58 @@ export class GameConnection
 		this.socket.send(JSON.stringify(joinMsg));
 	}
 
+	/**
+	 * Aux method to parse user main data from database, will use API endpoint
+	 * If email and pass are passed (through setPlayerInfo) will change mode for API message
+	 * The GET_USER endpoint triggers backend method that will store user object info into
+	 * 	this.game.playerDataGetter (aux attribute for later setting player details on game logs)
+	 */
+	public	async parseUserInfo(data: {email: string, password: string} | null)
+	{
+		let	mode = 'local';
+		if (data)
+		{
+			try
+			{
+				if (await this.checkPlayer(data))
+					mode = 'external';
+			}
+			catch (error){
+				console.error("Error while checking external player:", error);
+			}
+		}
+		this.socket?.send(JSON.stringify({
+			type: 'GET_USER',
+			mode: mode,
+			email: data?.email
+		}));
+	}
+
+	public async	checkPlayer(data: {email: string, password: string})
+	{
+		try
+		{
+			const response = await fetch("https://localhost:8443/back/verify_user", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			});
+			if (!response.ok)
+			{
+				const result = await response.json();
+				console.log(`Error: ${result.message}`);
+				return (false);
+			}
+			else
+				return (true);
+		}
+		catch (error){
+			console.error("Error while verifying:", error);
+		}
+	};
+	
 	public destroy()
 	{
 		if (this.socket)
