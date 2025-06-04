@@ -105,6 +105,9 @@ export class GameConnection {
         const joinMsg = {
             type: 'JOIN_GAME',
             mode: mode,
+            roomId: this.game.log.id,
+            player1: this.game.log.player1,
+            player2: this.game.log.player2,
             config: this.game.log.config
         };
         if (tournamentId)

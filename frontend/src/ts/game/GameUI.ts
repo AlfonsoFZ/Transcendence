@@ -58,21 +58,19 @@ export class GameUI
 			this.game.setGameMode('1v1');
 			this.showOnly('player2-login-panel');
 			this.setupPlayer2LoginPanel();
-			this.controllers.setupControllers('1v1');
 		});
 		
 		document.getElementById('play-ai')?.addEventListener('click', () => {
 			this.game.setPlayerInfo('player1', null);
 			this.game.setGameMode('1vAI');
 			this.showOnly('config-panel');
-			this.controllers.setupControllers('1vAI');
 		});
 	
 		document.getElementById('play-online')?.addEventListener('click', () => {
 			// Lobby + diff player entry assignation
+			// this.game.setPlayerInfo('player1', null);
 			this.game.setGameMode('remote');
 			this.showOnly('config-panel');
-			this.controllers.setupControllers('remote');
 		});
 		
 		// Configuration panel elements

@@ -54,19 +54,17 @@ export class GameUI {
             this.game.setGameMode('1v1');
             this.showOnly('player2-login-panel');
             this.setupPlayer2LoginPanel();
-            this.controllers.setupControllers('1v1');
         });
         (_b = document.getElementById('play-ai')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => {
             this.game.setPlayerInfo('player1', null);
             this.game.setGameMode('1vAI');
             this.showOnly('config-panel');
-            this.controllers.setupControllers('1vAI');
         });
         (_c = document.getElementById('play-online')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => {
             // Lobby + diff player entry assignation
+            // this.game.setPlayerInfo('player1', null);
             this.game.setGameMode('remote');
             this.showOnly('config-panel');
-            this.controllers.setupControllers('remote');
         });
         // Configuration panel elements
         this.setupConfigPanelListeners();

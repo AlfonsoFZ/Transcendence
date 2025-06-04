@@ -50,9 +50,10 @@ export function handleJoinGame(client, data)
 		config: gameSession.getConfig()
 	}));
 	// 5. Start game if ready (e.g., 2 players connected + online mode, 1 player connected + 1vAI mode...)
-	if (gameSession.shouldStart())
+	if (gameSession.shouldStart(joinMsgData))
 	{
 		gameSession.state = gameSession.resetState();
+		// Change this for broadCastUniversal() when done
 		gameSession.getConnections().forEach((conn) => {
 			if (conn.readyState === 1)
 			{
