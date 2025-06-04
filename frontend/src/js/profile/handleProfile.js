@@ -21,6 +21,7 @@ function changePassword() {
     const cancelModalButton = document.getElementById("cancel-modal-password");
     if (changePasswordModal) {
         changePasswordModal.classList.remove("hidden");
+        history.pushState({ modal: "change-password" }, "Change Password");
     }
     const saveButton = document.getElementById("save-modal-password");
     saveButton === null || saveButton === void 0 ? void 0 : saveButton.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
@@ -59,9 +60,21 @@ function changePassword() {
             console.error("Error changing password:", error);
         }
     }));
+    window.addEventListener("popstate", closeChangePasswordModalOnBack);
+    function closeChangePasswordModalOnBack() {
+        const changePasswordModal = document.getElementById("change-password-modal");
+        if (changePasswordModal && !changePasswordModal.classList.contains("hidden")) {
+            changePasswordModal.classList.add("hidden");
+            // Opcional: elimina el listener para evitar duplicados
+            window.removeEventListener("popstate", closeChangePasswordModalOnBack);
+            // Opcional: evita que el navegador navegue realmente atrás
+            history.pushState(null, "", window.location.href);
+        }
+    }
     cancelModalButton === null || cancelModalButton === void 0 ? void 0 : cancelModalButton.addEventListener("click", () => {
         if (changePasswordModal) {
             changePasswordModal.classList.add("hidden");
+            history.back();
         }
     });
 }
