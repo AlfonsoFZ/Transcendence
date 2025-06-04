@@ -17,11 +17,6 @@ export async function showUserProfile(currentUserId: string, userId: string, use
 
 	const { isFriend, isPending, isBlocked } = await checkFriendStatus(userId, friendsEntries);
 
-console.log({
-  userId, // perfil que ves
-  currentUserId, // usuario logueado
-  friendsEntries
-});	
 const canAccept = isPending && canAcceptRequest(userId, friendsEntries, currentUserId);
 
 const acceptDeclineButton = canAccept
@@ -45,7 +40,14 @@ const friendButton = !canAccept
     ? `<button id="play-btn" class="bg-green-600 hover:bg-green-400 text-white px-6 py-2 rounded-lg font-semibold shadow">🎮 Play Game</button>`
     : "";
 
-	const blockUserButton = getBlockUserButton(isBlocked, userId);
+	const blockedByMe = isBlockedByCurrentUser(userId, friendsEntries, currentUserId);
+	const blockedByOther = isBlockedByOther(userId, friendsEntries, currentUserId);
+	let blockUserButton = "";
+	if (blockedByMe) {
+		blockUserButton = getBlockUserButton(isBlocked, userId); // Mostrar "Unblock"
+	} else if (!blockedByOther) {
+		blockUserButton = getBlockUserButton(isBlocked, userId); // Mostrar "Block"
+	}
 
 	// Fondo semitransparente que NO cubre el header (ajusta top-[64px] si tu header es más alto o bajo)
 	const backdrop = createBackdrop();
@@ -154,4 +156,22 @@ function createBackdrop(): HTMLDivElement {
 	backdrop.className = "fixed left-0 right-0 bottom-0 top-[160px] bg-black/50 flex items-center justify-center z-40";
 	backdrop.style.animation = "fadeIn 0.2s";
 	return backdrop;
+}
+
+export function isBlockedByCurrentUser(userId: string, friendsEntries: any[], currentUserId: string): boolean {
+    return friendsEntries.some(
+        (entry: any) =>
+            entry.status === "blocked" &&
+            String(entry.userId) === String(currentUserId) && // El usuario actual bloqueó
+            String(entry.friendId) === String(userId)         // Al usuario del perfil
+    );
+}
+
+export function isBlockedByOther(userId: string, friendsEntries: any[], currentUserId: string): boolean {
+    return friendsEntries.some(
+        (entry: any) =>
+            entry.status === "blocked" &&
+            String(entry.userId) === String(userId) &&        // El usuario del perfil bloqueó
+            String(entry.friendId) === String(currentUserId)   // Al usuario actual
+    );
 }

@@ -45,9 +45,8 @@ export default class Chat extends Step {
 					const usernameSpan = userItem.querySelector("span.text-sm");
 					const clickedUsername = usernameSpan?.textContent?.trim();
 					const userId = await getUserId(this.username!);
-					console.log("Clicked user:", clickedUsername, "User ID:", userId);
-
-					if (clickedUsername && clickedUsername !== this.username) {
+					const clickedUserId = await getUserId(clickedUsername!);
+					if (clickedUserId && clickedUserId !== userId) {
 						showUserOptionsMenu(userItem, event as MouseEvent, Step.socket!, userId);
 					}
 				});
@@ -60,18 +59,18 @@ export default class Chat extends Step {
 }
 
 async function getUserId(username: string): Promise<string> {
-    const response = await fetch(`https://localhost:8443/back/get_user_by_username/?username=${encodeURIComponent(username)}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    if (!response.ok) {
-        throw new Error("No se pudo obtener el userId para el username: " + username);
-    }
-    const data = await response.json();
-    return data.id; // Ajusta si tu backend responde con otro campo
+	const response = await fetch(`https://localhost:8443/back/get_user_by_username/?username=${encodeURIComponent(username)}`, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	if (!response.ok) {
+		throw new Error("No se pudo obtener el userId para el username: " + username);
+	}
+	const data = await response.json();
+	return data.id; // Ajusta si tu backend responde con otro campo
 }
 // GESTIONAR EN EL BACKEND EL CASO DE QUE UN USUARIO SE DESCONECTE. ELIMINAR DEL ARRAY DE PRIVADOS.
 
