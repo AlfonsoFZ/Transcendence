@@ -62,6 +62,7 @@ export class GameUI
 		
 		document.getElementById('play-ai')?.addEventListener('click', async () => {
 			await this.game.setPlayerInfo('player1', null);
+			await this.game.setGuestInfo('player2', 'ai');
 			this.game.setGameMode('1vAI');
 			this.showOnly('config-panel');
 		});
@@ -166,14 +167,7 @@ export class GameUI
 
 		// Handle guest
 		guestBtn.onclick = () => {
-			const guestUser = {
-				id: `guest-${Date.now()}`,
-				username: 'Guest',
-				tournamentUsername: 'Guest',
-				email: 'guest@example.com',
-				avatarPath: '/images/default-avatar.png'
-			};
-			this.game.setTempPlayerInfo('player2', guestUser);
+			this.game.setGuestInfo('player2', 'guest');
 			this.showOnly('config-panel');
 			if (errorMsg)
 				errorMsg.textContent = '';
@@ -241,7 +235,6 @@ export class GameUI
 		this.game.log.startTime = 0;
 		this.game.log.duration = 0;
 		this.game.log.result = { winner: '', loser: '', score: [0, 0] };
-		this.game.renderer.isGameActive = true;
 		this.launchGame(this.game.log.mode, this.game.log.tournamentId);
     }
 }

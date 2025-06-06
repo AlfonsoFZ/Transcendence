@@ -2,6 +2,11 @@
  * GameConnection.ts -> WebSocket connection handling
  */
 
+// This is a variable to store the first websocket connection
+// so we can use the same one during the whole browser lifecycle
+// (if page close or reloaded, socket is closed and lost)
+let globalGameSocket: WebSocket | null = null;
+
 export class GameConnection
 {
 	private game: any;
@@ -17,20 +22,25 @@ export class GameConnection
 	async establishConnection(): Promise<void>
 	{
 		return new Promise((resolve, reject) => {
+			// 0. Check if there is already an existing socket, to avoid creating new one
+			//		if so, reset stats and skip rest (as configuration is already set)
+			if (globalGameSocket && globalGameSocket.readyState === WebSocket.OPEN)
+			{
+				console.log("Websocket reused =)");
+				this.socket = globalGameSocket;
+				this.connectionStat = true;
+				resolve();
+				return ;
+			}
 			// 1. Socket create/registred - ping test - buttons appear
 			this.socket = new WebSocket(`https://${window.location.host}/back/ws/game`);
+			globalGameSocket = this.socket;
 			// 1.1 Set what we want to happen on open socket (at first connected)
 			this.socket.onopen = () => {
-				console.log('Connected to game server');
-				// Send ping to test connection
-				this.socket?.send(JSON.stringify({
-					type: 'PING',
-					timestamp: Date.now()
-				}));
+				console.log('New socket connected to game server');
 				this.connectionStat = true;
 				resolve();
 			};
-		
 			// 2. Setting message received handler for all desired cases
 			this.socket.onmessage = (event) => {
 				console.log("Message received from server:", event.data);
@@ -88,9 +98,12 @@ export class GameConnection
 			};
 
 			// 4. Connection closed handler: set bool flag to false and hide play buttons
+			//		and set globalGameSocket to null so next time a new socket will get created
 			this.socket.onclose = (event) => {
 				console.log(`WebSocket connection closed: Code ${event.code}${event.reason ? ' - ' + event.reason : ''}`);
 				this.connectionStat = false;
+				if (globalGameSocket === this.socket)
+					globalGameSocket = null;
 			};
 		})
 	}

@@ -33,7 +33,6 @@ export function handleJoinGame(client, data)
 	}
 	// 2. Add player to the game
 	const playerNumber = gameSession.addPlayer(user.id, connection);
-	console.log("JOIN PLAYER NUMBER:", playerNumber);
 	if (!playerNumber)
 	{
 		connection.send(JSON.stringify({

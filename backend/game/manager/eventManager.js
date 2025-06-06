@@ -61,7 +61,7 @@ export function	messageManager(client, connection)
 	try
 	{
 	setTimeout(() => {
-		console.log("Sending test message to client...");
+		console.log("Sending test message to client");
 		connection.send(JSON.stringify({
 			type: 'SERVER_TEST',
 			message: 'Testing connection'
@@ -75,7 +75,7 @@ export function	messageManager(client, connection)
 		try
 		{
 			const data = JSON.parse(message.toString());
-			console.log("JSON message sent FRONT->BACK:\n", data);
+			console.log("JSON message received FRONT->BACK:\n", data);
 			switch (data.type)
 			{
 				case 'JOIN_GAME':

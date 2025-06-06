@@ -20,7 +20,6 @@ export default class Game extends Step {
     constructor(containerId = DEFAULT_CONTAINER_ID) {
         super(containerId);
         this.gameConfig = { scoreLimit: 5, difficulty: 'medium' };
-        console.log("Game constructor called");
         this.connection = new GameConnection(this);
         this.renderer = new GameRender(this);
         this.ui = new GameUI(this);
@@ -70,8 +69,15 @@ export default class Game extends Step {
             this.log[playerKey] = user;
         });
     }
-    setTempPlayerInfo(playerKey, playerData) {
-        this.log[playerKey] = playerData;
+    setGuestInfo(playerKey, name) {
+        const tempUser = {
+            id: `${name}-${Date.now()}`,
+            username: name,
+            tournamentUsername: 'name',
+            email: `${name}@email.com`,
+            avatarPath: '/images/default-avatar.png'
+        };
+        this.log[playerKey] = tempUser;
     }
     /**
      * Set tournament ID if this game is part of a tournament

@@ -22,7 +22,6 @@ export default class Game extends Step
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
 	{
 		super(containerId);
-		console.log("Game constructor called");
 		this.connection = new GameConnection(this);
 		this.renderer = new GameRender(this);
 		this.ui = new GameUI(this);
@@ -77,9 +76,16 @@ export default class Game extends Step
 		this.log[playerKey] = user;
 	}
 
-	public setTempPlayerInfo(playerKey: 'player1' | 'player2', playerData: GamePlayer): void
+	public setGuestInfo(playerKey: 'player1' | 'player2', name: 'ai'| 'guest'): void
 	{
-		this.log[playerKey] = playerData;
+		const tempUser : GamePlayer = {
+			id: `${name}-${Date.now()}`,
+			username: name,
+			tournamentUsername: 'name',
+			email: `${name}@email.com`,
+			avatarPath: '/images/default-avatar.png'
+		};
+		this.log[playerKey] = tempUser;
 	}
 
 	/**

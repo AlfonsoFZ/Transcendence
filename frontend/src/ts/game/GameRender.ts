@@ -11,7 +11,6 @@ export class GameRender
 	private gameState: any | null = null;
 	private lastKnownState: any | null = null;
 	private stateTimestamp: number = 0;
-	private	isGameActive: boolean = true;
 
 	constructor(game: any)
 	{
@@ -20,11 +19,6 @@ export class GameRender
 
 	renderGameState(state: any)
 	{
-		if (!this.isGameActive)
-		{
-			console.log("Game is inactive, ignoring new state updates");
-			return;
-		}
 		console.log("Received new game state:", state);
 		this.lastKnownState = this.game.gameState;
 		this.gameState = state;
@@ -57,14 +51,10 @@ export class GameRender
 
 	private startRenderLoop()
 	{
-		if (!this.isGameActive)
-			return ;
 		// Cancel any existing animation frame
 		if (this.animationFrameId !== null)
 			cancelAnimationFrame(this.animationFrameId);
 		const renderLoop = () => {
-			if (!this.isGameActive)
-				return ;
 			this.drawGame();
 			this.animationFrameId = requestAnimationFrame(renderLoop);
 		};
@@ -188,7 +178,6 @@ export class GameRender
 
 	public stopRenderLoop(): void
 	{
-		this.isGameActive = false;
 		if (this.animationFrameId) {
 			cancelAnimationFrame(this.animationFrameId);
 			this.animationFrameId = null;
