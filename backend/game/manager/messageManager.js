@@ -55,6 +55,33 @@ export function handleJoinGame(client, data)
 		gameSession.setPlayerDetails('player2', secondPlayerInfo);
 }
 
+export function handleRestartGame(client, data)
+{
+	const { user } = client;
+	const clientData = clients.get(user.id);
+	// Delete old game session if it exists
+	const oldGameSession = gamesList.get(clientData?.roomId);
+	if (oldGameSession)
+		gamesList.delete(clientData.roomId);
+	// Create a new game with same config
+	const gameMode = data.mode || (oldGameSession ? oldGameSession.gameMode : '1v1');
+	const roomId = `game-${Date.now()}`;
+	const config = data.config || { 
+		scoreLimit: oldGameSession ? oldGameSession.winScore : 5, 
+		difficulty: oldGameSession ? oldGameSession.difficulty : 'medium' 
+	};
+	let	player2 = null;
+	if (oldGameSession && (gameMode === '1v1' || gameMode === '1vAI'))
+		player2 = oldGameSession.metadata?.playerDetails?.player2 || null;
+	// Call join game with new parameters
+	handleJoinGame({user, connection: client.connection}, {
+		mode: gameMode,
+		roomId: roomId,
+		config: config,
+		player2: player2
+	});
+}
+
 /**
  * When a player sends keys input (should be up/down for paddle movement)
  * Server updates the player's paddle position and this updated position is reflected in the next GAME_STATE broadcast
@@ -88,33 +115,6 @@ export function handleLeaveGame(client)
 	}
 	// 3. Remove client tracking
 	clients.delete(user.id);
-}
-
-
-export function handleRestartGame(client, data)
-{
-	const { user } = client;
-	const clientData = clients.get(user.id);
-	
-	// Delete old game session if it exists
-	const oldGameSession = gamesList.get(clientData?.roomId);
-	if (oldGameSession)
-		gamesList.delete(clientData.roomId);
-
-	// Create a new game with same config
-	const gameMode = data.mode || (oldGameSession ? oldGameSession.gameMode : '1v1');
-	const roomId = `game-${Date.now()}`;
-	const config = data.config || { 
-		scoreLimit: oldGameSession ? oldGameSession.winScore : 5, 
-		difficulty: oldGameSession ? oldGameSession.difficulty : 'medium' 
-	};
-	
-	// Call join game with new parameters
-	handleJoinGame({user, connection: client.connection}, {
-		mode: gameMode,
-		roomId: roomId,
-		config: config
-	});
 }
 
 export async function	handlePlayerInfo(client, data)

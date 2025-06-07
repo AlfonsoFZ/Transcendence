@@ -83,15 +83,18 @@ export default class GameMatch extends Step
 			const duration = gameData.duration ? Math.floor(gameData.duration / 1000) : 0;
 			durationElement.textContent = duration.toString();
 		}
-		
+		const	playAgainBtn = document.getElementById('play-again-btn');
+		if (playAgainBtn && gameData.tournamentId)
+			playAgainBtn.hidden = true;
+		else if (playAgainBtn)
+			playAgainBtn.hidden = false;
 		// Show the results overlay
 		this.ui.showOnly('game-results', 'flex');
 		// Add event listeners for the buttons (these need to be set each time)
-		document.getElementById('play-again-btn')?.addEventListener('click', () => {
+		playAgainBtn?.addEventListener('click', () => {
 			this.ui.showOnly('game-container')
 			this.rematchGame();
 		});
-		
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
 			this.controllers.cleanup();
 			SPA.getInstance().navigate('game-lobby');
@@ -103,13 +106,18 @@ export default class GameMatch extends Step
 	 */
 	private rematchGame(): void
 	{
-		let rematchLog : GameData;
-		rematchLog = this.game.getGameLog();
-		rematchLog.startTime = 0;
-		rematchLog.duration = 0;
-		rematchLog.result = { winner: '', loser: '', score: [0, 0] };
-		this.game.setGameLog(rematchLog);
-		this.ui.launchGame();
+		if (this.connection.socket)
+		{	this.connection.socket.send(JSON.stringify({
+				type: 'RESTART_GAME'
+			}));
+		}
+		// let rematchLog : GameData;
+		// rematchLog = this.game.getGameLog();
+		// rematchLog.startTime = 0;
+		// rematchLog.duration = 0;
+		// rematchLog.result = { winner: '', loser: '', score: [0, 0] };
+		// this.game.setGameLog(rematchLog);
+		// this.ui.launchGame();
     }
 
 	public destroy()

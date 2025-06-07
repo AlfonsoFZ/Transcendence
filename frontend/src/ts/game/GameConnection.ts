@@ -117,7 +117,6 @@ export class GameConnection
 	 */
 	public joinGame(mode: string, tournamentId?: number): void
 	{
-		console.log("GAME LOG BEFORE JOIN SENDING: ", this.game.getGameLog());
 		if (!this.socket || !this.connectionStat)
 		{
 			console.error("Cannot join game: connection not ready");
