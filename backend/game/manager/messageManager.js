@@ -133,7 +133,6 @@ export function handleRestartGame(client, data)
 	});
 }
 
-
 export async function	handlePlayerInfo(client, data)
 {
 	let 	user = null;
@@ -184,9 +183,9 @@ export function handleClientReady(client, data)
 	if (gameSession.shouldStart())
 	{
 		const allReady = Array.from(gameSession.players.values()).every(p => p.ready);
-		console.log("gameLoop = ", gameSession.gameLoop);
 		if (allReady && !gameSession.gameLoop)
 		{
+			gameSession.state = gameSession.resetState();
 			gameSession.getConnections().forEach((conn) => {
 				if (conn.readyState === 1) {
 					conn.send(JSON.stringify({
