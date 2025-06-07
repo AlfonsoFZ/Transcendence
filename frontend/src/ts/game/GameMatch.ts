@@ -58,7 +58,6 @@ export default class GameMatch extends Step
 			this.renderer.ctx = canvas.getContext('2d');
 			this.connection.socket?.send(JSON.stringify({ type: "CLIENT_READY" }));
 		}
-		this.controllers.cleanup();
 		this.controllers.setupControllers(this.log.mode);
 	}
 	
@@ -94,6 +93,7 @@ export default class GameMatch extends Step
 		});
 		
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
+			this.controllers.cleanup();
 			SPA.getInstance().navigate('game-lobby');
 		});
 	}

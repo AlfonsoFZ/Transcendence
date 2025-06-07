@@ -45,6 +45,7 @@ export class GameUI
 			console.error("Error loading game UI:", error);
 			appElement.innerHTML = `<div class="error-container">Failed to load game interface. Please try again.</div>`;
 		}
+		this.setupEventListeners();
 	}
 
 	// Sets up event listeners for game mode buttons, which after will also set controllers
