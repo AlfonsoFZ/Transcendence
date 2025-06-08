@@ -2,7 +2,6 @@
  * GameUI.ts -> UI setup and event listeners
  */
 
-import { SPA } from '../spa/spa.js';
 import Game from './Game.js'
 
 export class GameUI
@@ -182,6 +181,5 @@ export class GameUI
 		}
 		this.game.setGameConfig(this.game.getGameConfig());
 		this.game.getGameConnection().joinGame(this.game.getGameLog().mode);
-		SPA.getInstance().navigate('game-match');
 	}
 }

@@ -22,6 +22,7 @@ export default class Game extends Step {
     constructor(containerId = DEFAULT_CONTAINER_ID) {
         super(containerId);
         this.gameConfig = { scoreLimit: 5, difficulty: 'medium' };
+        this.match = null;
         this.connection = new GameConnection(this);
         this.renderer = new GameRender(this);
         this.ui = new GameUI(this);
@@ -91,6 +92,9 @@ export default class Game extends Step {
     setTournamentId(id) {
         this.log.tournamentId = id;
     }
+    setGameMatch(match) {
+        this.match = match;
+    }
     /***********************************/
     /*********** GETTERS ***************/
     getGameConfig() {
@@ -107,5 +111,8 @@ export default class Game extends Step {
     }
     getGameUI() {
         return (this.ui);
+    }
+    getGameMatch() {
+        return (this.match);
     }
 }

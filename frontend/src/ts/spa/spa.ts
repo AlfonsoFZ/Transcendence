@@ -101,7 +101,11 @@ export class SPA {
 			// game-lobby <-> game-match communication
 			let stepInstance;
 			if (step === 'game-match')
+			{	
 				stepInstance = new module.default(this.currentGame);
+				if (this.currentGame && stepInstance)
+					this.currentGame.setGameMatch(stepInstance);
+			}
 			else if (step === 'game-lobby')
 			{
 				stepInstance = new module.default('app-container');

@@ -62,7 +62,12 @@ export function handleRestartGame(client, data)
 	// Delete old game session if it exists
 	const oldGameSession = gamesList.get(clientData?.roomId);
 	if (oldGameSession)
+	{	
 		gamesList.delete(clientData.roomId);
+		if (!data.rematch)
+			return ;
+	}
+	console.log("oldGameSession: ", oldGameSession);
 	// Create a new game with same config
 	const gameMode = data.mode || (oldGameSession ? oldGameSession.gameMode : '1v1');
 	const roomId = `game-${Date.now()}`;
@@ -70,10 +75,15 @@ export function handleRestartGame(client, data)
 		scoreLimit: oldGameSession ? oldGameSession.winScore : 5, 
 		difficulty: oldGameSession ? oldGameSession.difficulty : 'medium' 
 	};
+	console.log("RESTART GAME CONFIGURATION");
+	console.log("mode:", gameMode);
+	console.log("roomID:", roomId);
+	console.log("config:", config);
 	let	player2 = null;
 	if (oldGameSession && (gameMode === '1v1' || gameMode === '1vAI'))
 		player2 = oldGameSession.metadata?.playerDetails?.player2 || null;
 	// Call join game with new parameters
+	console.log("player2:", player2);
 	handleJoinGame({user, connection: client.connection}, {
 		mode: gameMode,
 		roomId: roomId,

@@ -21,7 +21,7 @@ export default class Game extends Step
 	protected	ui: GameUI;
 	protected	log: GameData;
 	protected	gameConfig: GameConfig = {scoreLimit: 5, difficulty: 'medium'};
-
+	protected	match: GameMatch | null = null;
 	/***************************************/
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
@@ -113,6 +113,11 @@ export default class Game extends Step
 		this.log.tournamentId = id;
 	}
 
+	public setGameMatch(match: GameMatch): void
+	{
+		this.match = match;
+	}
+
 	/***********************************/
 	/*********** GETTERS ***************/
 	public	getGameConfig(): GameConfig
@@ -138,5 +143,10 @@ export default class Game extends Step
 	public	getGameUI(): GameUI
 	{
 		return (this.ui);
+	}
+
+	public getGameMatch(): GameMatch | null
+	{
+		return (this.match);
 	}
 }

@@ -1,6 +1,3 @@
-/**
- * GameConnection.ts -> WebSocket connection handling
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,6 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+/**
+ * GameConnection.ts -> WebSocket connection handling
+ */
+import { SPA } from '../spa/spa.js';
 // This is a variable to store the first websocket connection
 // so we can use the same one during the whole browser lifecycle
 // (if page close or reloaded, socket is closed and lost)
@@ -44,7 +45,7 @@ export class GameConnection {
                 };
                 // 2. Setting message received handler for all desired cases
                 this.socket.onmessage = (event) => {
-                    var _a;
+                    var _a, _b, _c, _d;
                     console.log("Message received from server:", event.data);
                     try {
                         const data = JSON.parse(event.data);
@@ -57,6 +58,14 @@ export class GameConnection {
                                 }
                                 break;
                             case 'GAME_INIT':
+                                const spa = SPA.getInstance();
+                                if (window.location.hash === '#game-match' && ((_a = spa.currentGame) === null || _a === void 0 ? void 0 : _a.getGameMatch())) {
+                                    const appElement = document.getElementById('app-container');
+                                    if (appElement)
+                                        (_b = spa.currentGame.getGameMatch()) === null || _b === void 0 ? void 0 : _b.render(appElement);
+                                }
+                                else
+                                    spa.navigate('game-match');
                                 console.log("Game initialized:", data);
                                 break;
                             case 'GAME_STATE':
@@ -68,12 +77,11 @@ export class GameConnection {
                                 break;
                             case 'GAME_END':
                                 this.game.endGameSession(data.result);
-                                //this.game.getGameMatch().showGameResults(this.game.getGameLog());
+                                (_c = this.game.getGameMatch()) === null || _c === void 0 ? void 0 : _c.showGameResults(this.game.getGameLog());
                                 break;
                             case 'SERVER_TEST':
                                 console.log("Server test message:", data.message);
-                                // Respond to confirm bidirectional communication
-                                (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({
+                                (_d = this.socket) === null || _d === void 0 ? void 0 : _d.send(JSON.stringify({
                                     type: 'PING',
                                     message: 'Client response to server test'
                                 }));
@@ -111,7 +119,6 @@ export class GameConnection {
      * @param tournamentId Optional tournament ID
      */
     joinGame(mode, tournamentId) {
-        console.log("GAME LOG BEFORE JOIN SENDING: ", this.game.getGameLog());
         if (!this.socket || !this.connectionStat) {
             console.error("Cannot join game: connection not ready");
             return;

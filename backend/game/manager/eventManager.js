@@ -3,7 +3,7 @@
  * Functions to set up the socket event listeners/handlers when connection is established
  */
 import { extractUserFromToken } from "../../auth/token.js";
-import { handleJoinGame, handlePlayerInput, handleLeaveGame, handlePlayerInfo, handleClientReady } from "./messageManager.js";
+import { handleJoinGame, handlePlayerInput, handleLeaveGame, handlePlayerInfo, handleClientReady, handleRestartGame } from "./messageManager.js";
 export const gamesList = new Map();
 export const clients = new Map();
 

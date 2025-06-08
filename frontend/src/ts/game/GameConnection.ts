@@ -1,7 +1,7 @@
 /**
  * GameConnection.ts -> WebSocket connection handling
  */
-
+import { SPA } from '../spa/spa.js';
 import Game from './Game.js'
 
 // This is a variable to store the first websocket connection
@@ -60,6 +60,15 @@ export class GameConnection
 							}
 							break ;
 						case 'GAME_INIT':
+							const spa = SPA.getInstance();
+							if (window.location.hash === '#game-match' && spa.currentGame?.getGameMatch())
+							{
+								const appElement = document.getElementById('app-container');
+								if (appElement)
+									spa.currentGame.getGameMatch()?.render(appElement);
+							}
+							else 
+								spa.navigate('game-match');
 							console.log("Game initialized:", data);
 							break ;
 						case 'GAME_STATE':
@@ -71,11 +80,10 @@ export class GameConnection
 							break ;
 						case 'GAME_END':
 							this.game.endGameSession(data.result);
-							//this.game.getGameMatch().showGameResults(this.game.getGameLog());
+							this.game.getGameMatch()?.showGameResults(this.game.getGameLog());
 							break ;
 						case 'SERVER_TEST':
 							console.log("Server test message:", data.message);
-							// Respond to confirm bidirectional communication
 							this.socket?.send(JSON.stringify({
 								type: 'PING',
 								message: 'Client response to server test'

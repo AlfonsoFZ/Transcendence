@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { SPA } from '../spa/spa.js';
 export class GameUI {
     constructor(game) {
         this.game = game;
@@ -42,6 +41,7 @@ export class GameUI {
                 console.error("Error loading game UI:", error);
                 appElement.innerHTML = `<div class="error-container">Failed to load game interface. Please try again.</div>`;
             }
+            this.setupEventListeners();
         });
     }
     // Sets up event listeners for game mode buttons, which after will also set controllers
@@ -155,6 +155,5 @@ export class GameUI {
         }
         this.game.setGameConfig(this.game.getGameConfig());
         this.game.getGameConnection().joinGame(this.game.getGameLog().mode);
-        SPA.getInstance().navigate('game-match');
     }
 }

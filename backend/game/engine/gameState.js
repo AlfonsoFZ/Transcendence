@@ -135,10 +135,10 @@ export function endGame(gamesList)
 	// Stop and clean up intervals
 	clearInterval(this.gameLoop);
 	clearInterval(this.aiInterval);
-	// Remove from gamesList if present
-	if (gamesList && gamesList.has(this.roomId))
+	// Remove gameSession from map if we are on tournament game - no rematch possible
+	if (this.metadata.tournamentId && gamesList && gamesList.has(this.roomId))
 	{
-		console.log("endGame deleting gameSession from map!");
+		console.log("Tournamente Game: deleting gameSession from map");
 		gamesList.delete(this.roomId);
 	}
 	// Notify players

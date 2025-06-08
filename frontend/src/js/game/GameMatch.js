@@ -45,9 +45,8 @@ export default class GameMatch extends Step {
             if (canvas) {
                 this.renderer.canvas = canvas;
                 this.renderer.ctx = canvas.getContext('2d');
-                (_a = this.connection.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({ type: "CLIENT_READY" }));
+                (_a = this.connection.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({ type: 'CLIENT_READY' }));
             }
-            this.controllers.cleanup();
             this.controllers.setupControllers(this.log.mode);
         });
     }
@@ -56,7 +55,7 @@ export default class GameMatch extends Step {
      * @param gameData Complete game data
      */
     showGameResults(gameData) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c;
         // Update the HTML content with actual game data logs
         const winnerElement = document.getElementById('winner-name');
         const scoreElement = document.getElementById('final-score');
@@ -71,28 +70,41 @@ export default class GameMatch extends Step {
             const duration = gameData.duration ? Math.floor(gameData.duration / 1000) : 0;
             durationElement.textContent = duration.toString();
         }
+        const playAgainBtn = document.getElementById('play-again-btn');
+        if (playAgainBtn && gameData.tournamentId)
+            playAgainBtn.hidden = true;
+        else if (playAgainBtn)
+            playAgainBtn.hidden = false;
         // Show the results overlay
         this.ui.showOnly('game-results', 'flex');
         // Add event listeners for the buttons (these need to be set each time)
-        (_c = document.getElementById('play-again-btn')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => {
+        playAgainBtn === null || playAgainBtn === void 0 ? void 0 : playAgainBtn.addEventListener('click', () => {
             this.ui.showOnly('game-container');
-            this.rematchGame();
+            this.rematchGame(true);
         });
-        (_d = document.getElementById('return-lobby-btn')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', () => {
+        (_c = document.getElementById('return-lobby-btn')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => {
+            this.rematchGame(false);
+            this.controllers.cleanup();
             SPA.getInstance().navigate('game-lobby');
         });
     }
     /**
      * Reset the game to start a new one
      */
-    rematchGame() {
-        let rematchLog;
-        rematchLog = this.game.getGameLog();
-        rematchLog.startTime = 0;
-        rematchLog.duration = 0;
-        rematchLog.result = { winner: '', loser: '', score: [0, 0] };
-        this.game.setGameLog(rematchLog);
-        this.ui.launchGame();
+    rematchGame(state) {
+        if (this.connection.socket) {
+            this.connection.socket.send(JSON.stringify({
+                type: 'RESTART_GAME',
+                rematch: state
+            }));
+        }
+        // let rematchLog : GameData;
+        // rematchLog = this.game.getGameLog();
+        // rematchLog.startTime = 0;
+        // rematchLog.duration = 0;
+        // rematchLog.result = { winner: '', loser: '', score: [0, 0] };
+        // this.game.setGameLog(rematchLog);
+        // this.ui.launchGame();
     }
     destroy() {
         this.controllers.cleanup();

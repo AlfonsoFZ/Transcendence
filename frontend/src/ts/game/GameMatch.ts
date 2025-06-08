@@ -56,7 +56,7 @@ export default class GameMatch extends Step
 		{
 			this.renderer.canvas = canvas;
 			this.renderer.ctx = canvas.getContext('2d');
-			this.connection.socket?.send(JSON.stringify({ type: "CLIENT_READY" }));
+			this.connection.socket?.send(JSON.stringify({ type: 'CLIENT_READY' }));
 		}
 		this.controllers.setupControllers(this.log.mode);
 	}
@@ -93,9 +93,10 @@ export default class GameMatch extends Step
 		// Add event listeners for the buttons (these need to be set each time)
 		playAgainBtn?.addEventListener('click', () => {
 			this.ui.showOnly('game-container')
-			this.rematchGame();
+			this.rematchGame(true);
 		});
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
+			this.rematchGame(false);
 			this.controllers.cleanup();
 			SPA.getInstance().navigate('game-lobby');
 		});
@@ -104,11 +105,12 @@ export default class GameMatch extends Step
 	/**
 	 * Reset the game to start a new one
 	 */
-	private rematchGame(): void
+	private rematchGame(state : boolean): void
 	{
 		if (this.connection.socket)
 		{	this.connection.socket.send(JSON.stringify({
-				type: 'RESTART_GAME'
+				type: 'RESTART_GAME',
+				rematch: state
 			}));
 		}
 		// let rematchLog : GameData;
