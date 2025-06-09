@@ -45,7 +45,6 @@ export default class Game extends Step {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.ui.initializeUI(appElement);
             yield this.connection.establishConnection();
-            this.ui.setupEventListeners();
         });
     }
     startGameSession() {

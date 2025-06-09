@@ -29,7 +29,7 @@ export default class GameMatch extends Step
 		console.log('GameMatch constructed with:', game, 'getGameRender:', typeof game.getGameRender);
 		this.game = game;
 		this.renderer = game.getGameRender();
-		this.controllers = new GameControllers(game);
+		this.controllers = new GameControllers(this.game);
 		this.config = game.getGameConfig();
 		this.log = game.getGameLog();
 		this.ui = game.getGameUI();
@@ -58,7 +58,7 @@ export default class GameMatch extends Step
 			this.renderer.ctx = canvas.getContext('2d');
 			this.connection.socket?.send(JSON.stringify({ type: 'CLIENT_READY' }));
 		}
-		this.controllers.setupControllers(this.log.mode);
+		this.controllers.setupControllers();
 	}
 	
 	/**
@@ -98,7 +98,9 @@ export default class GameMatch extends Step
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
 			this.rematchGame(false);
 			this.controllers.cleanup();
+			this.controllers.destroy();
 			SPA.getInstance().navigate('game-lobby');
+			this.destroy()
 		});
 	}
 	
@@ -113,13 +115,6 @@ export default class GameMatch extends Step
 				rematch: state
 			}));
 		}
-		// let rematchLog : GameData;
-		// rematchLog = this.game.getGameLog();
-		// rematchLog.startTime = 0;
-		// rematchLog.duration = 0;
-		// rematchLog.result = { winner: '', loser: '', score: [0, 0] };
-		// this.game.setGameLog(rematchLog);
-		// this.ui.launchGame();
     }
 
 	public destroy()

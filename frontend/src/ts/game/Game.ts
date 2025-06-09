@@ -50,7 +50,6 @@ export default class Game extends Step
 	{
 		await this.ui.initializeUI(appElement);
 		await this.connection.establishConnection();
-		this.ui.setupEventListeners();
 	}
 
 	public startGameSession(): void

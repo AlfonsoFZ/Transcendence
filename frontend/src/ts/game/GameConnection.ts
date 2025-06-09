@@ -58,6 +58,8 @@ export class GameConnection
 								this.pendingUserInfoResolve(data.user);
 								this.pendingUserInfoResolve = null;
 							}
+							else
+								console.warn('No pendingUserInfoResolve to call!');
 							break ;
 						case 'GAME_INIT':
 							const spa = SPA.getInstance();
