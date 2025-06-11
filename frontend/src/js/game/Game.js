@@ -29,8 +29,7 @@ export default class Game extends Step {
         this.log = {
             id: "game " + Date.now(),
             mode: '',
-            player1: null,
-            player2: null,
+            playerDetails: { player1: null, player2: null },
             startTime: 0,
             config: undefined,
             result: { winner: '', loser: '', score: [0, 0] },
@@ -75,7 +74,7 @@ export default class Game extends Step {
     setPlayerInfo(playerKey_1) {
         return __awaiter(this, arguments, void 0, function* (playerKey, data = null) {
             const user = yield this.connection.parseUserInfo(data);
-            this.log[playerKey] = user;
+            this.log.playerDetails[playerKey] = user;
         });
     }
     setGuestInfo(playerKey, name) {
@@ -86,7 +85,7 @@ export default class Game extends Step {
             email: `${name}@email.com`,
             avatarPath: '/images/default-avatar.png'
         };
-        this.log[playerKey] = tempUser;
+        this.log.playerDetails[playerKey] = tempUser;
     }
     setTournamentId(id) {
         this.log.tournamentId = id;

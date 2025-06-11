@@ -18,8 +18,10 @@ export interface	GameData
 {
 	id: string;
 	mode: string;
-	player1?: GamePlayer | null;
-	player2?: GamePlayer | null;
+	playerDetails: {
+		player1?: GamePlayer | null;
+		player2?: GamePlayer | null;
+	};
 	startTime: number;
 	config?: GameConfig;
 	result?: {

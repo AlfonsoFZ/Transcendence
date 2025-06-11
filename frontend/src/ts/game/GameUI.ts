@@ -3,6 +3,7 @@
  */
 
 import Game from './Game.js'
+import { GameData } from './types.js'
 
 export class GameUI
 {
@@ -16,7 +17,7 @@ export class GameUI
 	showOnly(divId: string, displayStyle: string = "block") : void
 	{
 		const divIndex = [
-			'select-game',
+			'initial-screen',
 			'config-panel',
 			'game-container',
 			'game-results',
@@ -45,10 +46,11 @@ export class GameUI
 			appElement.innerHTML = `<div class="error-container">Failed to load game interface. Please try again.</div>`;
 		}
 		this.setupEventListeners();
+		this.requestGamesList();
 	}
 
 	// Sets up event listeners for game mode buttons, which after will also set controllers
-	setupEventListeners()
+	public setupEventListeners()
 	{
 		// Game mode buttons
 		document.getElementById('play-1v1')?.addEventListener('click', async () => {
@@ -57,17 +59,14 @@ export class GameUI
 			this.showOnly('player2-login-panel');
 			this.setupPlayer2LoginPanel();
 		});
-		
 		document.getElementById('play-ai')?.addEventListener('click', async () => {
 			await this.game.setPlayerInfo('player1', null);
 			this.game.setGuestInfo('player2', 'ai');
 			this.game.setGameMode('1vAI');
 			this.showOnly('config-panel');
 		});
-	
 		document.getElementById('play-online')?.addEventListener('click', async () => {
-			// Lobby + diff player entry assignation
-			// await this.game.setPlayerInfo('player1', null);
+			await this.game.setPlayerInfo('player1', null);	
 			this.game.setGameMode('remote');
 			this.showOnly('config-panel');
 		});
@@ -79,13 +78,26 @@ export class GameUI
 		document.getElementById('start-game')?.addEventListener('click', () => {
 			this.launchGame();
 		});
-	
 		// Back button - returns to lobby
 		document.getElementById('back-button')?.addEventListener('click', () => {
-			this.showOnly('select-game');
+			this.showOnly('initial-screen');
+		});
+		// Back button on 2nd player selection panel
+		document.getElementById('player2-back-btn')?.addEventListener('click', () => {
+			this.showOnly('initial-screen');
+		});
+		// Refresh lobby button
+		document.getElementById('refresh-lobby-btn')?.addEventListener('click', () => {
+			this.requestGamesList();
 		});
 	}
 	
+	public	requestGamesList()
+	{
+		const connection = this.game.getGameConnection();
+		if (connection.socket && connection.connectionStat)
+			connection.socket.send(JSON.stringify({ type: 'SHOW_GAMES' }));
+	}
 	/**
 	 * Set up listeners for the configuration panel elements
 	 */
@@ -172,7 +184,7 @@ export class GameUI
 		};
 	}
 
-	launchGame(): void 
+	public launchGame(): void 
 	{
 		if (!this.game.getGameConnection().socket || !this.game.getGameConnection().connectionStat)
 		{
@@ -180,6 +192,43 @@ export class GameUI
 			return ;
 		}
 		this.game.setGameConfig(this.game.getGameConfig());
-		this.game.getGameConnection().joinGame(this.game.getGameLog().mode);
+		this.game.getGameConnection().joinGame();
+	}
+
+	public	updateLobby(games: GameData[]): void
+	{
+		const lobbyDiv = document.getElementById('lobby-games-list');
+		if (!lobbyDiv)
+			return;
+		lobbyDiv.innerHTML = '';
+		if (!games || games.length === 0)
+		{
+			lobbyDiv.innerHTML = '<div class="text-white text-center">No games available.</div>';
+			return ;
+		}
+		// Per each game returned by backend, we create a new game card and append it to lobbyDiv
+		// TODO: we can add more elements to the card as "Ready, Full, In progress"...
+		console.log("GameDATA from server games", games);
+		games.forEach((game: GameData) => {
+			const card = document.createElement('div');
+			card.className = 'bg-gray-700 rounded p-4 flex flex-col gap-2';
+			card.innerHTML = `
+				<div class="text-white font-bold">Game ID: ${game.id}</div>
+				<div class="text-gray-300">Host: ${game.playerDetails.player1?.username}</div>
+				<div class="text-gray-300">Limit score: ${game.config?.scoreLimit}</div>
+				<div class="text-gray-300">Difficulty: ${game.config?.difficulty}</div>
+				<button class="join-game-btn bg-green-500 text-white rounded px-3 py-2 mt-2" data-gameid="${game.id}">Join</button>
+			`;
+			lobbyDiv.appendChild(card);
+		});
+		// Join game button - copy the game.lod metadata and uses to call JOIN API endpoint (should work)
+		// TODO: protect errors like game full or maybe only allow click event when 100% sure is the right moment
+		lobbyDiv.querySelectorAll('.join-game-btn').forEach(btn => {
+			btn.addEventListener('click', (e) => {
+				const gameId = (e.target as HTMLElement).getAttribute('data-gameid');
+				if (gameId)
+					this.game.getGameConnection().joinGame(gameId);
+			});
+		});
 	}
 }

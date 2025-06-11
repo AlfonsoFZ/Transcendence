@@ -24,17 +24,18 @@ export default class GameSession
 
 		// For game log and database storage
 		this.metadata = {
+			id: this.roomId,
+			mode: this.gameMode,
 			startTime: Date.now(),
 			endTime: null,
 			duration: 0,
 			tournamentId: null,
 			playerDetails: {
-				// Will be full user object - player1: {id, tournamentName,...}
+				// Will be full user object - player1: {id, username, tournamentName,...}
 				player1: null,
 				player2: null
 			},
 			result: {
-				// Not sure how to store winner yet, maybe just ID? nick?
 				winner: null,
 				loser: null,
 				finalScore: [0, 0]

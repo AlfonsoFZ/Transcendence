@@ -29,6 +29,10 @@ export function handleJoinGame(client, data)
 				gameSession.winScore = config.scoreLimit;
 			if (config.difficulty)
 				gameSession.setDifficulty(config.difficulty);
+			gameSession.metadata.config = {
+				scoreLimit: gameSession.winScore,
+				difficulty: gameSession.difficulty
+			};
 		}
 	}
 	// 2. Add player to the game
@@ -67,7 +71,7 @@ export function handleRestartGame(client, data)
 		if (!data.rematch)
 			return ;
 	}
-	console.log("oldGameSession: ", oldGameSession);
+
 	// Create a new game with same config
 	const gameMode = data.mode || (oldGameSession ? oldGameSession.gameMode : '1v1');
 	const roomId = `game-${Date.now()}`;
@@ -75,10 +79,7 @@ export function handleRestartGame(client, data)
 		scoreLimit: oldGameSession ? oldGameSession.winScore : 5, 
 		difficulty: oldGameSession ? oldGameSession.difficulty : 'medium' 
 	};
-	console.log("RESTART GAME CONFIGURATION");
-	console.log("mode:", gameMode);
-	console.log("roomID:", roomId);
-	console.log("config:", config);
+
 	let	player2 = null;
 	if (oldGameSession && (gameMode === '1v1' || gameMode === '1vAI'))
 		player2 = oldGameSession.metadata?.playerDetails?.player2 || null;
@@ -184,4 +185,18 @@ export function handleClientReady(client, data)
 			gameSession.startGameLoop(gamesList);
 		}
 	}
+}
+
+export function handleGamesList(client)
+{
+	const games = [];
+	for (const gameSession of gamesList.values())
+	{
+		if (gameSession && gameSession.metadata && gameSession.metadata.mode === 'remote')
+			games.push(gameSession.metadata);
+	}
+	client.connection.send(JSON.stringify({
+		type: 'GAMES_LIST',
+		games: games
+	}));
 }

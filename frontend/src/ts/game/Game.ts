@@ -33,8 +33,7 @@ export default class Game extends Step
 		this.log = {
 			id: "game " + Date.now(),
 			mode: '',
-			player1: null,
-			player2: null,
+			playerDetails: {player1: null, player2: null},
 			startTime: 0,
 			config: undefined,
 			result: {winner: '', loser: '', score: [0,0]},
@@ -92,7 +91,7 @@ export default class Game extends Step
 	public async setPlayerInfo(playerKey: 'player1' | 'player2', data: {email: string, password: string} | null = null): Promise<void>
 	{
 		const user = await this.connection.parseUserInfo(data) as GamePlayer;
-		this.log[playerKey] = user;
+		this.log.playerDetails[playerKey] = user;
 	}
 
 	public setGuestInfo(playerKey: 'player1' | 'player2', name: 'ai'| 'guest'): void
@@ -104,7 +103,7 @@ export default class Game extends Step
 			email: `${name}@email.com`,
 			avatarPath: '/images/default-avatar.png'
 		};
-		this.log[playerKey] = tempUser;
+		this.log.playerDetails[playerKey] = tempUser;
 	}
 
 	public setTournamentId(id: number): void

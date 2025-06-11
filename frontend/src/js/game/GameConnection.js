@@ -106,6 +106,9 @@ export class GameConnection {
                                 case 'PONG':
                                     console.log("Server responded to ping");
                                     break;
+                                case 'GAMES_LIST':
+                                    this.game.getGameUI().updateLobby(data.games || []);
+                                    break;
                                 default:
                                     console.log(`Received message with type: ${data.type}`);
                             }
@@ -123,23 +126,29 @@ export class GameConnection {
      * @param mode Game mode
      * @param tournamentId Optional tournament ID
      */
-    joinGame(mode, tournamentId) {
+    joinGame(gameId) {
         if (!this.socket || !this.connectionStat) {
             console.error("Cannot join game: connection not ready");
             return;
         }
-        if (tournamentId)
-            this.game.setTournamentId(tournamentId);
+        if (gameId) {
+            const joinMsg = {
+                type: 'JOIN_GAME',
+                roomId: gameId
+            };
+            this.socket.send(JSON.stringify(joinMsg));
+            return;
+        }
+        const metadata = this.game.getGameLog();
         const joinMsg = {
             type: 'JOIN_GAME',
-            mode: mode,
-            roomId: this.game.getGameLog().id,
-            player1: this.game.getGameLog().player1,
-            player2: this.game.getGameLog().player2,
-            config: this.game.getGameLog().config
+            mode: metadata.mode,
+            roomId: metadata.id,
+            player1: metadata.playerDetails.player1,
+            player2: metadata.playerDetails.player2,
+            config: metadata.config,
+            tournamentId: metadata.tournamentId
         };
-        if (tournamentId)
-            joinMsg.tournamentId = tournamentId;
         this.socket.send(JSON.stringify(joinMsg));
     }
     /**
