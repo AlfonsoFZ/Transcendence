@@ -74,11 +74,11 @@ export class GameUI {
         });
         // Back button - returns to lobby
         (_e = document.getElementById('back-button')) === null || _e === void 0 ? void 0 : _e.addEventListener('click', () => {
-            this.showOnly('initial-screen');
+            this.showOnly('initial-screen', 'flex');
         });
         // Back button on 2nd player selection panel
         (_f = document.getElementById('player2-back-btn')) === null || _f === void 0 ? void 0 : _f.addEventListener('click', () => {
-            this.showOnly('initial-screen');
+            this.showOnly('initial-screen', 'flex');
         });
         // Refresh lobby button
         (_g = document.getElementById('refresh-lobby-btn')) === null || _g === void 0 ? void 0 : _g.addEventListener('click', () => {
@@ -199,8 +199,10 @@ export class GameUI {
         lobbyDiv.querySelectorAll('.join-game-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const gameId = e.target.getAttribute('data-gameid');
-                if (gameId)
+                if (gameId) {
+                    this.game.setGameIsHost(false);
                     this.game.getGameConnection().joinGame(gameId);
+                }
             });
         });
     }

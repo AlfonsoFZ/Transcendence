@@ -37,6 +37,7 @@ export default class Game extends Step {
             tournamentId: null,
             readyState: false
         };
+        this.isHost = true;
     }
     /************ CORE *****************/
     /*********** METHODS ***************/
@@ -93,6 +94,9 @@ export default class Game extends Step {
     setGameMatch(match) {
         this.match = match;
     }
+    setGameIsHost(state) {
+        this.isHost = state;
+    }
     /***********************************/
     /*********** GETTERS ***************/
     getGameConfig() {
@@ -112,5 +116,8 @@ export default class Game extends Step {
     }
     getGameMatch() {
         return (this.match);
+    }
+    getGameIsHost() {
+        return (this.isHost);
     }
 }

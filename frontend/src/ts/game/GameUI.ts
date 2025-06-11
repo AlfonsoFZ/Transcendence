@@ -80,11 +80,11 @@ export class GameUI
 		});
 		// Back button - returns to lobby
 		document.getElementById('back-button')?.addEventListener('click', () => {
-			this.showOnly('initial-screen');
+			this.showOnly('initial-screen', 'flex');
 		});
 		// Back button on 2nd player selection panel
 		document.getElementById('player2-back-btn')?.addEventListener('click', () => {
-			this.showOnly('initial-screen');
+			this.showOnly('initial-screen', 'flex');
 		});
 		// Refresh lobby button
 		document.getElementById('refresh-lobby-btn')?.addEventListener('click', () => {
@@ -227,7 +227,10 @@ export class GameUI
 			btn.addEventListener('click', (e) => {
 				const gameId = (e.target as HTMLElement).getAttribute('data-gameid');
 				if (gameId)
+				{	
+					this.game.setGameIsHost(false);
 					this.game.getGameConnection().joinGame(gameId);
+				}
 			});
 		});
 	}

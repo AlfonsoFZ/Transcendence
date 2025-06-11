@@ -132,6 +132,7 @@ export class GameConnection {
             return;
         }
         if (gameId) {
+            this.game.setGameMode('remote');
             const joinMsg = {
                 type: 'JOIN_GAME',
                 roomId: gameId

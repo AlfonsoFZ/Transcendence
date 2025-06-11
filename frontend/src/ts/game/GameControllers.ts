@@ -54,16 +54,20 @@ export class GameControllers
 			if (!this.game.getGameConnection().socket)
 				return ;
 			// Always send player1 input
-			this.game.getGameConnection().socket?.send(JSON.stringify({
-				type: 'PLAYER_INPUT',
-				input: {
-					player: 'player1',
-					up: this.keyState.w,
-					down: this.keyState.s
-				}
-			}));
+			if (this.game.getGameIsHost())
+			{
+				this.game.getGameConnection().socket?.send(JSON.stringify({
+					type: 'PLAYER_INPUT',
+					input: {
+						player: 'player1',
+						up: this.keyState.w,
+						down: this.keyState.s
+					}
+				}));
+			}
 			// Send player2 input if 1v1 mode
-			if (this.game.getGameLog().mode === '1v1')
+			if (this.game.getGameLog().mode === '1v1'
+				|| (this.game.getGameLog().mode === 'remote' && !this.game.getGameIsHost()))
 			{
 				this.game.getGameConnection().socket?.send(JSON.stringify({
 					type: 'PLAYER_INPUT',

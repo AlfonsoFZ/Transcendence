@@ -22,6 +22,7 @@ export default class Game extends Step
 	protected	log: GameData;
 	protected	gameConfig: GameConfig = {scoreLimit: 5, difficulty: 'medium'};
 	protected	match: GameMatch | null = null;
+	protected	isHost: boolean;
 	/***************************************/
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
@@ -41,6 +42,7 @@ export default class Game extends Step
 			tournamentId: null,
 			readyState: false
 		};
+		this.isHost = true;
 	}
 
 	/************ CORE *****************/
@@ -116,6 +118,11 @@ export default class Game extends Step
 		this.match = match;
 	}
 
+	public	setGameIsHost(state: boolean) : void
+	{
+		this.isHost = state;
+	}
+
 	/***********************************/
 	/*********** GETTERS ***************/
 	public	getGameConfig(): GameConfig
@@ -146,5 +153,10 @@ export default class Game extends Step
 	public getGameMatch(): GameMatch | null
 	{
 		return (this.match);
+	}
+
+	public	getGameIsHost() : boolean
+	{
+		return (this.isHost);
 	}
 }
