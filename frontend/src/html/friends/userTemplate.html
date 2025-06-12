@@ -1,0 +1,21 @@
+<div id="item-{{ userId }}" class="item flex w-full gap-2.5">
+	<div
+		class="item-wrapper flex flex-col w-full leading-tight px-3 py-2 border-b rounded-lg bg-slate-700 hover:bg-slate-500 transition-colors duration-400 cursor-pointer">
+		<div class="flex items-center space-x-2 rtl:space-x-reverse" data-id="{{ id }}">
+			<div class="relative shrink-0">
+				<img class="w-8 h-8 rounded-full" src="{{ imagePath }}" alt="{{ usernameImage }}">
+				<span class="absolute bottom-0 right-0 w-2.5 h-2.5 {{ bgcolor }} border-2 border-{{ bcolor }}-100 rounded-full"></span>
+			</div>
+			<span class="text-sm font-semibold text-white truncate">{{ username }}</span>
+			<div class="flex gap-2 ml-auto">
+                {{ buttons }}
+            </div>
+		</div>
+	</div>
+</div>
+
+<!-- 
+bg-green-500
+bg-yellow-500
+bg-red-500  
+-->
