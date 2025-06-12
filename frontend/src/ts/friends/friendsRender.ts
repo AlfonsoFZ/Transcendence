@@ -1,5 +1,9 @@
 import { Step } from '../spa/stepRender.js';
 import { searchUsersFriends } from './friendsSearchUsers.js';
+import { renderRelations } from './renderRelations.js';
+import { getUserId } from '../chat/handleSenders.js';
+
+export let currentUserId = "";
 
 export default class Friends extends Step {
 	
@@ -21,7 +25,16 @@ export default class Friends extends Step {
 				await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
 				btnSearch = document.getElementById("btnSearch");
 			}
-				btnSearch.addEventListener("click", (event) => searchUsersFriends('boton', event));
+			btnSearch.addEventListener("click", (event) => searchUsersFriends('boton', event));
+			const userId = await getUserId(this.username!);
+			currentUserId = userId;
+			if (!userId) {
+				throw new Error("User ID not found");
+			}
+			console.log("User ID:", userId);
+			const relationsContainer = document.getElementById("relations-container") as HTMLDivElement;
+			await renderRelations(relationsContainer!, userId);
+
 		}catch (error) {
 				console.error("Error loading HTML file:", error);
 				appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
