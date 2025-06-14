@@ -1,0 +1,127 @@
+<section id="chess-section" class="bg-gray-900 flex justify-center items-start">
+	<div
+		class="flex flex-col lg:flex-row h-auto lg:h-[65vh] w-full max-w-screen-xl mx-auto items-center justify-center">
+
+		<div id="board" class="flex items-center w-[min(100%,65vh)] aspect-square">
+			<!-- Chessboard drawn here on the canvas -->
+		</div>
+
+		<!-- Info Container -->
+		<div id="sidebar" class="flex flex-col justify-between w-full max-w-[65vh] h-full p-6">
+
+			<!-- Other Player -->
+			<div id="opponent" class="flex items-center gap-4 mb-4 w-[65%]">
+				<img src="https://localhost:8443/back/images/avatar-1.png" alt="Guest"
+					class="w-12 h-12 rounded-full shrink-0" />
+				<div class="text-white text-lg sm:text-xl font-semibold truncate">
+					Guest (1200)
+				</div>
+				<div id="user-time" class="bg-gray-600 text-white font-bold text-3xl sm:text-4xl leading-none mt-1 ml-auto px-2 py-2 rounded">
+					12:34
+				</div>
+			</div>
+
+			<!-- Buttons -->
+			<div id="action-buttons" class="flex justify-between items-center w-[65%] overflow-hidden border-2 border-red-500">
+				<button id="starting-position" class="flex-1 text-gray-300 group font-semibold text-sm cursor-pointer transition-colors duration-200 hover:text-gray-600">
+					<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+						class="w-14 h-14 mr-2 fill-current transition-colors duration-200">
+						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+						<g id="SVGRepo_iconCarrier" fill-rule="nonzero">
+							<path
+								d="M358.989 657.36h51.154V366.64H358.99zM631.348 656.96l36.118-36.29L559.112 511.8l108.354-108.87-36.118-36.29L486.875 511.8z">
+							</path>
+						</g>
+					</svg>
+				</button>
+				<button id="step-back" class="flex-1 text-white font-semibold text-sm group cursor-pointer">
+					<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+						class="w-9 h-9 mr-2 fill-gray-300 group-hover:fill-gray-600 transition-colors duration-200">
+						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+						<g id="SVGRepo_iconCarrier">
+							<path d="M604.7 759.2l61.8-61.8L481.1 512l185.4-185.4-61.8-61.8L357.5 512z"></path>
+						</g>
+					</svg>
+				</button>
+				<button id="play" class="flex-1 text-white font-semibold text-sm group cursor-pointer">
+					<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+						class="w-9 h-9 mr-2 fill-gray-300 group-hover:fill-gray-600 transition-colors duration-200">
+						<g id="SVGRepo_iconCarrier">
+							<path d="M716.8 512l-384-256v512z" fill-rule="evenodd"></path>
+						</g>
+					</svg>
+				</button>
+				<button id="step-forward" class="flex-1 text-white font-semibold text-sm group cursor-pointer">
+					<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+						style="transform: rotate(180deg);"
+						class="w-9 h-9 mr-2 fill-gray-300 group-hover:fill-gray-600 transition-colors duration-200">
+						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+						<g id="SVGRepo_iconCarrier">
+							<path d="M604.7 759.2l61.8-61.8L481.1 512l185.4-185.4-61.8-61.8L357.5 512z"></path>
+						</g>
+					</svg>
+				</button>
+				<button id="last-move" class="flex-1 text-gray-300 group font-semibold text-sm cursor-pointer transition-colors duration-200 hover:text-gray-600">
+					<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+						style="transform: rotate(180deg);"
+						class="w-14 h-14 mr-2 fill-current transition-colors duration-200">
+						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+						<g id="SVGRepo_iconCarrier" fill-rule="nonzero">
+							<path
+								d="M358.989 657.36h51.154V366.64H358.99zM631.348 656.96l36.118-36.29L559.112 511.8l108.354-108.87-36.118-36.29L486.875 511.8z">
+							</path>
+						</g>
+					</svg>
+				</button>
+				<button id="flip-board" class="flex-1 text-white font-semibold text-sm group cursor-pointer">
+					<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+						class="w-9 h-9 mr-2 fill-gray-300 group-hover:fill-gray-600 transition-colors duration-200">
+						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+						<g id="SVGRepo_iconCarrier">
+							<path
+								d="M512 281.6c71.221 0 136.396 32.619 179.2 85.526V256h51.2v204.8H537.6v-51.2h121.511c-32.857-47.165-87.235-76.8-147.111-76.8-98.97 0-179.2 80.23-179.2 179.2 0 98.97 80.23 179.2 179.2 179.2v-.02c73.665 0 138.994-44.857 166.176-111.988l47.458 19.216C690.689 684.711 606.7 742.38 512 742.38v.02c-127.246 0-230.4-103.154-230.4-230.4 0-127.246 103.154-230.4 230.4-230.4z"
+								fill-rule="nonzero"></path>
+						</g>
+					</svg>
+				</button>
+			</div>
+
+			<!-- Notation container -->
+			<div id="notation-container"
+				class="flex-1 w-[65%] overflow-y-auto mb-4 bg-gray-700 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-500">
+				<div class="">
+					<!-- Items con scroll -->
+					<div class="p-2 text-white hover:bg-gray-800 border-1 border-gray-400 cursor-pointer">1.<span
+							style="padding-left: 5em;">e4<span style="padding-left: 5em;">&#9822 f3</div>
+				</div>
+			</div>
+
+			<!-- Buttons -->
+			<div id="game-options" class="flex justify-between gap-2 mb-4 w-[65%]">
+				<button class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-2 rounded text-sm">Play</button>
+				<button class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-1 px-2 rounded text-sm">Offer Draw</button>
+				<button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-2 rounded text-sm">Resign</button>
+			</div>
+
+			<!-- User -->
+			<div id="user" class="flex items-center gap-4 w-[65%]">
+				<img src="https://localhost:8443/back/images/avatar-2.png" alt="Ismael"
+					class="w-12 h-12 rounded-full shrink-0" />
+				<div class="text-white text-lg sm:text-xl font-semibold truncate">
+					Ismael (800)
+				</div>
+				<div id="user-time" class="bg-gray-600 text-white font-bold text-3xl sm:text-4xl leading-none mt-1 ml-auto px-2 py-2 rounded">
+					12:34
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+	</div>
+</section>

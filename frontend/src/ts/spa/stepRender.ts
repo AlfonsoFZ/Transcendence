@@ -84,6 +84,7 @@ export class Step {
 	        <nav id="nav" class="bg-gray-800 p-4">
 	            <ul class="flex space-x-4">
 	                <li><a href="#play-pong" class="text-white hover:text-gray-400">Play Game</a></li>
+	                <li><a href="#play-chess" class="text-white hover:text-gray-400">Chess</a></li>
 	                <li><a href="#play-tournament" class="text-white hover:text-gray-400">Start Tournament</a></li>
 	                <li><a href="#friends" class="text-white hover:text-gray-400">Friends</a></li>
 	                <li><a href="#chat" class="text-white hover:text-gray-400">Chat</a></li>
