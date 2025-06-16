@@ -10,8 +10,6 @@ export function addPlayer(playerId, connection)
 	const playerNumber = this.players.size === 0 ? 'player1' : 'player2';
 	this.players.set(playerId, { connection, playerNumber, ready: false });
 
-	if (this.gameMode === '1vAI' && this.players.size === 1)
-		this.startAI();
 	return (playerNumber);
 }
 
@@ -39,37 +37,6 @@ export function removePlayer(playerId)
 	this.players.delete(playerId);
 	if (this.isEmpty())
 		this.destroy();
-}
-
-// Start AI opponent which will track ball an move paddle to it
-// TODO: use aiErrorFactor from difficulty
-export function startAI()
-{
-	this.aiInterval = setInterval(() => {
-		const	speedAI = 0.15;
-		const 	ballY = this.state.ball.y;
-		const 	paddle = this.state.paddles.player2;
-		
-		// Store last position to track movement
-		if (!paddle.lastY)
-			paddle.lastY = paddle.y;
-		
-		// Old position
-		const	oldY = paddle.y;
-		// Tracking speed
-		paddle.y += (ballY - paddle.y) * speedAI;
-		
-		// Paddle boundries (so they don't move out of canvas)
-		const	paddleHeight = 0.15;
-		const	minY = paddleHeight / 2;
-		const	maxY = 1 - (paddleHeight / 2);
-		if (paddle.y < minY)
-			paddle.y = minY;
-		if (paddle.y > maxY)
-			paddle.y = maxY;
-		// Track velocity
-		paddle.lastY = oldY;
-	}, 50);
 }
 
 // Handle player input

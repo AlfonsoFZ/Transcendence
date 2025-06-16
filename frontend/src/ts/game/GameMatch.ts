@@ -12,16 +12,18 @@ import { GameUI } from './GameUI.js';
 import { Step } from "../spa/stepRender.js";
 import { GameControllers } from './GameControllers.js'
 import { GameData, GameConfig, GamePlayer } from './types.js';
+import { GameAI } from './GameAI.js';
 
 export default class GameMatch extends Step
 {
-	private game: Game;
+	private	game: Game;
 	public	controllers: GameControllers;
 	private log: GameData;
 	private renderer: GameRender;
 	private config: GameConfig;
 	private	ui: GameUI;
 	private	connection: GameConnection;
+	private	ai: GameAI | null = null;
 
 	constructor(game: Game)
 	{
@@ -34,6 +36,8 @@ export default class GameMatch extends Step
 		this.log = game.getGameLog();
 		this.ui = game.getGameUI();
 		this.connection = game.getGameConnection();
+		if (this.log.mode === '1vAI')
+			this.ai = new GameAI(this.game);
 	}
 
 	async render(appElement: HTMLElement): Promise<void>
@@ -58,6 +62,8 @@ export default class GameMatch extends Step
 			this.renderer.ctx = canvas.getContext('2d');
 			this.connection.socket?.send(JSON.stringify({ type: 'CLIENT_READY' }));
 		}
+		if (this.ai)
+			this.ai.start();
 		this.controllers.setupControllers();
 	}
 	
@@ -121,5 +127,10 @@ export default class GameMatch extends Step
 	{
 		this.controllers.cleanup();
 		this.renderer.destroy();
+		if (this.ai)
+		{
+			this.ai.stop();
+			this.ai = null;
+		}
 	}
 }
