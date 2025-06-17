@@ -28,7 +28,7 @@ export default class GameMatch extends Step
 	constructor(game: Game)
 	{
 		super('game-container');
-		console.log('GameMatch constructed with:', game, 'getGameRender:', typeof game.getGameRender);
+		console.log('GameMatch constructed with:', game);
 		this.game = game;
 		this.renderer = game.getGameRender();
 		this.controllers = new GameControllers(this.game);

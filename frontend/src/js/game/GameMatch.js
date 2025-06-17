@@ -15,10 +15,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { SPA } from '../spa/spa.js';
 import { Step } from "../spa/stepRender.js";
 import { GameControllers } from './GameControllers.js';
+import { GameAI } from './GameAI.js';
 export default class GameMatch extends Step {
     constructor(game) {
         super('game-container');
-        console.log('GameMatch constructed with:', game, 'getGameRender:', typeof game.getGameRender);
+        this.ai = null;
+        console.log('GameMatch constructed with:', game);
         this.game = game;
         this.renderer = game.getGameRender();
         this.controllers = new GameControllers(this.game);
@@ -26,6 +28,8 @@ export default class GameMatch extends Step {
         this.log = game.getGameLog();
         this.ui = game.getGameUI();
         this.connection = game.getGameConnection();
+        if (this.log.mode === '1vAI')
+            this.ai = new GameAI(this.game);
     }
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -47,6 +51,8 @@ export default class GameMatch extends Step {
                 this.renderer.ctx = canvas.getContext('2d');
                 (_a = this.connection.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({ type: 'CLIENT_READY' }));
             }
+            if (this.ai)
+                this.ai.start();
             this.controllers.setupControllers();
         });
     }
@@ -104,5 +110,9 @@ export default class GameMatch extends Step {
     destroy() {
         this.controllers.cleanup();
         this.renderer.destroy();
+        if (this.ai) {
+            this.ai.stop();
+            this.ai = null;
+        }
     }
 }
