@@ -7,6 +7,7 @@ import { TournamentData, TournamentConfig, TournamentPlayer } from './types.js';
 import { PlayerCard } from './playerCard.js'; 
 import { GamePlayer } from '../game/types.js';
 
+
 // Assuming you have a utility function to prepare players
 export class TournamentUI
 {
@@ -131,61 +132,61 @@ export class TournamentUI
 						console.error("Summary elements not found");
 					}
 					console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
-						preparePlayers(numberOfPlayers);
+						this.preparePlayers(numberOfPlayers);
 					});
 				
 			}
 		}
 		);
 
-		const preparePlayers = (numberOfPlayers: number): void => {
-			this.tournament.setEmptyTournamentPlayers(numberOfPlayers);
-			getFirstPlayer();
-			console.log ("Pendingplayers desde prepare players: ", this.tournament.getPendingPlayersCount());
-			console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
+		// const preparePlayers = (numberOfPlayers: number): void => {
+		// 	this.tournament.setEmptyTournamentPlayers(numberOfPlayers);
+		// 	getFirstPlayer();
+		// 	console.log ("Pendingplayers desde prepare players: ", this.tournament.getPendingPlayersCount());
+		// 	console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
 			
-			for (let i : number = 1; i <= numberOfPlayers; i++) {
+		// 	for (let i : number = 1; i <= numberOfPlayers; i++) {
 				
-				console.log("Preparing player card for player: ", i + 1);
-				const playersContainer = document.getElementById('select-player-container');
-				// // const playerContainer = document.getElementById('player-container');
-				if (playersContainer )
-				{				
-					playersContainer.style.display = "block";
-					new PlayerCard(i+1, playersContainer);
-				}
-			}	
-		}
+		// 		console.log("Preparing player card for player: ", i + 1);
+		// 		const playersContainer = document.getElementById('select-player-container');
+		// 		// // const playerContainer = document.getElementById('player-container');
+		// 		if (playersContainer )
+		// 		{				
+		// 			playersContainer.style.display = "block";
+		// 			new PlayerCard(i+1, playersContainer);
+		// 		}
+		// 	}	
+		// }
 	
-		const getFirstPlayer = async (): Promise<void> => {
-			try
-			{
-				const response = await fetch("https://localhost:8443/back//verify_first_player", {
-					method: "POST",
-					credentials: 'include',	
-				});
-				const result = await response.json();
-				if (!response.ok)
-				{
-					console.log(`Error: ${result.message}`);
-				}
-				else{
-					const playerOne: GamePlayer = {
-						id: result.id,
-						username: result.username,
-						tournamentUsername: result.tournamentUsername,
-						email: result.email,
-						avatarPath: result.avatarPath
-					};
-					this.tournament.setTournamentPlayer( 0,'ready', playerOne);
-					// Esta llamada hay que repetirla para cada jugador que se registre
-					this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
-				}
-			}
-			catch (error){
-				console.error("Error while verifying:", error);
-			}
-		}
+		// const getFirstPlayer = async (): Promise<void> => {
+		// 	try
+		// 	{
+		// 		const response = await fetch("https://localhost:8443/back//verify_first_player", {
+		// 			method: "POST",
+		// 			credentials: 'include',	
+		// 		});
+		// 		const result = await response.json();
+		// 		if (!response.ok)
+		// 		{
+		// 			console.log(`Error: ${result.message}`);
+		// 		}
+		// 		else{
+		// 			const playerOne: GamePlayer = {
+		// 				id: result.id,
+		// 				username: result.username,
+		// 				tournamentUsername: result.tournamentUsername,
+		// 				email: result.email,
+		// 				avatarPath: result.avatarPath
+		// 			};
+		// 			this.tournament.setTournamentPlayer( 0,'ready', playerOne);
+		// 			// Esta llamada hay que repetirla para cada jugador que se registre
+		// 			this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
+		// 		}
+		// 	}
+		// 	catch (error){
+		// 		console.error("Error while verifying:", error);
+		// 	}
+		// }
 
 		document.getElementById('remoteTournament')?.addEventListener('click', async () => {
 			// await this.game.setPlayerInfo('player1', null);
@@ -202,6 +203,97 @@ export class TournamentUI
 		});
 
 	}
+
+	preparePlayers(numberOfPlayers: number): void {
+		// this.tournament.setEmptyTournamentPlayers(numberOfPlayers);
+		this.getFirstPlayer();
+		console.log("Pending players desde preparePlayers:", this.tournament.getPendingPlayersCount());
+		console.log("Preparing players for tournament with number of players:", numberOfPlayers);
+		this.getNextPlayer();
+
+	}
+
+	getNextPlayer(): void {
+		const numberOfPlayers = this.tournament.getTournamentConfig().numberOfPlayers;
+		const numberOfPendingPlayers = this.tournament.getPendingPlayersCount();
+		if (numberOfPendingPlayers === 0) {
+			this.launchTournament(this.tournament); // No pending players to prepare
+		}
+		let i = this.tournament.addTournamentPlayer.length;
+		const playersContainer = document.getElementById('select-player-container');
+		if (playersContainer) {
+			playersContainer.style.display = "block";
+			new PlayerCard(i + 1, playersContainer);
+			}
+	
+		// numberOfPlayers
+		// for (let i = 1; i <= numberOfPlayers; i++) {
+		// 	console.log("Preparing player card for player:", i + 1);
+		// 	const playersContainer = document.getElementById('select-player-container');
+		// 	if (playersContainer) {
+		// 		playersContainer.style.display = "block";
+		// 		new PlayerCard(i + 1, playersContainer);
+		// 		}
+		// 	}
+		// }
+	}
+
+	launchTournament(tournament: Tournament): void {
+		// incluir lógica para lanzar el torneo
+		console.log("Launching tournament:");
+		// if (!tournament.checkTournamentPlayers()) {
+		// 	console.error("Cannot start tournament: not all players are ready");
+		// 	return;
+		// }
+		
+	// 	tournament.setTournamentData({
+	// 		id: 'tournament-' + Date.now(),
+	// 		mode: 'local',
+	// 		players: tournament.getTournamentPlayers().map(player => player.gameplayer),
+	// 		startTime: Date.now(),
+	// 		config: tournament.getTournamentConfig(),
+	// 		result: null,
+	// 		gameIds: [],
+	// 		readyState: true
+	// 	} as TournamentData);
+	// 	console.log("Tournament started with data:", tournament.getTournamentData());
+	// 	this.showOnly('tournament-container');
+	// 	this.renderRegisteredPlayers(tournament.getTournamentPlayers());
+	// }
+	}
+	
+	async getFirstPlayer(): Promise<void> {
+		try {
+			const response = await fetch("https://localhost:8443/back//verify_first_player", {
+				method: "POST",
+				credentials: 'include',
+			});
+			const result = await response.json();
+			if (!response.ok) {
+				console.log(`Error: ${result.message}`);
+			} else {
+				const playerOne: GamePlayer = {
+					id: result.id,
+					username: result.username,
+					tournamentUsername: result.tournamentUsername,
+					email: result.email,
+					avatarPath: result.avatarPath
+				};
+				// this.tournament.setTournamentPlayer(0, 'ready', playerOne);
+				const tournamentPlayer: TournamentPlayer = {
+					Index: '',
+					status: 'ready',
+					gameplayer: playerOne
+				};
+				this.tournament.addTournamentPlayer(tournamentPlayer);
+				this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
+			}
+		} catch (error) {
+			console.error("Error while verifying:", error);
+		}
+	}
+
+
 
 	/**
 	 * Hay que darle el formato al componente para mostrar ya sea haciendo un pequeño componente con su html y sus clases, incluyendo más css aquí o con el archivo css**/
