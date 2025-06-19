@@ -3,7 +3,11 @@
  */
 
 import Tournament from './Tournament.js'
+import { TournamentData, TournamentConfig, TournamentPlayer } from './types.js';
+import { PlayerCard } from './playerCard.js'; 
+import { GamePlayer } from '../game/types.js';
 
+// Assuming you have a utility function to prepare players
 export class TournamentUI
 {
 	private	tournament: Tournament;
@@ -20,7 +24,8 @@ export class TournamentUI
 			'tournament-config-panel',
 			'tournament-container',
 			'tournament-results',
-			'local-tournament-form'
+			'local-tournament-form',
+			"tournamnet-info-container"
 		];
 		divIndex.forEach(id => {
 			const	checkDiv = document.getElementById(id);
@@ -53,12 +58,135 @@ export class TournamentUI
 		console.log("Setting up tournament UI event listeners");
 		// Game mode buttons
 		document.getElementById('localTournament')?.addEventListener('click', async () => {
-			// await this.game.setPlayerInfo('player1', null);
-			// this.game.setGameMode('1v1');
 			this.showOnly('local-tournament-form');
-			// this.setupPlayer2LoginPanel();
-		});
-		
+			// Número de jugadores
+			const numberSlider = document.getElementById("tournament-number-of-players") as HTMLInputElement | null;
+			const numberValue = document.getElementById("tournament-number-of-players-value") as HTMLElement | null;
+			if (numberSlider && numberValue) {
+				numberValue.textContent = numberSlider.value;
+				numberSlider.addEventListener("input", () => {
+					numberValue.textContent = numberSlider.value;
+				});
+			}
+
+			// Score limit
+			const scoreSlider = document.getElementById("tournament-score-limit") as HTMLInputElement | null;
+			const scoreValue = document.getElementById("tournament-score-value") as HTMLElement | null;
+			if (scoreSlider && scoreValue) {
+				scoreValue.textContent = scoreSlider.value;
+				scoreSlider.addEventListener("input", () => {
+					scoreValue.textContent = scoreSlider.value;
+				});
+			}
+
+			// Dificultad
+			const difficultySlider = document.getElementById("tournament-difficulty") as HTMLInputElement | null;
+			const difficultyValue = document.getElementById("tournament-difficulty-value") as HTMLElement | null;
+			const difficultyLabels = ["Easy", "Medium", "Hard"];
+			if (difficultySlider && difficultyValue) {
+				difficultyValue.textContent = difficultyLabels[parseInt(difficultySlider.value) - 1];
+				difficultySlider.addEventListener("input", () => {
+					difficultyValue.textContent = difficultyLabels[parseInt(difficultySlider.value) - 1];
+				});
+			}
+			const selectPlayers = document.getElementById("select-players") as HTMLButtonElement | null;
+			if (selectPlayers) {
+				selectPlayers.addEventListener("click", (e) => {
+					e.preventDefault();
+					let numberOfPlayers = parseInt(numberSlider?.value || "4");
+					let scoreLimit = parseInt(scoreSlider?.value || "5");
+
+					console.log("difficultySlider.value:", difficultySlider?.value);
+					// Difficulty slider
+					if (!difficultySlider) {
+						console.error("Difficulty slider not found");
+						return;
+					}
+					const value = parseInt(difficultySlider?.value);
+					let difficultyLevel: 'easy' | 'medium' | 'hard' = 'medium';
+					if (value === 1){
+						difficultyLevel = 'easy';
+					}else if (value === 3)							{
+						difficultyLevel = 'hard';
+					}
+					let tConfig = {numberOfPlayers:numberOfPlayers, scoreLimit: scoreLimit, difficulty: difficultyLevel} as TournamentConfig;							
+					console.log("Tconfig set:", JSON.stringify(tConfig));
+					this.tournament.setTournamentConfig(tConfig);
+					this.tournament.setPendingPlayersCount(numberOfPlayers - 1);
+						
+					console.log("numberOfPlayers set to:", numberOfPlayers);
+					console.log("scoreLimit set to:", scoreLimit);
+					console.log("Difficulty set to:", this.tournament.getTournamentConfig().difficulty);
+					console.log("Tournament config set:", JSON.stringify(this.tournament.getTournamentConfig()));
+					this.showOnly('tournamnet-info-container');
+					
+					const sumaryPlayersHtml = document.getElementById('summary-players')
+					const sumaryScoreHtml = document.getElementById('summary-score')
+					const sumaryDifficultHtml = document.getElementById('summary-difficulty')
+					if (sumaryPlayersHtml && sumaryScoreHtml && sumaryDifficultHtml) {
+						sumaryPlayersHtml.textContent = `Number of Players: ${numberOfPlayers}`;
+						sumaryScoreHtml.textContent = `Score Limit: ${scoreLimit}`;
+						sumaryDifficultHtml.textContent = `Difficulty: ${this.tournament.getTournamentConfig().difficulty}`;
+					} else {
+						console.error("Summary elements not found");
+					}
+					console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
+						preparePlayers(numberOfPlayers);
+					});
+				
+			}
+		}
+		);
+
+		const preparePlayers = (numberOfPlayers: number): void => {
+			this.tournament.setEmptyTournamentPlayers(numberOfPlayers);
+			getFirstPlayer();
+			console.log ("Pendingplayers desde prepare players: ", this.tournament.getPendingPlayersCount());
+			console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
+			
+			for (let i : number = 1; i <= numberOfPlayers; i++) {
+				
+				console.log("Preparing player card for player: ", i + 1);
+				const playersContainer = document.getElementById('select-player-container');
+				// // const playerContainer = document.getElementById('player-container');
+				if (playersContainer )
+				{				
+					playersContainer.style.display = "block";
+					new PlayerCard(i+1, playersContainer);
+				}
+			}	
+		}
+	
+		const getFirstPlayer = async (): Promise<void> => {
+			try
+			{
+				const response = await fetch("https://localhost:8443/back//verify_first_player", {
+					method: "POST",
+					credentials: 'include',	
+				});
+				const result = await response.json();
+				if (!response.ok)
+				{
+					console.log(`Error: ${result.message}`);
+				}
+				else{
+					const playerOne: GamePlayer = {
+						id: result.id,
+						username: result.username,
+						tournamentUsername: result.tournamentUsername,
+						email: result.email,
+						avatarPath: result.avatarPath
+					};
+					this.tournament.setTournamentPlayer( 0,'ready', playerOne);
+					// Esta llamada hay que repetirla para cada jugador que se registre
+					this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
+				}
+			}
+			catch (error){
+				console.error("Error while verifying:", error);
+			}
+		}
+
 		document.getElementById('remoteTournament')?.addEventListener('click', async () => {
 			// await this.game.setPlayerInfo('player1', null);
 			// this.game.setGuestInfo('player2', 'ai');
@@ -72,7 +200,48 @@ export class TournamentUI
 			// this.game.setGameMode('remote');
 			this.showOnly('tournament-config-panel');
 		});
+
 	}
+
+	/**
+	 * Hay que darle el formato al componente para mostrar ya sea haciendo un pequeño componente con su html y sus clases, incluyendo más css aquí o con el archivo css**/
+		public renderRegisteredPlayers = (players: TournamentPlayer[]): void => {
+			const PlayerRegisterHTMLContainer = document.getElementById('registered-players');
+
+			if (!PlayerRegisterHTMLContainer) {
+				console.error("Player register HTML container not found");
+				return;
+			}
+			else
+			{
+				PlayerRegisterHTMLContainer.innerHTML = ''; // Clear previous content
+				players.forEach((player) => {
+					if (player.status === 'ready' ){	//Condicionar al modo en remoto para el cambio de ready a waiting si se hace finalmente
+					const playerItem = document.createElement('li');
+					playerItem.classList.add('flex', 'flex-row');
+					const avatarImg = document.createElement('img');
+					avatarImg.src = player.gameplayer.avatarPath || 'default-avatar.png'; // Use a default avatar if none is provided
+					avatarImg.alt = `Avatar of Player ${player.Index}`;
+					avatarImg.className = 'player-avatar';
+					avatarImg.style.maxWidth = '2rem';
+					avatarImg.style.height = 'auto';
+					playerItem.appendChild(avatarImg);
+					playerItem.className = 'player-item';
+					const playerTournamentName = document.createElement('span');
+					playerTournamentName.className = 'player-tournament-name';
+					playerItem.appendChild(playerTournamentName);
+					// Capitalize the first letter of the tournament username
+					// and make the rest lowercase
+					playerTournamentName.textContent = ` ${player.gameplayer.tournamentUsername.charAt(0).toUpperCase()}${player.gameplayer.tournamentUsername.slice(1).toLowerCase()}`;
+					PlayerRegisterHTMLContainer.appendChild(playerItem);
+					}
+				});
+			}
+		};
+	}
+	
+
+
 // 		// Configuration panel elements
 // 		this.setupConfigPanelListeners();
 		
@@ -183,4 +352,4 @@ export class TournamentUI
 // 		this.game.setGameConfig(this.game.getGameConfig());
 // 		this.game.getGameConnection().joinGame(this.game.getGameLog().mode);
 // 	}
-}
+	

@@ -17,9 +17,6 @@ export default class Tournament extends Step {
     constructor(containerId = DEFAULT_CONTAINER_ID) {
         super(containerId);
         this.tournamentId = null;
-        this.tournamentPlayers = [];
-        this.tournamentConfig = { numberOfPlayers: 4, scoreLimit: 5, difficulty: 'medium' };
-        this.tournamentPendingPlayers = this.tournamentConfig.numberOfPlayers - 1;
         this.findNextTournamentId().then(id => {
             this.tournamentId = id;
         });
@@ -72,51 +69,5 @@ export default class Tournament extends Step {
             // 	appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
             // }
         });
-    }
-    setTournamentConfig(config) {
-        this.tournamentConfig = config;
-        // this.log.config = config;
-    }
-    getTournamentConfig() {
-        return this.tournamentConfig;
-    }
-    setEmptyTournamentPlayers(numberOfPlayers) {
-        this.tournamentPlayers = [];
-        for (let i = 0; i < numberOfPlayers; i++) {
-            this.tournamentPlayers.push({
-                Index: i.toString(),
-                status: 'pending', // 
-                gameplayer: { id: '', username: '', tournamentUsername: '', email: '', avatarPath: '' } // Assuming GamePlayer has these properties
-            });
-        }
-    }
-    checkTournamentPlayers() {
-        if (this.tournamentPlayers.length === 0) {
-            console.warn("No players in the tournament.");
-            return false;
-        }
-        for (const player of this.tournamentPlayers) {
-            if (player.status === 'pending') {
-                return false;
-            }
-        }
-        return true;
-    }
-    getTournamentPlayers() {
-        return this.tournamentPlayers;
-    }
-    getTournamentPlayerByIndex(index) {
-        const player = this.tournamentPlayers[index];
-        return player && player.gameplayer && player.gameplayer.id ? [player] : null;
-    }
-    setTournamentPlayer(index, status, player) {
-        this.tournamentPlayers[index].status = status;
-        this.tournamentPlayers[index].gameplayer = player;
-    }
-    getPendingPlayersCount() {
-        return this.tournamentPendingPlayers;
-    }
-    setPendingPlayersCount(count) {
-        this.tournamentPendingPlayers = count;
     }
 }

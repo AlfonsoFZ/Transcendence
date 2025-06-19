@@ -1,0 +1,67 @@
+<!-- Wrapper visible -->
+<div id="tournament-form-wrapper" class="w-full min-h-screen p-4 bg-black text-white flex flex-col lg:flex-row gap-4">
+
+	<!-- Left: Config & Registered Players -->
+	<div class="w-full lg:w-1/2 bg-gray-800 p-4 rounded-xl">
+		<h3 class="text-xl font-bold text-yellow-400 mb-4">Tournament Config</h3>
+		<ul class="space-y-2 mb-6">
+		<li>🕹️ Players: <span id="summary-players">4</span></li>
+				<li>🏁 Score Limit: <span id="summary-score">5</span></li>
+				<li>🔥 Difficulty: <span id="summary-difficulty">Medium</span></li>
+		</ul>
+
+		<h4 class="text-lg font-bold text-green-400 mb-2">Registered Players</h4>
+		<ul id="registered-players" class="space-y-2">
+			<!-- Aquí se añaden avatares + nombres -->
+		</ul>
+	</div>
+
+	<!-- Right: Player Form -->
+	<div class="w-full lg:w-1/2 bg-gray-700 p-4 rounded-xl relative">
+		<div class="relative w-full h-full">
+			<div id="player-forms" class="w-full h-full relative">
+				<!-- Formulario actual visible -->
+				<div id="player-form-1" class="transition-transform duration-500">
+					<h4 class="text-lg font-bold mb-3">Select player {{ Player_index}}</h4>
+					<form id="players-login-form-{ userIndex }" class="w-full flex flex-col items-center space-y-2">
+						<input type="email" id="players-email-{ userIndex }" placeholder="Email"
+							class="w-full h-14 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg" />
+						<input type="password" id="players-password-{ userIndex }" placeholder="Password"
+							class="w-full h-14 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg" />
+						<button type="submit" class="w-full bg-green-500 text-white p-2 rounded font-bold hover:bg-green-600 transition text-lg">
+							Play as a registered user
+						</button>
+					</form>
+					<!-- Divider -->
+					<div class="flex items-center gap-4 text-yellow-400 font-bold my-6">
+					  <div class="flex-grow h-px bg-yellow-400"></div>
+					  <span class="text-lg">or</span>
+					  <div class="flex-grow h-px bg-yellow-400"></div>
+					</div>
+
+					<h4 class="text-lg font-bold mb-3">Select a tournament Name for player {{ Player_index}} and play as a guest</h4>
+					<form id="guests-login-form-{ userIndex }" class="w-full flex flex-col items-center space-y-2 mt-4 ">
+						<input type="text" id="guest-email-{ userIndex }" placeholder="choose a Tournament Name or leave it blank. and you'll get a guestName" class="w-full h-14 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"/>
+						<button type="submit" id="players-guest-btn-{ userIndex }" class="w-full bg-yellow-500 text-black p-2 rounded font-bold hover:bg-yellow-600 transition text-lg">
+							Play as a guest
+						</button>
+						<div id="players-login-error" class="w-full text-center text-red-500 mt-4"></div>
+						</form>
+					<!-- Divider -->
+					<div class="flex items-center gap-4 text-yellow-400 font-bold my-6">
+					  <div class="flex-grow h-px bg-orange-400"></div>
+					  <span class="text-lg">or</span>
+					  <div class="flex-grow h-px bg-orange-400"></div>
+					</div>
+					<button id="players-guest-btn-{ userIndex }" class="w-full bg-orange-500 text-black p-2 rounded font-bold hover:bg-orange-600 transition text-lg">
+							AI Player {{ Player_index }}
+					</button>
+				</div>
+				<!-- Ocultos por defecto -->
+
+					<!-- mismo formulario -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

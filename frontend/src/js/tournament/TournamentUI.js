@@ -10,8 +10,43 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { PlayerCard } from './playerCard.js';
+// Assuming you have a utility function to prepare players
 export class TournamentUI {
     constructor(tournament) {
+        /**
+         * Hay que darle el formato al componente para mostrar ya sea haciendo un pequeño componente con su html y sus clases, incluyendo más css aquí o con el archivo css**/
+        this.renderRegisteredPlayers = (players) => {
+            const PlayerRegisterHTMLContainer = document.getElementById('registered-players');
+            if (!PlayerRegisterHTMLContainer) {
+                console.error("Player register HTML container not found");
+                return;
+            }
+            else {
+                PlayerRegisterHTMLContainer.innerHTML = ''; // Clear previous content
+                players.forEach((player) => {
+                    if (player.status === 'ready') { //Condicionar al modo en remoto para el cambio de ready a waiting si se hace finalmente
+                        const playerItem = document.createElement('li');
+                        playerItem.classList.add('flex', 'flex-row');
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = player.gameplayer.avatarPath || 'default-avatar.png'; // Use a default avatar if none is provided
+                        avatarImg.alt = `Avatar of Player ${player.Index}`;
+                        avatarImg.className = 'player-avatar';
+                        avatarImg.style.maxWidth = '2rem';
+                        avatarImg.style.height = 'auto';
+                        playerItem.appendChild(avatarImg);
+                        playerItem.className = 'player-item';
+                        const playerTournamentName = document.createElement('span');
+                        playerTournamentName.className = 'player-tournament-name';
+                        playerItem.appendChild(playerTournamentName);
+                        // Capitalize the first letter of the tournament username
+                        // and make the rest lowercase
+                        playerTournamentName.textContent = ` ${player.gameplayer.tournamentUsername.charAt(0).toUpperCase()}${player.gameplayer.tournamentUsername.slice(1).toLowerCase()}`;
+                        PlayerRegisterHTMLContainer.appendChild(playerItem);
+                    }
+                });
+            }
+        };
         this.tournament = tournament;
     }
     showOnly(divId, displayStyle = "block") {
@@ -20,7 +55,8 @@ export class TournamentUI {
             'tournament-config-panel',
             'tournament-container',
             'tournament-results',
-            'local-tournament-form'
+            'local-tournament-form',
+            "tournamnet-info-container"
         ];
         divIndex.forEach(id => {
             const checkDiv = document.getElementById(id);
@@ -50,11 +86,122 @@ export class TournamentUI {
         console.log("Setting up tournament UI event listeners");
         // Game mode buttons
         (_a = document.getElementById('localTournament')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
-            // await this.game.setPlayerInfo('player1', null);
-            // this.game.setGameMode('1v1');
             this.showOnly('local-tournament-form');
-            // this.setupPlayer2LoginPanel();
+            // Número de jugadores
+            const numberSlider = document.getElementById("tournament-number-of-players");
+            const numberValue = document.getElementById("tournament-number-of-players-value");
+            if (numberSlider && numberValue) {
+                numberValue.textContent = numberSlider.value;
+                numberSlider.addEventListener("input", () => {
+                    numberValue.textContent = numberSlider.value;
+                });
+            }
+            // Score limit
+            const scoreSlider = document.getElementById("tournament-score-limit");
+            const scoreValue = document.getElementById("tournament-score-value");
+            if (scoreSlider && scoreValue) {
+                scoreValue.textContent = scoreSlider.value;
+                scoreSlider.addEventListener("input", () => {
+                    scoreValue.textContent = scoreSlider.value;
+                });
+            }
+            // Dificultad
+            const difficultySlider = document.getElementById("tournament-difficulty");
+            const difficultyValue = document.getElementById("tournament-difficulty-value");
+            const difficultyLabels = ["Easy", "Medium", "Hard"];
+            if (difficultySlider && difficultyValue) {
+                difficultyValue.textContent = difficultyLabels[parseInt(difficultySlider.value) - 1];
+                difficultySlider.addEventListener("input", () => {
+                    difficultyValue.textContent = difficultyLabels[parseInt(difficultySlider.value) - 1];
+                });
+            }
+            const selectPlayers = document.getElementById("select-players");
+            if (selectPlayers) {
+                selectPlayers.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    let numberOfPlayers = parseInt((numberSlider === null || numberSlider === void 0 ? void 0 : numberSlider.value) || "4");
+                    let scoreLimit = parseInt((scoreSlider === null || scoreSlider === void 0 ? void 0 : scoreSlider.value) || "5");
+                    console.log("difficultySlider.value:", difficultySlider === null || difficultySlider === void 0 ? void 0 : difficultySlider.value);
+                    // Difficulty slider
+                    if (!difficultySlider) {
+                        console.error("Difficulty slider not found");
+                        return;
+                    }
+                    const value = parseInt(difficultySlider === null || difficultySlider === void 0 ? void 0 : difficultySlider.value);
+                    let difficultyLevel = 'medium';
+                    if (value === 1) {
+                        difficultyLevel = 'easy';
+                    }
+                    else if (value === 3) {
+                        difficultyLevel = 'hard';
+                    }
+                    let tConfig = { numberOfPlayers: numberOfPlayers, scoreLimit: scoreLimit, difficulty: difficultyLevel };
+                    console.log("Tconfig set:", JSON.stringify(tConfig));
+                    this.tournament.setTournamentConfig(tConfig);
+                    this.tournament.setPendingPlayersCount(numberOfPlayers - 1);
+                    console.log("numberOfPlayers set to:", numberOfPlayers);
+                    console.log("scoreLimit set to:", scoreLimit);
+                    console.log("Difficulty set to:", this.tournament.getTournamentConfig().difficulty);
+                    console.log("Tournament config set:", JSON.stringify(this.tournament.getTournamentConfig()));
+                    this.showOnly('tournamnet-info-container');
+                    const sumaryPlayersHtml = document.getElementById('summary-players');
+                    const sumaryScoreHtml = document.getElementById('summary-score');
+                    const sumaryDifficultHtml = document.getElementById('summary-difficulty');
+                    if (sumaryPlayersHtml && sumaryScoreHtml && sumaryDifficultHtml) {
+                        sumaryPlayersHtml.textContent = `Number of Players: ${numberOfPlayers}`;
+                        sumaryScoreHtml.textContent = `Score Limit: ${scoreLimit}`;
+                        sumaryDifficultHtml.textContent = `Difficulty: ${this.tournament.getTournamentConfig().difficulty}`;
+                    }
+                    else {
+                        console.error("Summary elements not found");
+                    }
+                    console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
+                    preparePlayers(numberOfPlayers);
+                });
+            }
         }));
+        const preparePlayers = (numberOfPlayers) => {
+            this.tournament.setEmptyTournamentPlayers(numberOfPlayers);
+            getFirstPlayer();
+            console.log("Pendingplayers desde prepare players: ", this.tournament.getPendingPlayersCount());
+            console.log("Preparing players for tournament with number of players: ", numberOfPlayers);
+            for (let i = 1; i <= numberOfPlayers; i++) {
+                console.log("Preparing player card for player: ", i + 1);
+                const playersContainer = document.getElementById('select-player-container');
+                // // const playerContainer = document.getElementById('player-container');
+                if (playersContainer) {
+                    playersContainer.style.display = "block";
+                    new PlayerCard(i + 1, playersContainer);
+                }
+            }
+        };
+        const getFirstPlayer = () => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield fetch("https://localhost:8443/back//verify_first_player", {
+                    method: "POST",
+                    credentials: 'include',
+                });
+                const result = yield response.json();
+                if (!response.ok) {
+                    console.log(`Error: ${result.message}`);
+                }
+                else {
+                    const playerOne = {
+                        id: result.id,
+                        username: result.username,
+                        tournamentUsername: result.tournamentUsername,
+                        email: result.email,
+                        avatarPath: result.avatarPath
+                    };
+                    this.tournament.setTournamentPlayer(0, 'ready', playerOne);
+                    // Esta llamada hay que repetirla para cada jugador que se registre
+                    this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
+                }
+            }
+            catch (error) {
+                console.error("Error while verifying:", error);
+            }
+        });
         (_b = document.getElementById('remoteTournament')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
             // await this.game.setPlayerInfo('player1', null);
             // this.game.setGuestInfo('player2', 'ai');
@@ -69,3 +216,102 @@ export class TournamentUI {
         }));
     }
 }
+// 		// Configuration panel elements
+// 		this.setupConfigPanelListeners();
+// 		// Start game button
+// 		document.getElementById('start-game')?.addEventListener('click', () => {
+// 			this.launchGame();
+// 		});
+// 		// Back button - returns to lobby
+// 		document.getElementById('back-button')?.addEventListener('click', () => {
+// 			this.showOnly('select-game');
+// 		});
+// 	}
+// 	/**
+// 	 * Set up listeners for the configuration panel elements
+// 	 */
+// 	private setupConfigPanelListeners(): void
+// 	{
+// 		// Score limit slider
+// 		const scoreSlider = document.getElementById('score-limit') as HTMLInputElement;
+// 		const scoreValue = document.getElementById('score-value');
+// 		if (scoreSlider && scoreValue)
+// 		{
+// 			scoreSlider.addEventListener('input', () => {
+// 				const value = scoreSlider.value;
+// 				scoreValue.textContent = value;
+// 				this.game.getGameConfig().scoreLimit = parseInt(value);
+// 			});
+// 		}
+// 		// Difficulty slider
+// 		const difficultySlider = document.getElementById('difficulty') as HTMLInputElement;
+// 		const difficultyValue = document.getElementById('difficulty-value');
+// 		if (difficultySlider && difficultyValue)
+// 		{
+// 			difficultySlider.addEventListener('input', () => {
+// 				const value = parseInt(difficultySlider.value);
+// 				let difficultyText = 'Medium';
+// 				let difficultyLevel: 'easy' | 'medium' | 'hard' = 'medium';
+// 				if (value === 1)
+// 				{
+// 					difficultyText = 'Easy';
+// 					difficultyLevel = 'easy';
+// 				}
+// 				else if (value === 3)
+// 				{
+// 					difficultyText = 'Hard';
+// 					difficultyLevel = 'hard';
+// 				}
+// 				difficultyValue.textContent = difficultyText;
+// 				this.game.getGameConfig().difficulty = difficultyLevel;
+// 			});
+// 		}
+// 	}
+// 	private setupPlayer2LoginPanel(): void
+// 	{
+// 		const	loginPanel = document.getElementById('player2-login-panel');
+// 		const	configPanel = document.getElementById('config-panel');
+// 		const	loginForm = document.getElementById('player2-login-form') as HTMLFormElement;
+// 		const	guestBtn = document.getElementById('player2-guest-btn');
+// 		const	errorMsg = document.getElementById('player2-login-error');
+// 		if (!loginPanel || !loginForm || !guestBtn || !configPanel)
+// 			return;
+// 		// Handle registered user login
+// 		loginForm.onsubmit = async (e) => {
+// 			e.preventDefault();
+// 			const email = (document.getElementById('player2-email') as HTMLInputElement).value;
+// 			const password = (document.getElementById('player2-password') as HTMLInputElement).value;
+// 			const success = await this.game.getGameConnection().checkPlayer({ email, password });
+// 			if (!email || !password)
+// 			{
+// 				if (errorMsg)
+// 					errorMsg.textContent = 'Please enter both email and password';
+// 				return;
+// 			}
+// 			if (success)
+// 			{
+// 				this.game.setPlayerInfo('player2', { email, password });
+// 				this.showOnly('config-panel');
+// 				if (errorMsg) errorMsg.textContent = '';
+// 			}
+// 			else
+// 				if (errorMsg) errorMsg.textContent = 'Invalid email or password. Please try again';
+// 		};
+// 		// Handle guest
+// 		guestBtn.onclick = () => {
+// 			this.game.setGuestInfo('player2', 'guest');
+// 			this.showOnly('config-panel');
+// 			if (errorMsg)
+// 				errorMsg.textContent = '';
+// 		};
+// 	}
+// 	launchGame(): void 
+// 	{
+// 		if (!this.game.getGameConnection().socket || !this.game.getGameConnection().connectionStat)
+// 		{
+// 			console.error("Cannot join game: connection not ready");
+// 			return ;
+// 		}
+// 		this.game.setGameConfig(this.game.getGameConfig());
+// 		this.game.getGameConnection().joinGame(this.game.getGameLog().mode);
+// 	}

@@ -79,7 +79,7 @@ export class GameConnection
 					try
 					{
 						const data = JSON.parse(event.data);
-						console.log("Parsed server message:", data);
+						// console.log("Parsed server message:", data);
 						switch(data.type)
 						{		
 							/*Cuando el servidor responde con un mensaje de tipo USER_INFO, 

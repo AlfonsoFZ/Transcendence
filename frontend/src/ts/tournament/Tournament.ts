@@ -1,5 +1,7 @@
 import { Step } from '../spa/stepRender.js';
 import { TournamentUI } from '../tournament/TournamentUI.js';
+import { TournamentData, TournamentConfig, TournamentPlayer} from './types.js';
+import { GamePlayer } from '../game/types.js';
 // import { game } from '../game/Game.js';
 
 // Default container ID (I think i should match HTML file)
@@ -8,9 +10,11 @@ const DEFAULT_CONTAINER_ID = "tournament-container";
 export default class Tournament extends Step {
 	
 	protected tournamentId: number | null = null;
+	protected tournamentPlayers: TournamentPlayer[] = [];
 	// protected games: game[] | null = null;
 	protected ui: TournamentUI;
-
+	protected tournamentConfig: TournamentConfig = {numberOfPlayers:4, scoreLimit: 5, difficulty: 'medium'};
+	protected tournamentPendingPlayers: number = this.tournamentConfig.numberOfPlayers -1;
 
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
@@ -68,4 +72,66 @@ export default class Tournament extends Step {
 		// 	appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
 		// }
 	}
+		public setTournamentConfig(config: TournamentConfig): void
+		{
+			this.tournamentConfig = config;
+			// this.log.config = config;
+		}
+
+		public getTournamentConfig(): TournamentConfig
+		{
+			return this.tournamentConfig;
+		}
+
+		public setEmptyTournamentPlayers(numberOfPlayers: number): void{
+			this.tournamentPlayers = [];
+			for (let i = 0; i < numberOfPlayers; i++) {
+				this.tournamentPlayers.push({
+					Index: i.toString(),
+					status: 'pending', // 
+					gameplayer: { id: '', username: '', tournamentUsername:'',email:'',avatarPath:'' } // Assuming GamePlayer has these properties
+				});
+			}
+		}
+
+		public checkTournamentPlayers(): boolean
+		{
+			if (this.tournamentPlayers.length === 0) {
+				console.warn("No players in the tournament.");
+				return false;
+			}
+			for (const player of this.tournamentPlayers) {
+				if (player.status === 'pending' ){
+				return false;
+				}
+			}
+			return true;
+		}
+
+		public getTournamentPlayers(): TournamentPlayer[]
+		{
+			return this.tournamentPlayers;
+		}
+
+		public getTournamentPlayerByIndex(index:number): TournamentPlayer[]| null
+		{
+			const player = this.tournamentPlayers[index];
+			return player && player.gameplayer && player.gameplayer.id ? [player] : null;
+		}
+
+		public setTournamentPlayer(index:number, status: 'pending' | 'ready' | 'waiting', player: GamePlayer): void
+		{
+			this.tournamentPlayers[index].status = status;
+			this.tournamentPlayers[index].gameplayer = player;
+		}
+		
+		public getPendingPlayersCount(): number
+		{
+			return this.tournamentPendingPlayers;
+		}
+
+		public setPendingPlayersCount(count: number): void
+		{
+			this.tournamentPendingPlayers = count;
+		}
 }
