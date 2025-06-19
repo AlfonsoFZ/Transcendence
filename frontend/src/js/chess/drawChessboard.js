@@ -16,26 +16,27 @@ function resizeCanvas(canvas) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
 }
-function drawBoard(fromSquare, toSquare, canvas) {
+function drawBoard(fromSquare, toSquare, selectedSquares, canvas) {
     const ctx = canvas.getContext("2d");
     const squareSize = canvas.clientWidth / 8;
     // To highlight last move
-    const fsCol = fromSquare ? parseInt(fromSquare[1]) : null;
     const fsRow = fromSquare ? parseInt(fromSquare[0]) : null;
-    const tsCol = toSquare ? parseInt(toSquare[1]) : null;
+    const fsCol = fromSquare ? parseInt(fromSquare[1]) : null;
     const tsRow = toSquare ? parseInt(toSquare[0]) : null;
+    const tsCol = toSquare ? parseInt(toSquare[1]) : null;
     ctx.font = `bold ${squareSize / 5}px Arial`;
-    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
             const isLight = (row + col) % 2 === 0;
-            if ((fsCol === col && fsRow === row) || (tsCol === col && tsRow === row)) {
-                console.log("HOLAAAA");
+            if (selectedSquares && selectedSquares.has(`${row}${col}`)) {
+                ctx.fillStyle = "rgb(180, 5, 5)";
+            }
+            else if ((fsCol === col && fsRow === row) || (tsCol === col && tsRow === row)) {
                 ctx.fillStyle = "rgb(255, 139, 139)";
             }
             else {
-                ctx.fillStyle = isLight ? "rgb(248, 250, 252)" : "rgb(67, 128, 183)";
+                ctx.fillStyle = isLight ? "rgb(255, 255, 255)" : "rgb(67, 128, 183)";
             }
             ctx.fillRect(col * squareSize, row * squareSize, squareSize, squareSize);
             if (col === 0) {
@@ -106,12 +107,12 @@ export function highlightSquare(square, canvas) {
     const squareRow = parseInt(square[0]);
     const squareX = squareCol * squareSize;
     const squareY = squareRow * squareSize;
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "rgb(255, 139, 139)";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgb(154, 234, 236)";
     ctx.strokeRect(squareX + 2, squareY + 2, squareSize - 4, squareSize - 4);
 }
-export function setupChessboard(chessboard, canvas, fromSquare, toSquare) {
+export function setupChessboard(chessboard, canvas, fromSquare, toSquare, selectedSquares) {
     resizeCanvas(canvas);
-    drawBoard(fromSquare, toSquare, canvas);
+    drawBoard(fromSquare, toSquare, selectedSquares, canvas);
     drawPieces(chessboard, canvas);
 }

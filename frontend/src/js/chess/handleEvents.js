@@ -1,6 +1,7 @@
 import { setupChessboard, drawMovingPiece, highlightSquare } from './drawChessboard.js';
-let fromSquare = null;
-let toSquare = null;
+let lastMoveFrom = null;
+let lastMoveTo = null;
+let selectedSquares = new Set();
 function getSquare(event, canvas) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -19,37 +20,52 @@ function getSquare(event, canvas) {
 function movePiece(event, fromSquare, piece, copy, canvas) {
     const currentSquare = getSquare(event, canvas);
     copy.deletePiece(fromSquare);
-    setupChessboard(copy, canvas, fromSquare, null);
+    setupChessboard(copy, canvas, fromSquare, null, selectedSquares);
     if (currentSquare) {
         highlightSquare(currentSquare, canvas);
     }
     drawMovingPiece(event, piece, canvas);
 }
-function dropPiece(event, piece, chessboard, canvas) {
-    // if move is ok from backend, then
-    toSquare = getSquare(event, canvas);
-    if (toSquare) {
-        chessboard.movePiece(fromSquare, toSquare);
-        console.log("chessboard.move", chessboard.move);
-        setupChessboard(chessboard, canvas, fromSquare, toSquare);
+function dropPiece(event, fromSquare, piece, chessboard, canvas) {
+    // If move is ok from backend, then
+    // fromSquare and toSquare are always set here. But it should set it only if they are valids.
+    // If fromSquare === toSquare, response is false from backend
+    const response = true;
+    const toSquare = getSquare(event, canvas);
+    if (toSquare && response) {
+        lastMoveFrom = fromSquare;
+        lastMoveTo = toSquare;
+        chessboard.movePiece(lastMoveFrom, lastMoveTo);
+        setupChessboard(chessboard, canvas, lastMoveFrom, lastMoveTo, selectedSquares);
     }
     else {
-        setupChessboard(chessboard, canvas, null, null);
+        setupChessboard(chessboard, canvas, lastMoveFrom, lastMoveTo, selectedSquares);
     }
 }
-function activateMouseListeners(piece, chessboard, canvas) {
+function activateMouseListeners(fromSquare, piece, chessboard, canvas) {
     function mouseMoveHandler(event) {
         movePiece(event, fromSquare, piece, chessboard.clone(), canvas);
     }
     function mouseUpHandler(event) {
-        dropPiece(event, piece, chessboard, canvas);
+        dropPiece(event, fromSquare, piece, chessboard, canvas);
         window.removeEventListener("mousemove", mouseMoveHandler);
         window.removeEventListener("mouseup", mouseUpHandler);
     }
+    function mouseRightClickHandler(event) {
+        setupChessboard(chessboard, canvas, lastMoveFrom, lastMoveTo, selectedSquares);
+        window.removeEventListener("mousemove", mouseMoveHandler);
+        window.removeEventListener("mouseup", mouseUpHandler);
+        window.removeEventListener("contextmenu", mouseRightClickHandler);
+    }
     window.addEventListener("mousemove", mouseMoveHandler);
     window.addEventListener("mouseup", mouseUpHandler);
+    window.addEventListener("contextmenu", mouseRightClickHandler);
 }
 export function handleEvents(chessboard, canvas) {
+    // To prevent right click context menu
+    canvas.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+    });
     // Event listener to change style cursor
     canvas.addEventListener("mousemove", (event) => {
         const square = getSquare(event, canvas);
@@ -63,21 +79,39 @@ export function handleEvents(chessboard, canvas) {
             }
         }
     });
-    // Event listener to handle moving a piece
+    // Event listener to handle select and move a piece or select and highlight a square
     canvas.addEventListener("mousedown", (event) => {
-        fromSquare = getSquare(event, canvas);
-        if (fromSquare) {
-            const piece = chessboard.getPieceAt(fromSquare);
-            if (piece) {
-                movePiece(event, fromSquare, piece, chessboard.clone(), canvas);
-                activateMouseListeners(piece, chessboard, canvas);
+        if (event.button === 0) {
+            if (selectedSquares) {
+                selectedSquares.clear();
+                setupChessboard(chessboard, canvas, lastMoveFrom, lastMoveTo, selectedSquares);
+            }
+            const fromSquare = getSquare(event, canvas);
+            if (fromSquare) {
+                const piece = chessboard.getPieceAt(fromSquare);
+                if (piece) {
+                    movePiece(event, fromSquare, piece, chessboard.clone(), canvas);
+                    activateMouseListeners(fromSquare, piece, chessboard, canvas);
+                }
+            }
+        }
+        if (event.button === 2) {
+            const square = getSquare(event, canvas);
+            if (square) {
+                if (selectedSquares.has(square)) {
+                    selectedSquares.delete(square);
+                }
+                else {
+                    selectedSquares.add(square);
+                }
+                setupChessboard(chessboard, canvas, lastMoveFrom, lastMoveTo, selectedSquares);
             }
         }
     });
     // Event listener for resize window
     window.addEventListener("resize", () => {
         requestAnimationFrame(() => {
-            setupChessboard(chessboard, canvas, fromSquare, toSquare);
+            setupChessboard(chessboard, canvas, lastMoveFrom, lastMoveTo, selectedSquares);
         });
     });
 }

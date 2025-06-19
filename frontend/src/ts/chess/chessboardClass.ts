@@ -47,6 +47,13 @@ export class Chessboard {
 		this.game.set(this.move, this.board);
 	}
 
+    setPieceAt(square: string, piece: string | null) {
+
+		const row = parseInt(square[0]);
+		const col = parseInt(square[1]);
+		this.board[row][col] = piece;
+	}
+
     getPieceAt(square: string): string | null {
 
 		const row = parseInt(square[0]);
@@ -54,11 +61,11 @@ export class Chessboard {
         return this.board[row][col];
     }
 
-    setPieceAt(square: string, piece: string | null) {
+	deletePiece(square: string) {
 
 		const row = parseInt(square[0]);
 		const col = parseInt(square[1]);
-		this.board[row][col] = piece;
+		this.board[row][col] = null;
 	}
 
     movePiece(fromSquare: string , toSquare: string) {
@@ -69,13 +76,6 @@ export class Chessboard {
         this.setPieceAt(toSquare, piece);
 		this.game.set(this.move++, this.board);
     }
-
-	deletePiece(square: string) {
-
-		const row = parseInt(square[0]);
-		const col = parseInt(square[1]);
-		this.board[row][col] = null;
-	}
 
 	clearBoard() {
 
