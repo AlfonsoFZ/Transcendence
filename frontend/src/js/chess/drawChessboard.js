@@ -19,7 +19,6 @@ function resizeCanvas(canvas) {
 function drawBoard(fromSquare, toSquare, selectedSquares, arrows, canvas) {
     const ctx = canvas.getContext("2d");
     const squareSize = canvas.clientWidth / 8;
-    // To highlight last move
     const fsRow = fromSquare ? parseInt(fromSquare[0]) : null;
     const fsCol = fromSquare ? parseInt(fromSquare[1]) : null;
     const tsRow = toSquare ? parseInt(toSquare[0]) : null;

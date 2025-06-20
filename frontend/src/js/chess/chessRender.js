@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from '../spa/stepRender.js';
+import { verifySocket } from './verifySocket.js';
 import { Chessboard } from './chessboardClass.js';
 import { getChessHtml, getUserId } from './handleFetchers.js';
 import { handleEvents } from './handleEvents.js';
@@ -23,6 +24,7 @@ export default class Chess extends Step {
                 appElement.innerHTML = yield getChessHtml();
                 const board = document.getElementById("board");
                 const userId = yield getUserId(this.username);
+                Step.socket = verifySocket(Step.chessSocket);
                 const chessboard = new Chessboard();
                 chessboard.init();
                 const canvas = createCanvas(board);

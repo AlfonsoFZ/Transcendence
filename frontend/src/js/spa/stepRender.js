@@ -156,3 +156,4 @@ export class Step {
     }
 }
 Step.socket = null; // Almacena la conexión WebSocket
+Step.chessSocket = null;
