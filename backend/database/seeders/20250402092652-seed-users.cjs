@@ -6,48 +6,127 @@ const { hashPassword } = require('../users/PassUtils.cjs');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
-	  const users = [
-		{
-		  username: 'ismael',
-		  password: await hashPassword('1234'),
-		  email: 'ismael@gmail.com',
-		  last_login: new Date(),
-		},
-		{
-		  username: 'alfonso',
-		  password: await hashPassword('1234'),
-		  email: 'alfonso@gmail.com',
-		  last_login: new Date(),
-		},
-		{
-		  username: 'fernando',
-		  password: await hashPassword('1234'),
-		  email: 'fernando@gmail.com',
-		  last_login: new Date(),
-		},
-		{
-		  username: 'pedro',
-		  password: await hashPassword('1234'),
-		  email: 'pedro@gmail.com',
-		  last_login: new Date(),
-		},
-		{
-		  username: 'user',
-		  password: await hashPassword('1234'),
-		  email: 'user@gmail.com',
-		  last_login: new Date(),
-		},
-	  ];
-  
-	  for (const user of users) {
-		await User.create(user);
-	  }
-	},
-  
-	async down(queryInterface, Sequelize) {
-	  await queryInterface.bulkDelete('users', null, {});
-	}
-  };
+		const users = [
+			{
+				username: 'ismael',
+				password: await hashPassword('1234'),
+				email: 'ismael@gmail.com',
+				last_login: new Date(),
+			},
+			{
+				username: 'alfonso',
+				password: await hashPassword('1234'),
+				email: 'alfonso@gmail.com',
+				last_login: new Date(),
+			},
+			{
+				username: 'fernando',
+				password: await hashPassword('1234'),
+				email: 'fernando@gmail.com',
+				last_login: new Date(),
+			},
+			{
+				username: 'pedro',
+				password: await hashPassword('1234'),
+				email: 'pedro@gmail.com',
+				last_login: new Date(),
+			},
+			{
+				username: 'user',
+				password: await hashPassword('1234'),
+				email: 'user@gmail.com',
+				last_login: new Date(),
+			},
+		];
 
-// docker exec -it backend bash && cd ./database && npx sequelize-cli db:seed:all --debug
-// docker exec -it backend bash && cd ./database && npx sequelize-cli db:seed:undo:all
+		// Añadir usuarios AI001-AI007
+		for (let i = 1; i <= 7; i++) {
+			const num = i.toString().padStart(3, '0');
+			users.push({
+				username: `Ai${num}`,
+				password: await hashPassword('1234'),
+				email: `ai${num}@transcendence.com`,
+				last_login: new Date(),
+			});
+		}
+
+		// Añadir usuarios Guest001-Guest008
+		for (let i = 1; i <= 7; i++) {
+			const num = i.toString().padStart(3, '0');
+			users.push({
+				username: `Guest${num}`,
+				password: await hashPassword('1234'),
+				email: `guest${num}@transcendence.com`,
+				last_login: new Date(),
+			});
+		}
+
+		// Crear todos los usuarios en la base de datos
+		for (const user of users) {
+			await User.create(user);
+		}
+	},
+
+	async down(queryInterface, Sequelize) {
+		await queryInterface.bulkDelete('users', {
+			username: {
+				[Sequelize.Op.like]: '%'
+			}
+		}, {});
+	}
+};
+
+
+// 'use strict';
+
+// const { User } = require('../models/index.cjs');
+// const { hashPassword } = require('../users/PassUtils.cjs');
+
+// /** @type {import('sequelize-cli').Migration} */
+// module.exports = {
+// 	async up(queryInterface, Sequelize) {
+// 	  const users = [
+// 		{
+// 		  username: 'ismael',
+// 		  password: await hashPassword('1234'),
+// 		  email: 'ismael@gmail.com',
+// 		  last_login: new Date(),
+// 		},
+// 		{
+// 		  username: 'alfonso',
+// 		  password: await hashPassword('1234'),
+// 		  email: 'alfonso@gmail.com',
+// 		  last_login: new Date(),
+// 		},
+// 		{
+// 		  username: 'fernando',
+// 		  password: await hashPassword('1234'),
+// 		  email: 'fernando@gmail.com',
+// 		  last_login: new Date(),
+// 		},
+// 		{
+// 		  username: 'pedro',
+// 		  password: await hashPassword('1234'),
+// 		  email: 'pedro@gmail.com',
+// 		  last_login: new Date(),
+// 		},
+// 		{
+// 		  username: 'user',
+// 		  password: await hashPassword('1234'),
+// 		  email: 'user@gmail.com',
+// 		  last_login: new Date(),
+// 		},
+// 	  ];
+  
+// 	  for (const user of users) {
+// 		await User.create(user);
+// 	  }
+// 	},
+  
+// 	async down(queryInterface, Sequelize) {
+// 	  await queryInterface.bulkDelete('users', null, {});
+// 	}
+//   };
+
+// // docker exec -it backend bash && cd ./database && npx sequelize-cli db:seed:all --debug
+// // docker exec -it backend bash && cd ./database && npx sequelize-cli db:seed:undo:all

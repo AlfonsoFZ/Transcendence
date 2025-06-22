@@ -14,7 +14,7 @@ export default class Tournament extends Step {
 	// protected games: game[] | null = null;
 	protected ui: TournamentUI;
 	protected tournamentConfig: TournamentConfig = {numberOfPlayers:4, scoreLimit: 5, difficulty: 'medium'};
-	protected tournamentPendingPlayers: number = this.tournamentConfig.numberOfPlayers -1;
+	protected tournamentPendingPlayers: number = this.tournamentConfig.numberOfPlayers;
 
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
@@ -37,7 +37,13 @@ export default class Tournament extends Step {
 		// 	readyState: false
 		// };
 	}
-		
+	
+	public setTournamentId(tournamentId: number): void {
+		this.tournamentId = tournamentId;
+	}
+	public getTournamentId(): number | null {
+		return this.tournamentId;
+	}	
 	async findNextTournamentId(): Promise<number> {
 		return 42; // insert the functionto retrieve next tournament ID available
 	}
@@ -72,77 +78,74 @@ export default class Tournament extends Step {
 		// 	appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
 		// }
 	}
-		public setTournamentConfig(config: TournamentConfig): void
-		{
-			this.tournamentConfig = config;
-			// this.log.config = config;
-		}
+	public setTournamentConfig(config: TournamentConfig): void{
+		this.tournamentConfig = config;
+		// this.log.config = config;
+	}
 
-		public getTournamentConfig(): TournamentConfig
-		{
-			return this.tournamentConfig;
-		}
+	public getTournamentConfig(): TournamentConfig{
+		return this.tournamentConfig;
+	}
 
-		public setEmptyTournamentPlayers(numberOfPlayers: number): void{
-			this.tournamentPlayers = [];
-			for (let i = 0; i < numberOfPlayers; i++) {
-				this.tournamentPlayers.push({
-					Index: i.toString(),
-					status: 'pending', // 
-					gameplayer: { id: '', username: '', tournamentUsername:'',email:'',avatarPath:'' } // Assuming GamePlayer has these properties
-				});
+	public setEmptyTournamentPlayers(numberOfPlayers: number): void{
+		this.tournamentPlayers = [];
+		for (let i = 0; i < numberOfPlayers; i++) {
+			this.tournamentPlayers.push({
+				Index: i.toString(),
+				status: 'pending', // 
+				gameplayer: { id: '', username: '', tournamentUsername:'',email:'',avatarPath:'' } // Assuming GamePlayer has these properties
+			});
+		}
+	}
+
+	public checkTournamentPlayers(): boolean
+	{
+		if (this.tournamentPlayers.length === 0) {
+			console.warn("No players in the tournament.");
+			return false;
+		}
+		for (const player of this.tournamentPlayers) {
+			if (player.status === 'pending' ){
+			return false;
 			}
 		}
+		return true;
+	}
 
-		public checkTournamentPlayers(): boolean
-		{
-			if (this.tournamentPlayers.length === 0) {
-				console.warn("No players in the tournament.");
-				return false;
-			}
-			for (const player of this.tournamentPlayers) {
-				if (player.status === 'pending' ){
-				return false;
-				}
-			}
-			return true;
-		}
+	public getTournamentPlayers(): TournamentPlayer[]{
+		return this.tournamentPlayers;
+	}
 
-		public getTournamentPlayers(): TournamentPlayer[]
-		{
-			return this.tournamentPlayers;
-		}
+	public getTournamentPlayerByIndex(index:number): TournamentPlayer[]| null		{
+		const player = this.tournamentPlayers[index];
+		return player && player.gameplayer && player.gameplayer.id ? [player] : null;
+	}
 
-		public getTournamentPlayerByIndex(index:number): TournamentPlayer[]| null
-		{
-			const player = this.tournamentPlayers[index];
-			return player && player.gameplayer && player.gameplayer.id ? [player] : null;
-		}
+	public setTournamentPlayer(index:number, status: 'pending' | 'ready' | 'waiting', player: GamePlayer): void	{
+		this.tournamentPlayers[index].status = status;
+		this.tournamentPlayers[index].gameplayer = player;
+	}
 
-		public setTournamentPlayer(index:number, status: 'pending' | 'ready' | 'waiting', player: GamePlayer): void
-		{
-			this.tournamentPlayers[index].status = status;
-			this.tournamentPlayers[index].gameplayer = player;
+	public addTournamentPlayer(player: TournamentPlayer): void{
+		console.log("Adding player to tournament:", player);
+		if (this.tournamentPlayers.length < this.tournamentConfig.numberOfPlayers) {
+			console.log("Adding player to tournament: dentro del if");
+			player.Index = this.tournamentPlayers.length.toString(); // Assign an ID based on the current length
+			player.status = 'ready'; // Default status for new players
+			this.tournamentPlayers.push(player);
+			this.tournamentPendingPlayers--;
+		} else {
+			console.warn("Cannot add more players, tournament is full.");
 		}
+		console.log("Current tournament players: ", this.tournamentPlayers.length);
+		console.log("Pending players count: ", this.tournamentPendingPlayers);
+	}
 
-		public addTournamentPlayer(player: TournamentPlayer): void
-		{
-			if (this.tournamentPlayers.length < this.tournamentConfig.numberOfPlayers) {
-				player.Index = this.tournamentPlayers.length.toString(); // Assign an ID based on the current length
-				player.status = 'ready'; // Default status for new players
-				this.tournamentPlayers.push(player);
-			} else {
-				console.warn("Cannot add more players, tournament is full.");
-			}
-		}
+	public getPendingPlayersCount(): number {
+		return this.tournamentPendingPlayers;
+	}
 
-		public getPendingPlayersCount(): number
-		{
-			return this.tournamentPendingPlayers;
-		}
-
-		public setPendingPlayersCount(count: number): void
-		{
-			this.tournamentPendingPlayers = count;
-		}
+	public setPendingPlayersCount(count: number): void {
+		this.tournamentPendingPlayers = count;
+	}
 }

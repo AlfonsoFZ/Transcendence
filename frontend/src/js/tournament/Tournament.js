@@ -19,7 +19,7 @@ export default class Tournament extends Step {
         this.tournamentId = null;
         this.tournamentPlayers = [];
         this.tournamentConfig = { numberOfPlayers: 4, scoreLimit: 5, difficulty: 'medium' };
-        this.tournamentPendingPlayers = this.tournamentConfig.numberOfPlayers - 1;
+        this.tournamentPendingPlayers = this.tournamentConfig.numberOfPlayers;
         this.findNextTournamentId().then(id => {
             this.tournamentId = id;
         });
@@ -36,6 +36,12 @@ export default class Tournament extends Step {
         // 	tournamentId: null,
         // 	readyState: false
         // };
+    }
+    setTournamentId(tournamentId) {
+        this.tournamentId = tournamentId;
+    }
+    getTournamentId() {
+        return this.tournamentId;
     }
     findNextTournamentId() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -114,14 +120,19 @@ export default class Tournament extends Step {
         this.tournamentPlayers[index].gameplayer = player;
     }
     addTournamentPlayer(player) {
+        console.log("Adding player to tournament:", player);
         if (this.tournamentPlayers.length < this.tournamentConfig.numberOfPlayers) {
+            console.log("Adding player to tournament: dentro del if");
             player.Index = this.tournamentPlayers.length.toString(); // Assign an ID based on the current length
             player.status = 'ready'; // Default status for new players
             this.tournamentPlayers.push(player);
+            this.tournamentPendingPlayers--;
         }
         else {
             console.warn("Cannot add more players, tournament is full.");
         }
+        console.log("Current tournament players: ", this.tournamentPlayers.length);
+        console.log("Pending players count: ", this.tournamentPendingPlayers);
     }
     getPendingPlayersCount() {
         return this.tournamentPendingPlayers;

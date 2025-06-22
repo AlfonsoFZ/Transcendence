@@ -9,63 +9,30 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	}
 	User.init({
-		username: {
+		tournamentId: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: true
 		},
 		tournamentUsername: {
 			type: DataTypes.STRING,
 			allowNull: true,
 			unique: true
 		},
-		password: {
-			type: DataTypes.STRING,
-			allowNull: true
-		},
-		googleId: {
-			type: DataTypes.STRING,
-			allowNull: true,
-			unique: true
-		},
-		email: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: true
-		},
 		avatarPath: {
 			type: DataTypes.STRING,
 			allowNull: true,
-		},
-		lastLogin: {
-			type: DataTypes.DATE,
-			allowNull: false,
-			defaultValue: DataTypes.NOW
-		},
-		lastLogout: {
-			type: DataTypes.DATE,
-			allowNull: true,
-			defaultValue: null
-		},
-		refreshToken: {
-			type: DataTypes.STRING,
-			allowNull: true,
-			defaultValue: null
 		}
 	}, {
 	sequelize,
-	modelName: 'User',
+	modelName: 'Tempuser',
 	underscored: true,
-	tableName: 'users',
+	tableName: 'Tempusers',
 	freezeTableName: true,
 	hooks: {
 		beforeCreate: (user) => {
 			if (!user.avatarPath) {
 				const randomIndex = Math.floor(Math.random() * avatarUrls.length);
 				user.avatarPath = avatarUrls[randomIndex];
-			}
-			if (!user.tournamentUsername) {
-				user.tournamentUsername = user.username;
 			}
 		}
 	}

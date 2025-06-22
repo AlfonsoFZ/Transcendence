@@ -5,9 +5,8 @@ import { authenticateUser } from '../auth/user.js';
 import { comparePassword } from '../database/users/PassUtils.cjs';
 import { extractUserFromToken } from '../auth/token.js';
 
+
 export function configureTournamentRoutes(fastify) {
-
-
 
 		/**
 	 * Define a POST route to verify and provided a safe User with non-sensitive data
@@ -26,59 +25,127 @@ export function configureTournamentRoutes(fastify) {
 			if (!user1)
 				return reply.code(401).send({ error: 'Unauthenticated user' });
 			userSafe1 = (({ id, username,tournamentUsername, email, avatarPath }) => ({ id, username,tournamentUsername, email, avatarPath }))(user1);
-			fastify.log.info('userSafe1 en verify_first_player', userSafe1);
 			reply.status(200).send(userSafe1);	
 		} catch (error) {
 			reply.status(401).send({ valid: false, message: 'Invalid or expired Token' });
 		}
 	});
+	
+	/**
+	 * Define a POST route to verify and provided next safe User with non-sensitive data
+	 * It also compares player two with player one  
+	 * To get player One info use it with no email and password
+	 * 
+	 * @param {string} email - The email of the user to verify.
+	 * @param {string} password - The password of the user to verify.
+	 * @returns {object} - A safe user object with non-sensitive data.
+	*/
+	fastify.post('/verify_tounament_user', async (request, reply) => {
+		const { email, password } = request.body;
+		let userSafe;
 
+		if (!email && !password) {
+			reply.status(401).send("empty field has been found");
+		} else if (email && password) { 
+			try {
+				const user = await crud.user.getUserByEmail(email);
+				if (!user)
+					return reply.status(401).send({ message: 'Wrong email' });
+				const isMatch = await comparePassword(password, user.password);
+				if (!isMatch)
+					return reply.status(401).send({ message: 'Wrong password' });		
+				userSafe = (({ id, username,tournamentUsername, email, avatarPath }) => ({ id, username,tournamentUsername, email, avatarPath }))(user);
+				reply.status(200).send(userSafe);
+			} catch (err) {
+				fastify.log.error(err);
+				reply.status(400).send({ error: 'Error verifying user' + err.message });
+			}
+		} else {
+			reply.status(400).send({ error: 'Error verifying user' + "an empty field has been found" });
+		}
+	});
+
+	fastify.post('/verify_guest_tournamentName', async (request, reply) => {
+		const { tournamentId, tournamentName } = request.body;
+		console.log('verify_guest_tournamentName');
+		console.log('tournamentId:', tournamentId, 'tournamentName:', tournamentName);
+
+		if (tournamentName) { 
+				try {
+					const users = await crud.user.getUsers();
+					const temusers = await crud.tempuser.getTempUsers();
+					const exists = users.some(user => user.tournamentUsername === tournamentName);
+					const tempExists = temusers.some(tempUser => tempUser.tournamentUsername === tournamentName);
+					if (!exists && !tempExists) {
+						const newTempUser = await crud.tempuser.createTempuser(tournamentId, tournamentName);
+						reply.status(200).send(newTempUser);
+					} else
+						reply.status(400).send({ error: 'Tournament name already exists' });
+				} catch (err) {
+					fastify.log.error(err);
+					reply.status(500).send({ error: 'Error fetching users' + err.message });
+				}
+		}
+		else {
+			reply.status(400).send({ error: 'Error verifying user' + "an empty field has been found" });
+		}
+	});
+
+
+
+
+
+	function shuffleArray(array) {
+		  const shuffled = [...array];
+		  for (let i = shuffled.length - 1; i > 0; i--) {
+		    const j = Math.floor(Math.random() * (i + 1));
+		    const temp = shuffled[i];
+		    shuffled[i] = shuffled[j];
+		    shuffled[j] = temp;
+		  }
+		  return shuffled;
+		}
+
+	fastify.post('/prepareBracket', async (request, reply) => {
+		fastify.log.info('En prepareBracket: ');
+		const { Tid, Players,Tconfig } = request.body;
+		if (!Tid || !Players || !Tconfig) {
+			fastify.log.error('Missing required fields in request body');
+			return reply.status(400).send({ error: 'Missing required fields in request body'
+			});
+		}
+		const NumberOfPlayers = Players.length;
+		if (NumberOfPlayers < 3 || NumberOfPlayers > 8) {
+			fastify.log.error('Number of players must be between 3 and 8');
+			return reply.status(403).send({ error: 'Number of players must be between 3 and 8' });
+		}
+		// hacer una llamada a la funcion de matchMakng en lugar de ShugffleArray si se implementa
+		const PlayersBracket = shuffleArray(Players);
+		reply.status(200).send(PlayersBracket);
+		// let userSafe;
+
+		// if (!email && !password) {
+		// 	reply.status(401).send("empty field has been found");
+		// } else if (email && password) { 
+		// 	try {
+		// 		const user = await crud.user.getUserByEmail(email);
+		// 		if (!user)
+		// 			return reply.status(401).send({ message: 'Wrong email' });
+		// 		const isMatch = await comparePassword(password, user.password);
+		// 		if (!isMatch)
+		// 			return reply.status(401).send({ message: 'Wrong password' });		
+		// 		userSafe = (({ id, username,tournamentUsername, email, avatarPath }) => ({ id, username,tournamentUsername, email, avatarPath }))(user);
+		// 		reply.status(200).send(userSafe);
+		// 	} catch (err) {
+		// 		fastify.log.error(err);
+		// 		reply.status(400).send({ error: 'Error verifying user' + err.message });
+		// 	}
+		// } else {
+		// 	reply.status(400).send({ error: 'Error verifying user' + "an empty field has been found" });
+		// }
+	});
 
 	
-	// /**
-	//  * Define a POST route to verify and provided a safe User with non-sensitive data
-	//  * It also compares player two with player one  
-	//  * To get player One info use it with no email and password
-	//  * 
-	//  * @param {string} email - The email of the user to verify.
-	//  * @param {string} password - The password of the user to verify.
-	//  * @returns {object} - A safe user object with non-sensitive data.
-	// */
-	// fastify.post('/verify_user', async (request, reply) => {
-	// 	const { email, password } = request.body;
-	// 	let userSafe1;
-	// 	let userSafe;
-	// 	try {
-	// 		const user1 = await extractUserFromToken(request.cookies.token);
-	// 		if (!user1)
-	// 			return reply.code(401).send({ error: 'Unauthenticated user' });
-	// 		userSafe1 = (({ id, username,tournamentUsername, email, avatarPath }) => ({ id, username,tournamentUsername, email, avatarPath }))(user1);
-	// 	} catch (error) {
-	// 		reply.status(401).send({ valid: false, message: 'Invalid or expired Token' });
-	// 	}
-	// 	if (!email && !password) {
-	// 		reply.status(200).send(userSafe1);
-	// 	} else if (email && password) {
-	// 		try {
-	// 			const user = await crud.user.getUserByEmail(email);
-	// 			if (!user)
-	// 				return reply.status(401).send({ message: 'Wrong email' });
-	// 			const isMatch = await comparePassword(password, user.password);
-	// 			if (!isMatch)
-	// 				return reply.status(401).send({ message: 'Wrong password' });		
-	// 			userSafe = (({ id, username,tournamentUsername, email, avatarPath }) => ({ id, username,tournamentUsername, email, avatarPath }))(user);
-	// 			if (userSafe.id == userSafe1.id) {
-	// 				return reply.status(401).send({ message: 'Payer two cannot be the same than player one' });
-	// 			}
-	// 			reply.status(200).send(userSafe);
-	// 		} catch (err) {
-	// 			fastify.log.error(err);
-	// 			reply.status(400).send({ error: 'Error verifying user' + err.message });
-	// 		}
-	// 	} else {
-	// 		reply.status(400).send({ error: 'Error verifying user' + "an empty field has been found" });
-	// 	}
-	// });
 }
 
 
