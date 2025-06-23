@@ -68,19 +68,20 @@ export function configureTournamentRoutes(fastify) {
 	fastify.post('/verify_guest_tournamentName', async (request, reply) => {
 		const { tournamentId, tournamentName } = request.body;
 		console.log('verify_guest_tournamentName');
+		console.log (request.body);
 		console.log('tournamentId:', tournamentId, 'tournamentName:', tournamentName);
 
 		if (tournamentName) { 
 				try {
 					const users = await crud.user.getUsers();
-					const temusers = await crud.tempuser.getTempUsers();
+					const tempusers = await crud.tempuser.getTempUsers();
 					const exists = users.some(user => user.tournamentUsername === tournamentName);
-					const tempExists = temusers.some(tempUser => tempUser.tournamentUsername === tournamentName);
+					const tempExists = tempusers.some(tempUser => tempUser.tournamentUsername === tournamentName);
 					if (!exists && !tempExists) {
-						const newTempUser = await crud.tempuser.createTempuser(tournamentId, tournamentName);
-						reply.status(200).send(newTempUser);
+					 	const newTempUser = await crud.tempuser.createTempuser(tournamentId, tournamentName);
+					 	reply.status(200).send(newTempUser);
 					} else
-						reply.status(400).send({ error: 'Tournament name already exists' });
+					 	reply.status(400).send({ error: 'Tournament name already exists' });
 				} catch (err) {
 					fastify.log.error(err);
 					reply.status(500).send({ error: 'Error fetching users' + err.message });

@@ -8,7 +8,7 @@ const { sequelize } = pkg;
 
 export const createTempuser = async (tournamentId, tournamentName ) => {
     console.log('Creating temp user with:', tournamentId, tournamentName);
-    if (!tournamentName || tournamentName.trim() === '' || !tournamentId || tournamentId.trim() === '') {
+	if (!tournamentName || tournamentName.toString().trim() === '' || !tournamentId || String(tournamentId).toString().trim() === '') {
         throw new Error('tournamentName cannot be empty');
     }
     try {

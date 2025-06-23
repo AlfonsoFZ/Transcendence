@@ -43,21 +43,16 @@ export class TournamentUI {
                         playerItem.appendChild(playerTournamentName);
                         // Capitalize the first letter of the tournament username
                         // and make the rest lowercase
-                        playerTournamentName.textContent = ` ${player.gameplayer.tournamentUsername}`;
+                        playerTournamentName.textContent = ` ${player.gameplayer.tournamentUsername.charAt(0).toUpperCase()}${player.gameplayer.tournamentUsername.slice(1).toLowerCase()}`;
                         PlayerRegisterHTMLContainer.appendChild(playerItem);
                     }
                 });
             }
         };
-        this.checkRepeatedPlayer = (tournamentName, email) => {
+        this.checkRepeatedPlayer = (email) => {
             const players = this.tournament.getTournamentPlayers();
             for (const player of players) {
-                // console.log("Checking player:", player.gameplayer.tournamentUsername, player.gameplayer.email);
-                // console.log("Checking against:", tournamentName, email);
-                if (email && player.gameplayer.email === email) {
-                    return true; // Player with the same email already exists
-                }
-                if (tournamentName && player.gameplayer.tournamentUsername === tournamentName) {
+                if (player.gameplayer.email === email) {
                     return true; // Player with the same email already exists
                 }
             }
@@ -262,79 +257,26 @@ export class TournamentUI {
             playersContainer.innerHTML = ''; // Clear previous content
             playersContainer.style.display = "block";
             const playerCard = new PlayerCard(i, playersContainer, this.tournament.getTournamentId() !== null ? this.tournament.getTournamentId().toString() : undefined);
-            playerCard.onPlayerFilled = (tournamentPlayer, selectedOption) => __awaiter(this, void 0, void 0, function* () {
+            // Suponiendo que PlayerCard tiene un atributo tournamentPlayer y un callback/listener para cuando se rellena
+            playerCard.onPlayerFilled = (tournamentPlayer) => __awaiter(this, void 0, void 0, function* () {
                 console.log("Player card filled for player:", tournamentPlayer.gameplayer.email);
-                if (selectedOption === 1) {
-                    const playerEmail = document.getElementById(`players-email-${tournamentPlayer.Index}`);
-                    const playerPassword = document.getElementById(`players-password-${tournamentPlayer.Index}`);
-                    if (this.checkRepeatedPlayer(null, playerEmail.value)) {
-                        showMessage("Duplicate player, please choose a different one.", null);
-                        playerEmail.value = '';
-                        playerPassword.value = '';
-                        return;
-                    }
-                    const playerData = yield this.checkPlayer(i, playerEmail.value, playerPassword.value);
-                    if (playerData) {
-                        console.log("Player data received:", playerData);
-                        tournamentPlayer.gameplayer = playerData.gameplayer;
-                        tournamentPlayer.status = 'ready';
-                    }
-                    else {
-                        showMessage("Invalid email or password.", null);
-                        return;
-                    }
-                }
-                else if (selectedOption === 2) {
-                    const guestTournamentName = document.getElementById(`guest-tournament-name-${tournamentPlayer.Index}`);
-                    if (!guestTournamentName || guestTournamentName.value.trim() === '') {
-                        tournamentPlayer.gameplayer = {
-                            id: '',
-                            username: '',
-                            tournamentUsername: `Guest00${i}`,
-                            email: '',
-                            avatarPath: `https://localhost:8443/back/images/avatar-${i}.png`
-                        };
-                        tournamentPlayer.status = 'ready';
-                    }
-                    else {
-                        if (this.checkRepeatedPlayer(guestTournamentName.value, null)) {
-                            showMessage("Tournament Name not available, please choose a different one.", null);
-                            guestTournamentName.value = '';
-                            return; // Exit if the player is already registered
-                        }
-                        const guestData = yield this.checkGuestPlayer(i, guestTournamentName.value);
-                        console.log("Guest data received:", guestData);
-                        if (guestData) {
-                            tournamentPlayer.gameplayer = guestData.gameplayer;
-                            tournamentPlayer.status = 'ready';
-                        }
-                        else {
-                            showMessage("Tournament name already exists", null);
-                            guestTournamentName.value = '';
-                            return; // Exit if the guest is not valid
-                        }
-                    }
-                }
-                else if (selectedOption === 3) { // AI 
-                    tournamentPlayer.gameplayer = {
-                        id: '',
-                        username: `AI Player ${tournamentPlayer.Index}`,
-                        tournamentUsername: `AI Player ${tournamentPlayer.Index}`,
-                        email: '',
-                        avatarPath: `https://localhost:8443/back/images/avatar-1${i}.png`
-                    };
-                    tournamentPlayer.status = 'ready';
-                }
-                playersContainer.innerHTML = ''; // Clear previous content
-                this.tournament.addTournamentPlayer(playerCard.tournamentPlayer);
-                this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
-                if (this.tournament.getTournamentPlayers().length < numberOfPlayers) {
-                    this.getNextPlayer();
+                if (this.checkRepeatedPlayer(tournamentPlayer.gameplayer.email)) {
+                    showMessage("Duplicate player, please choose a different one.", null);
+                    return; // Exit if the player is already registered
                 }
                 else {
-                    console.log("All players are ready. Launching tournament.");
-                    yield this.launchTournament(this.tournament);
+                    playersContainer.innerHTML = ''; // Clear previous content
+                    this.tournament.addTournamentPlayer(playerCard.tournamentPlayer);
+                    this.renderRegisteredPlayers(this.tournament.getTournamentPlayers());
+                    if (this.tournament.getTournamentPlayers().length < numberOfPlayers) {
+                        this.getNextPlayer();
+                    }
+                    else {
+                        console.log("All players are ready. Launching tournament.");
+                        yield this.launchTournament(this.tournament);
+                    }
                 }
+                // Llama a la siguiente lógica que necesites
             });
         }
         // numberOfPlayers
@@ -382,7 +324,7 @@ export class TournamentUI {
                 // if (!appElement) {
                 // 	console.error("Tournament bracket container not found");
                 // 	return;
-                // }tournamentId
+                // }
                 // appElement.innerHTML = `
                 // 	<div id="pong-container">
                 // 		<h2>Tournament Bracket</h2>
@@ -450,91 +392,6 @@ export class TournamentUI {
             }
             catch (error) {
                 console.error("Error while verifying:", error);
-            }
-        });
-    }
-    checkGuestPlayer(index, guestTournamentName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log(`Guest Player en checkguestPlayer: ${index} name: ${guestTournamentName}`);
-            if (!guestTournamentName || guestTournamentName.trim() === '') {
-                const AvatarPath = `https://localhost:8443/back/images/avatar-${index}.png`;
-                return {
-                    Index: '',
-                    status: 'ready',
-                    gameplayer: {
-                        id: '',
-                        username: '',
-                        tournamentUsername: '',
-                        email: '',
-                        avatarPath: AvatarPath
-                    }
-                };
-            }
-            else {
-                const guestData = { tournamentId: this.tournament.getTournamentId(), tournamentName: guestTournamentName };
-                try {
-                    const response = yield fetch("https://localhost:8443/back/verify_guest_tournamentName", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(guestData),
-                    });
-                    const result = yield response.json();
-                    if (!response.ok) {
-                        showMessage(`Error: ${result.error}`, null);
-                        return null;
-                    }
-                    return {
-                        Index: '',
-                        status: 'ready',
-                        gameplayer: {
-                            id: '',
-                            username: '',
-                            tournamentUsername: guestTournamentName,
-                            email: '',
-                            avatarPath: result.avatarPath
-                        }
-                    };
-                }
-                catch (error) {
-                    console.error("Error while verifying:", error);
-                    return null;
-                }
-            }
-        });
-    }
-    checkPlayer(index, email, password) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = { email, password };
-            try {
-                const response = yield fetch("https://localhost:8443/back/verify_tounament_user", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                });
-                const result = yield response.json();
-                if (!response.ok) {
-                    showMessage(`Error: ${result.message}`, null);
-                    return null;
-                }
-                return {
-                    Index: index.toString(),
-                    status: 'ready',
-                    gameplayer: {
-                        id: result.id,
-                        username: result.username,
-                        tournamentUsername: result.tournamentUsername,
-                        email: result.email,
-                        avatarPath: result.avatarPath
-                    }
-                };
-            }
-            catch (error) {
-                console.error("Error while verifying:", error);
-                return null;
             }
         });
     }

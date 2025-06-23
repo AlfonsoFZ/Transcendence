@@ -61,7 +61,6 @@ export class PlayerCard {
                 event.preventDefault();
                 console.log(`Player ${this.player_index} login button clicked`);
                 if (playerEmail.value !== "" && playerPassword.value !== "") {
-                    this.tournamentPlayer.gameplayer.email = playerEmail.value;
                     if (this.onPlayerFilled) {
                         this.onPlayerFilled(this.tournamentPlayer, 1);
                     }
