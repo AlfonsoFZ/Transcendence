@@ -12,7 +12,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { PlayerCard } from './playerCard.js';
 import { showMessage } from '../modal/showMessage.js';
-import Game from '../game/Game.js';
 // Assuming you have a utility function to prepare players
 export class TournamentUI {
     constructor(tournament) {
@@ -72,7 +71,8 @@ export class TournamentUI {
             'tournament-container',
             'tournament-results',
             'local-tournament-form',
-            "tournament-info-container"
+            "tournament-info-container",
+            "tournament-bracket-container"
         ];
         divIndex.forEach(id => {
             const checkDiv = document.getElementById(id);
@@ -369,8 +369,11 @@ export class TournamentUI {
                 const data = yield response.json();
                 if (response.ok) {
                     // const FirsGameui = new GameUI(new Game());
-                    const firstGame = new Game();
-                    firstGame.setTournamentId(tounamentData.Tid ? tounamentData.Tid : 0);
+                    console.log("Tournament bracket prepared successfully:", data);
+                    this.renderBracket(data);
+                    yield new Promise(resolve => setTimeout(resolve, 5000));
+                    // const firstGame = new Game();
+                    // firstGame.setTournamentId(tounamentData.Tid? tounamentData.Tid : 0);
                 }
                 // if (!response.ok) {
                 // 	console.error("Error preparing tournament bracket:", data.message);
@@ -417,6 +420,28 @@ export class TournamentUI {
             // 	this.showOnly('tournament-container');
             // 	this.renderRegisteredPlayers(tournament.getTournamentPlayers());
             // }
+        });
+    }
+    renderBracket(data) {
+        const appElement = document.getElementById('tournament-bracket-container');
+        if (!appElement) {
+            console.error("Tournament bracket container not found");
+            return;
+        }
+        //   var html_Brackert_template = `../../html/tournament/bracket-template-${data.length}.html`;
+        var html_Brackert_template = `../../html/tournament/bracket-template-3.html`;
+        this.loadTemplate(html_Brackert_template).then(BracketHtml => {
+            let parsed = BracketHtml;
+            for (let i = 0; i < data.length; i++) {
+                const player = data[i];
+                parsed = parsed
+                    .replace(new RegExp(`player-${i + 1}\\.tounamentName`, 'g'), player.gameplayer.tournamentUsername)
+                    .replace(new RegExp(`player-${i + 1}\\.avatar`, 'g'), player.gameplayer.avatarPath);
+            }
+            const wrapper = document.createElement('div');
+            wrapper.className = 'tournament-bracket';
+            wrapper.innerHTML = parsed;
+            appElement.appendChild(wrapper);
         });
     }
     getFirstPlayer() {
@@ -536,6 +561,12 @@ export class TournamentUI {
                 console.error("Error while verifying:", error);
                 return null;
             }
+        });
+    }
+    loadTemplate(template) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield fetch(template);
+            return yield response.text();
         });
     }
 }

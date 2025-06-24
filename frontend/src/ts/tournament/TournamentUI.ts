@@ -28,7 +28,8 @@ export class TournamentUI
 			'tournament-container',
 			'tournament-results',
 			'local-tournament-form',
-			"tournament-info-container"
+			"tournament-info-container",
+			"tournament-bracket-container"
 		];
 		divIndex.forEach(id => {
 			const	checkDiv = document.getElementById(id);
@@ -350,10 +351,12 @@ export class TournamentUI
 
 			  if(response.ok) {
 				// const FirsGameui = new GameUI(new Game());
+				console.log("Tournament bracket prepared successfully:", data);
+				this.renderBracket(data);
+				await new Promise(resolve => setTimeout(resolve, 5000));
+				// const firstGame = new Game();
 
-				const firstGame = new Game();
-
-				firstGame.setTournamentId(tounamentData.Tid? tounamentData.Tid : 0);
+				// firstGame.setTournamentId(tounamentData.Tid? tounamentData.Tid : 0);
 				}
 			// if (!response.ok) {
 			// 	console.error("Error preparing tournament bracket:", data.message);
@@ -406,6 +409,32 @@ export class TournamentUI
 
 	}
 	
+	renderBracket(data: any): void {
+		  const appElement = document.getElementById('tournament-bracket-container');
+		  if (!appElement) {
+		   console.error("Tournament bracket container not found");
+		   return;
+		  }
+		//   var html_Brackert_template = `../../html/tournament/bracket-template-${data.length}.html`;
+				var html_Brackert_template =  `../../html/tournament/bracket-template-3.html`;
+				this.loadTemplate(html_Brackert_template).then(BracketHtml => {
+					let parsed = BracketHtml;
+					for (let i = 0; i < data.length; i++) {
+						const player = data[i];
+						parsed = parsed
+							.replace(new RegExp(`player-${i + 1}\\.tounamentName`, 'g'), player.gameplayer.tournamentUsername)
+							.replace(new RegExp(`player-${i + 1}\\.avatar`, 'g'), player.gameplayer.avatarPath);
+					}
+					const wrapper = document.createElement('div');
+					wrapper.className = 'tournament-bracket';
+					wrapper.innerHTML = parsed;
+					appElement.appendChild(wrapper);
+				});
+			}
+				
+			
+
+
 	async getFirstPlayer(): Promise<void> {
 		try {
 			const response = await fetch("https://localhost:8443/back//verify_first_player", {
@@ -568,4 +597,8 @@ export class TournamentUI
 		}
 	}
 
+	private async loadTemplate(template:string): Promise<string> {
+	  	const response = await fetch(template);
+	  return await response.text();
+	}
 	}
