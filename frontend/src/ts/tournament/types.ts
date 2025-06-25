@@ -3,6 +3,7 @@
  */
 
 import { GamePlayer } from '../game/types.js';
+import { GameData } from '../game/types.js';
 // Game state refers to the current values/positions of the game elements
 export interface    GameState
 {
@@ -25,7 +26,7 @@ export interface	TournamentData
 	result?: {
 		winner: string;
 	};
-	gameIds?: string[]; // IDs of games played in the tournament
+	gameData?: GameData[]; // IDs of games played in the tournament
 	readyState: boolean;
 }
 
