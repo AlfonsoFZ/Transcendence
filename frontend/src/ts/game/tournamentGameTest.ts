@@ -19,7 +19,7 @@ export class Tournament extends Step
 	constructor(containerId: string = DEFAULT_CONTAINER_ID)
 	{
 		super(DEFAULT_CONTAINER_ID);
-		this.bracket = undefined;
+		this.bracket = [];
 		this.config = null;
 		this.players = null;
 	}
@@ -67,13 +67,19 @@ export class Tournament extends Step
 	//		and start the usual workflow client-server to start the match in its own step
 	launchNextMatch()
 	{
-		// const matchData = this.bracket[this.currentMatchIndex];
-		const game = new Game();
-		// game.setGameLog(matchData);
+		let matchData: GameData;
+		if (this.bracket)
+		{
+			matchData = this.bracket[this.currentMatchIndex];
+			const game = new Game(matchData.id);
+			game.setGameLog(matchData);
+			game.getGameUI().launchGame();
+		}
 		// Navigate to game-match step, passing game instance
 	}
 
 	// Receive and gather game results - may need to improve gameMatch class to pass this info
+	// Also, may need to call it or implement it on a wait/promise manner?
 	handleMatchResult(result: GameData)
 	{
 		// Aux method -> Update bracket, increment currentMatchIndex, etc.
