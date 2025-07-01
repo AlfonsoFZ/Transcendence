@@ -13,11 +13,16 @@ export function sendPieceMove(socket: WebSocket, userId: string, fromSquare: str
 	socket.send(JSON.stringify(message));
 }
 
-export function sendGameStart(socket: WebSocket, data: string) {
+export function sendGameConfig(socket: WebSocket, data: any) {
 
 	const message = {
-		type: 'start',
-		data: data,
+		type: 'config',
+		userId: data.userId,
+		playerColor: data.playerColor,
+		timeControl: data.timeControl,
+		gameMode: data.gameMode,
+		minRating: data.minRating,
+		maxRating: data.maxRating,
 	};
 	socket.send(JSON.stringify(message));
 }

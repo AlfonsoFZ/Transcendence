@@ -20,15 +20,17 @@ function handleSocketOpen(socket, userId) {
 function handleSocketMessage(socket, userId, chessboard, canvas) {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
-        if (data.type === 'move') {
-            console.log("Entrando");
-            if (data.return === 'true') {
-                chessboard.movePiece(data.moveFrom, data.moveTo);
-                setupChessboard(chessboard, canvas, null, null);
-            }
-            else {
-                setupChessboard(chessboard, canvas, null, null);
-            }
+        console.log(data);
+        if (data.type === 'config') {
+        }
+        else if (data.type === 'move') {
+            // if (data.return === 'true') {
+            chessboard.movePiece(data.moveFrom, data.moveTo);
+            setupChessboard(chessboard, canvas, null, null);
+            // }
+            // else {
+            // 	setupChessboard(chessboard, canvas, null, null);
+            // }
         }
     });
 }

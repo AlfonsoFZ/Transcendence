@@ -9,10 +9,15 @@ export function sendPieceMove(socket, userId, fromSquare, toSquare, piece, chess
     };
     socket.send(JSON.stringify(message));
 }
-export function sendGameStart(socket, data) {
+export function sendGameConfig(socket, data) {
     const message = {
-        type: 'start',
-        data: data,
+        type: 'config',
+        userId: data.userId,
+        playerColor: data.playerColor,
+        timeControl: data.timeControl,
+        gameMode: data.gameMode,
+        minRating: data.minRating,
+        maxRating: data.maxRating,
     };
     socket.send(JSON.stringify(message));
 }

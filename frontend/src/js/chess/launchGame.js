@@ -9,40 +9,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { handleEvents } from './handleEvents.js';
 import { Chessboard } from './chessboardClass.js';
-import { sendGameStart } from './handleSenders.js';
+import { sendGameConfig } from './handleSenders.js';
 import { handleSocketEvents } from '../chess/handleSocketEvents.js';
 import { createCanvas, preloadImages, setupChessboard } from './drawChessboard.js';
 import { getLaunchGameHtml, getChessHtml } from './handleFetchers.js';
 export function checkIfGameIsRunning() {
     return sessionStorage.getItem("chessboard") || "";
 }
-function initChessboard() {
+function getConfig(userId) {
     const playerColor = document.getElementById('color').value;
     const timeControl = document.getElementById('time').value;
     const gameMode = document.getElementById('mode').value;
     const minRating = document.getElementById('minRating').value;
     const maxRating = document.getElementById('maxRating').value;
     let dataPlayerColor, dataTimeControl, dataGameMode, dataMinRating, dataMaxRating;
-    if (playerColor === 'random') {
-        const options = ['white', 'black'];
-        const randomIndex = Math.floor(Math.random() * options.length);
-        dataPlayerColor = options[randomIndex];
-    }
-    else {
-        dataPlayerColor = playerColor;
-    }
+    dataPlayerColor = playerColor;
     dataTimeControl = timeControl;
     dataGameMode = gameMode;
     dataMinRating = (minRating === "any") ? -10000 : parseInt(minRating, 10);
     dataMaxRating = (maxRating === "any") ? 10000 : parseInt(maxRating, 10);
     const data = {
+        userId: userId,
         playerColor: dataPlayerColor,
         timeControl: dataTimeControl,
         gameMode: dataGameMode,
         minRating: dataMinRating,
         maxRating: dataMaxRating,
     };
-    return JSON.stringify(data);
+    return data;
 }
 export function launchUI(socket, userId, appElement) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -58,9 +52,9 @@ export function launchUI(socket, userId, appElement) {
         }
         modeSelect.addEventListener('change', () => toggleModeVisibility(modeContainer, modeSelect));
         start.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
-            const data = initChessboard();
-            sendGameStart(socket, data);
-            yield launchGame(socket, userId, data, appElement);
+            const data = getConfig(userId);
+            sendGameConfig(socket, data);
+            // await launchGame(socket, userId, data, appElement)
         }));
     });
 }
@@ -77,3 +71,5 @@ export function launchGame(socket, userId, data, appElement) {
         });
     });
 }
+// Launch UI === LaunchConfig + LaunchLobby
+// Global: userId, socket, chessboard, canvas
