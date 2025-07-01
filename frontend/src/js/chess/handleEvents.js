@@ -2,22 +2,26 @@ import { sendPieceMove } from './handleSenders.js';
 import { setupChessboard, drawMovingPiece, highlightSquare } from './drawChessboard.js';
 let selectedSquares = new Set();
 let arrows = new Map();
-function getSquare(event, canvas) {
+function getSquare(playerColorView, event, canvas) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     const x = (event.clientX - rect.left) * scaleX;
     const y = (event.clientY - rect.top) * scaleY;
     const squareSize = canvas.width / 8;
-    const col = Math.floor(x / squareSize);
-    const row = Math.floor(y / squareSize);
+    let col = Math.floor(x / squareSize);
+    let row = Math.floor(y / squareSize);
     if (col < 0 || col > 7 || row < 0 || row > 7)
         return null;
     // console.log(`Square is: ${String.fromCharCode(97 + col)}${8 - row}`);
+    if (playerColorView === "black") {
+        row = 7 - row;
+        col = 7 - col;
+    }
     return `${row}${col}`;
 }
 function movePiece(event, fromSquare, piece, copy, canvas) {
-    const currentSquare = getSquare(event, canvas);
+    const currentSquare = getSquare("white", event, canvas);
     copy.deletePiece(fromSquare);
     copy.setLastMoves(fromSquare, null);
     setupChessboard(copy, canvas, null, null);
@@ -29,7 +33,7 @@ function movePiece(event, fromSquare, piece, copy, canvas) {
 // fromSquare and toSquare are always set here. But it should set it only if they are valids.
 // If fromSquare === toSquare, response is false from backend
 function dropPiece(socket, userId, event, fromSquare, piece, chessboard, canvas) {
-    const toSquare = getSquare(event, canvas);
+    const toSquare = getSquare(chessboard.playerColorView, event, canvas);
     if (toSquare)
         sendPieceMove(socket, userId, fromSquare, toSquare, piece, chessboard);
 }
@@ -56,7 +60,7 @@ function handleRightClick(fromSquare, chessboard, canvas) {
     function mouseUpHandler(event) {
         if (event.button !== 2)
             return;
-        const toSquare = getSquare(event, canvas);
+        const toSquare = getSquare("white", event, canvas);
         if (fromSquare === toSquare) {
             if (selectedSquares.has(fromSquare))
                 selectedSquares.delete(fromSquare);
@@ -83,7 +87,7 @@ export function handleEvents(socket, userId, chessboard, canvas) {
     });
     // Event listener to change style cursor
     canvas.addEventListener("mousemove", (event) => {
-        const square = getSquare(event, canvas);
+        const square = getSquare(chessboard.playerColorView, event, canvas);
         if (square) {
             const piece = chessboard.getPieceAt(square);
             if (piece)
@@ -100,7 +104,7 @@ export function handleEvents(socket, userId, chessboard, canvas) {
                 selectedSquares.clear();
                 setupChessboard(chessboard, canvas, null, null);
             }
-            const fromSquare = getSquare(event, canvas);
+            const fromSquare = getSquare(chessboard.playerColorView, event, canvas);
             if (fromSquare) {
                 const piece = chessboard.getPieceAt(fromSquare);
                 if (piece) {
@@ -110,7 +114,7 @@ export function handleEvents(socket, userId, chessboard, canvas) {
             }
         }
         if (event.button === 2 && (event.buttons & 1) === 0) {
-            const fromSquare = getSquare(event, canvas);
+            const fromSquare = getSquare("white", event, canvas);
             if (fromSquare)
                 handleRightClick(fromSquare, chessboard, canvas);
         }

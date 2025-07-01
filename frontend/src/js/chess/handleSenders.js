@@ -9,3 +9,10 @@ export function sendPieceMove(socket, userId, fromSquare, toSquare, piece, chess
     };
     socket.send(JSON.stringify(message));
 }
+export function sendGameStart(socket, data) {
+    const message = {
+        type: 'start',
+        data: data,
+    };
+    socket.send(JSON.stringify(message));
+}

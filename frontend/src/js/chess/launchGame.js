@@ -9,35 +9,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { handleEvents } from './handleEvents.js';
 import { Chessboard } from './chessboardClass.js';
+import { sendGameStart } from './handleSenders.js';
 import { handleSocketEvents } from '../chess/handleSocketEvents.js';
 import { createCanvas, preloadImages, setupChessboard } from './drawChessboard.js';
 import { getLaunchGameHtml, getChessHtml } from './handleFetchers.js';
 export function checkIfGameIsRunning() {
-    return sessionStorage.getItem("chess") || "";
+    return sessionStorage.getItem("chessboard") || "";
 }
 function initChessboard() {
-    const chessboard = new Chessboard();
-    chessboard.init();
-    const color = document.getElementById('color').value;
-    const time = document.getElementById('time').value;
-    const mode = document.getElementById('mode').value;
+    const playerColor = document.getElementById('color').value;
+    const timeControl = document.getElementById('time').value;
+    const gameMode = document.getElementById('mode').value;
     const minRating = document.getElementById('minRating').value;
     const maxRating = document.getElementById('maxRating').value;
-    if (color === 'random') {
+    let dataPlayerColor, dataTimeControl, dataGameMode, dataMinRating, dataMaxRating;
+    if (playerColor === 'random') {
         const options = ['white', 'black'];
         const randomIndex = Math.floor(Math.random() * options.length);
-        chessboard.color = options[randomIndex];
+        dataPlayerColor = options[randomIndex];
     }
     else {
-        chessboard.color = color;
+        dataPlayerColor = playerColor;
     }
-    chessboard.time = time;
-    chessboard.mode = mode;
-    chessboard.minRating = parseInt(minRating, 10);
-    chessboard.maxRating = parseInt(maxRating, 10);
-    return chessboard;
+    dataTimeControl = timeControl;
+    dataGameMode = gameMode;
+    dataMinRating = (minRating === "any") ? -10000 : parseInt(minRating, 10);
+    dataMaxRating = (maxRating === "any") ? 10000 : parseInt(maxRating, 10);
+    const data = {
+        playerColor: dataPlayerColor,
+        timeControl: dataTimeControl,
+        gameMode: dataGameMode,
+        minRating: dataMinRating,
+        maxRating: dataMaxRating,
+    };
+    return JSON.stringify(data);
 }
-export function launchUI(socket, userId, game, appElement) {
+export function launchUI(socket, userId, appElement) {
     return __awaiter(this, void 0, void 0, function* () {
         appElement.innerHTML = yield getLaunchGameHtml();
         const start = document.getElementById('start-game');
@@ -50,12 +57,16 @@ export function launchUI(socket, userId, game, appElement) {
                 modeContainer.classList.add('hidden');
         }
         modeSelect.addEventListener('change', () => toggleModeVisibility(modeContainer, modeSelect));
-        start.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () { return yield launchGame(socket, userId, game, appElement); }));
+        start.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+            const data = initChessboard();
+            sendGameStart(socket, data);
+            yield launchGame(socket, userId, data, appElement);
+        }));
     });
 }
-export function launchGame(socket, userId, game, appElement) {
+export function launchGame(socket, userId, data, appElement) {
     return __awaiter(this, void 0, void 0, function* () {
-        const chessboard = initChessboard();
+        const chessboard = new Chessboard(data);
         appElement.innerHTML = yield getChessHtml();
         const board = document.getElementById("board");
         const canvas = createCanvas(board);

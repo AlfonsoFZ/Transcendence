@@ -1,17 +1,32 @@
 export class Chessboard {
-    constructor() {
-        this.color = "white";
-        this.time = "5|0";
-        this.mode = "local";
-        this.minRating = 0;
-        this.maxRating = 3500;
-        this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
-        this.game = new Map();
-        this.lastMoveFrom = null;
-        this.lastMoveTo = null;
-        this.move = 0;
+    constructor(data) {
+        const chessData = JSON.parse(data);
+        this.playerColor = chessData.playerColor;
+        this.playerColorView = chessData.playerColor;
+        this.timeControl = chessData.timeControl;
+        this.gameMode = chessData.gameMode;
+        this.minRating = chessData.minRating;
+        this.maxRating = chessData.maxRating;
+        this.move = chessData.move || 0;
+        this.turn = this.move % 2 === 0;
+        this.lastMoveFrom = chessData.lastMoveFrom || null;
+        this.lastMoveTo = chessData.lastMoveTo || null;
+        if (chessData.game) {
+            this.game = new Map(chessData.game.map(([key, value]) => [
+                Number(key),
+                value.map(row => row.slice()),
+            ]));
+        }
+        else
+            this.game = new Map();
+        if (chessData.board)
+            this.board = chessData.board.map((row) => row.slice());
+        else {
+            this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
+            this.initBoard();
+        }
     }
-    init() {
+    initBoard() {
         this.board[0][0] = "br";
         this.board[0][1] = "bn";
         this.board[0][2] = "bb";
@@ -45,6 +60,7 @@ export class Chessboard {
         this.board[6][6] = "wp";
         this.board[6][7] = "wp";
         this.game.set(this.move, this.board);
+        this.saveToStorage();
     }
     setPieceAt(square, piece) {
         const row = parseInt(square[0]);
@@ -70,9 +86,12 @@ export class Chessboard {
         this.deletePiece(fromSquare);
         this.deletePiece(toSquare);
         this.setPieceAt(toSquare, piece);
-        this.game.set(this.move++, this.board);
+        this.game.set(this.move, this.board);
         this.lastMoveFrom = fromSquare;
         this.lastMoveTo = toSquare;
+        this.saveToStorage();
+        this.move++;
+        this.turn = this.move % 2 === 0;
     }
     clearBoard() {
         for (let row = 0; row < 8; row++) {
@@ -80,21 +99,37 @@ export class Chessboard {
                 this.board[row][col] = null;
             }
         }
-        this.game.clear();
+        this.move = 0;
         this.lastMoveFrom = null;
         this.lastMoveTo = null;
-        this.move = 0;
+        this.game.clear();
+        this.deleteStorage();
+    }
+    getData() {
+        const data = {
+            playerColor: this.playerColor,
+            timeControl: this.timeControl,
+            gameMode: this.gameMode,
+            minRating: this.minRating,
+            maxRating: this.maxRating,
+            move: this.move,
+            lastMoveFrom: this.lastMoveFrom,
+            lastMoveTo: this.lastMoveTo,
+            game: Array.from(this.game.entries()),
+            board: this.board.map(row => row.slice()),
+        };
+        return JSON.stringify(data);
     }
     clone() {
-        const newBoard = new Chessboard();
-        newBoard.board = this.board.map(row => row.slice());
-        newBoard.game = new Map();
-        this.game.forEach((value, key) => {
-            newBoard.game.set(key, value.map(row => row.slice()));
-        });
-        newBoard.lastMoveFrom = this.lastMoveFrom;
-        newBoard.lastMoveTo = this.lastMoveTo;
-        newBoard.move = this.move;
+        const data = this.getData();
+        const newBoard = new Chessboard(data);
         return newBoard;
+    }
+    saveToStorage() {
+        const data = this.getData();
+        sessionStorage.setItem('chessboard', data);
+    }
+    deleteStorage() {
+        sessionStorage.removeItem('chessboard');
     }
 }

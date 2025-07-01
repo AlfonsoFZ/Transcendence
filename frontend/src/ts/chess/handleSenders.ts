@@ -12,3 +12,12 @@ export function sendPieceMove(socket: WebSocket, userId: string, fromSquare: str
 	};
 	socket.send(JSON.stringify(message));
 }
+
+export function sendGameStart(socket: WebSocket, data: string) {
+
+	const message = {
+		type: 'start',
+		data: data,
+	};
+	socket.send(JSON.stringify(message));
+}

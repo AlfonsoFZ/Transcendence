@@ -26,7 +26,7 @@ function resizeCanvas(canvas: HTMLCanvasElement) {
 	ctx.scale(dpr, dpr);
 }
 
-function drawBoard(chessboard: Chessboard, selectedSquares: Set<string> | null, arrows: Map<string, [string, string]> | null ,canvas: HTMLCanvasElement) {
+function drawBoard(chessboard: Chessboard, selectedSquares: Set<string> | null, canvas: HTMLCanvasElement) {
 
 	const ctx = canvas.getContext("2d")!;
 	const squareSize = canvas.clientWidth / 8;
@@ -36,38 +36,36 @@ function drawBoard(chessboard: Chessboard, selectedSquares: Set<string> | null, 
 	const tsRow = chessboard.lastMoveTo ? parseInt(chessboard.lastMoveTo[0]) : null;
 	const tsCol = chessboard.lastMoveTo ? parseInt(chessboard.lastMoveTo[1]) : null;
 
+	const logicToVisualRow = (r: number | null) => r === null ? null : (chessboard.playerColorView === "white" ? r : 7 - r);
+	const logicToVisualCol = (c: number | null) => c === null ? null : (chessboard.playerColorView === "white" ? c : 7 - c);
+
 	ctx.font = `bold ${squareSize / 5}px Arial`;
 	ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 	for (let row = 0; row < 8; row++) {
 		for (let col = 0; col < 8; col++) {
 			const isLight = (row + col) % 2 === 0;
 			if (selectedSquares && selectedSquares.has(`${row}${col}`))
-				ctx.fillStyle = "rgb(255, 139, 139)";
-			else if ((fsCol === col && fsRow === row) || (tsCol === col && tsRow === row)) {
+				ctx.fillStyle = isLight ? "rgb(255, 139, 139)" : "rgb(253, 103, 103)";
+			else if ((logicToVisualCol(fsCol) === col && logicToVisualRow(fsRow) === row) || (logicToVisualCol(tsCol) === col && logicToVisualRow(tsRow) === row)) {
 				ctx.fillStyle = "rgb(154, 234, 236)";
 			}
 			else
 				ctx.fillStyle = isLight ? "rgb(255, 255, 255)" : "rgb(67, 128, 183)";
 			ctx.fillRect(col * squareSize, row * squareSize, squareSize, squareSize);
 			if (col === 0) {
-				const number = 8 - row;
+				const number = chessboard.playerColorView === "white" ? 8 - row : row + 1;
 				ctx.textBaseline = "top";
 				ctx.textAlign = "left";
-				ctx.fillStyle = isLight ? "#4380b7" : "#f8fafc";
+				ctx.fillStyle = isLight ? "rgb(67, 128, 183)" : "rgb(255, 255, 255)";
 				ctx.fillText(number.toString(), col * squareSize + 4, row * squareSize + 4);
 			}
 			if (row === 7) {
-				const number = String.fromCharCode(97 + col);
+				const letter = chessboard.playerColorView === "white" ? String.fromCharCode(97 + col) : String.fromCharCode(97 + (7 - col));
 				ctx.textBaseline = "bottom";
 				ctx.textAlign = "right";
-				ctx.fillStyle = isLight ? "#4380b7" : "#f8fafc";
-				ctx.fillText(number.toString(), (col + 1) * squareSize - 4, (row + 1) * squareSize - 4);
+				ctx.fillStyle = isLight ? "rgb(67, 128, 183)" : "rgb(255, 255, 255)";
+				ctx.fillText(letter.toString(), (col + 1) * squareSize - 4, (row + 1) * squareSize - 4);
 			}
-		}
-	}
-	if (arrows) {
-		for (const [, [from, to]] of arrows) {
-			drawArrow(from, to, canvas);
 		}
 	}
 }
@@ -89,14 +87,19 @@ export function preloadImages(callback: () => void) {
 	}
 }
 
-function drawPieceAt(row: number, col: number, piece: string, canvas: HTMLCanvasElement) {
+function drawPieceAt(row: number, col: number, piece: string, canvas: HTMLCanvasElement, playerColorView: string) {
 
 	const ctx = canvas.getContext("2d")!;
 	ctx.imageSmoothingEnabled = true;
 
 	const squareSize = canvas.clientWidth / 8;
-	const x = col * squareSize;
-	const y = row * squareSize;
+
+	// Si el jugador está viendo con negras, invierte las coordenadas
+	const displayRow = playerColorView === "white" ? row : 7 - row;
+	const displayCol = playerColorView === "white" ? col : 7 - col;
+
+	const x = displayCol * squareSize;
+	const y = displayRow * squareSize;
 
 	const image = pieceImages[piece];
 	ctx.drawImage(image, x, y, squareSize, squareSize);
@@ -108,7 +111,7 @@ function drawPieces(chessboard: Chessboard, canvas: HTMLCanvasElement) {
 		for (let col = 0; col < 8; col++) {
 			const piece = chessboard.getPieceAt(`${row}${col}`);
 			if (piece)
-				drawPieceAt(row, col, piece, canvas);
+				drawPieceAt(row, col, piece, canvas, chessboard.playerColorView);
 		}
 	}
 }
@@ -146,67 +149,73 @@ export function highlightSquare(square: string, canvas: HTMLCanvasElement) {
 	ctx.strokeRect(squareX + 2, squareY + 2, squareSize - 4, squareSize - 4);
 }
 
-export function drawArrow(fromSquare: string, toSquare: string, canvas: HTMLCanvasElement) {
+export function drawArrows(arrows: Map<string, [string, string]> | null, canvas: HTMLCanvasElement) {
+
+	if (!arrows) return;
 
 	const ctx = canvas.getContext("2d")!;
 	const squareSize = canvas.clientWidth / 8;
 
-	// Get center of squares
-	const fromX = parseInt(fromSquare[1]) * squareSize + squareSize / 2;
-	const fromY = parseInt(fromSquare[0]) * squareSize + squareSize / 2;
-	const toX = parseInt(toSquare[1]) * squareSize + squareSize / 2;
-	const toY = parseInt(toSquare[0]) * squareSize + squareSize / 2;
+	for (const [, [fromSquare, toSquare]] of arrows) {
 
-	// Direction
-	const dx = toX - fromX;
-	const dy = toY - fromY;
-	const length = Math.hypot(dx, dy);
-	const unitX = dx / length;
-	const unitY = dy / length;
+		// Get center of squares
+		const fromX = parseInt(fromSquare[1]) * squareSize + squareSize / 2;
+		const fromY = parseInt(fromSquare[0]) * squareSize + squareSize / 2;
+		const toX = parseInt(toSquare[1]) * squareSize + squareSize / 2;
+		const toY = parseInt(toSquare[0]) * squareSize + squareSize / 2;
 
-	// Parameters
-	const shortenStart = squareSize * 0.2;
-	const headLength = squareSize * 0.5;
-	const angle = Math.atan2(dy, dx);
+		// Direction
+		const dx = toX - fromX;
+		const dy = toY - fromY;
+		const length = Math.hypot(dx, dy);
+		const unitX = dx / length;
+		const unitY = dy / length;
 
-	// Coordinates of the start of the line
-	const startX = fromX + unitX * shortenStart;
-	const startY = fromY + unitY * shortenStart;
+		// Parameters
+		const shortenStart = squareSize * 0.2;
+		const headLength = squareSize * 0.5;
+		const angle = Math.atan2(dy, dx);
 
-	// Coordinates of the two rear points of the head
-	const tipX = toX;
-	const tipY = toY;
+		// Coordinates of the start of the line
+		const startX = fromX + unitX * shortenStart;
+		const startY = fromY + unitY * shortenStart;
 
-	const leftX = tipX - headLength * Math.cos(angle - Math.PI / 6);
-	const leftY = tipY - headLength * Math.sin(angle - Math.PI / 6);
-	const rightX = tipX - headLength * Math.cos(angle + Math.PI / 6);
-	const rightY = tipY - headLength * Math.sin(angle + Math.PI / 6);
+		// Coordinates of the two rear points of the head
+		const tipX = toX;
+		const tipY = toY;
 
-	// Midpoint of the base of the head triangle
-	const baseX = (leftX + rightX) / 2;
-	const baseY = (leftY + rightY) / 2;
+		const leftX = tipX - headLength * Math.cos(angle - Math.PI / 6);
+		const leftY = tipY - headLength * Math.sin(angle - Math.PI / 6);
+		const rightX = tipX - headLength * Math.cos(angle + Math.PI / 6);
+		const rightY = tipY - headLength * Math.sin(angle + Math.PI / 6);
 
-	// Draw arrow body
-	ctx.beginPath();
-	ctx.moveTo(startX, startY);
-	ctx.lineTo(baseX, baseY);
-	ctx.strokeStyle = "rgba(255, 191, 62, 0.8)";
-	ctx.lineWidth = squareSize * 0.2;
-	ctx.stroke();
+		// Midpoint of the base of the head triangle
+		const baseX = (leftX + rightX) / 2;
+		const baseY = (leftY + rightY) / 2;
 
-	// Draw arrow head
-	ctx.beginPath();
-	ctx.moveTo(tipX, tipY);
-	ctx.lineTo(leftX, leftY);
-	ctx.lineTo(rightX, rightY);
-	ctx.closePath();
-	ctx.fillStyle = "rgba(255, 191, 62, 0.8)";
-	ctx.fill();
+		// Draw arrow body
+		ctx.beginPath();
+		ctx.moveTo(startX, startY);
+		ctx.lineTo(baseX, baseY);
+		ctx.strokeStyle = "rgba(255, 191, 62, 0.7)";
+		ctx.lineWidth = squareSize * 0.2;
+		ctx.stroke();
+
+		// Draw arrow head
+		ctx.beginPath();
+		ctx.moveTo(tipX, tipY);
+		ctx.lineTo(leftX, leftY);
+		ctx.lineTo(rightX, rightY);
+		ctx.closePath();
+		ctx.fillStyle = "rgba(255, 191, 62, 0.7)";
+		ctx.fill();
+	}
 }
 
 export function setupChessboard(chessboard: Chessboard, canvas: HTMLCanvasElement, selectedSquares: Set<string> | null, arrows: Map<string, [string, string]> | null) {
 
 	resizeCanvas(canvas);
-	drawBoard(chessboard, selectedSquares, arrows, canvas);
+	drawBoard(chessboard, selectedSquares, canvas);
 	drawPieces(chessboard, canvas);
+	drawArrows(arrows, canvas);
 }

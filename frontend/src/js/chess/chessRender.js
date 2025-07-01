@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from '../spa/stepRender.js';
+import { getUserId } from './handleFetchers.js';
 import { verifySocket } from './verifySocket.js';
 import { checkIfGameIsRunning, launchGame, launchUI } from './launchGame.js';
-import { getUserId } from './handleFetchers.js';
 export default class Chess extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,11 +21,11 @@ export default class Chess extends Step {
             try {
                 const socket = verifySocket(Step.socket);
                 const userId = yield getUserId(this.username);
-                const game = checkIfGameIsRunning();
-                if (!game)
-                    launchUI(socket, userId, game, appElement);
+                const data = checkIfGameIsRunning();
+                if (!data)
+                    launchUI(socket, userId, appElement);
                 else
-                    launchGame(socket, userId, game, appElement);
+                    launchGame(socket, userId, data, appElement);
             }
             catch (error) {
                 console.log(error);
@@ -34,9 +34,3 @@ export default class Chess extends Step {
         });
     }
 }
-// Verificación de socket
-// Obtener el ID
-// Verificar session.storage
-/////////// Si no hay una sesión de juego, abrir el menu y función para crear el chessboard y gestionar el juego (lo de gestionar el juego debe ser una función que se lance en el eventListener del clic del menú)
-/////////// Si hay una sesión de juego abierta, función para crear el chessboard y gestionar el juego
-// Gestionar la construcción del tablero

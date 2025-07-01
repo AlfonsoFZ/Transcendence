@@ -10,11 +10,19 @@ export async function registerUser(request, socket) {
 	return user;
 }
 
+function handleGameStart(data) {
+	
+	console.log("Game started with data:", data);
+}
+
 export async function handleIncomingSocketMessage(user, socket) {
 
 	socket.on('message', async message => {
 		try {
 			const data = JSON.parse(message.toString());
+			if (data.type === 'start') {
+				handleGameStart(data);
+			}
 			if (data.type === 'move') {
 				handleMove(data);
 			}
