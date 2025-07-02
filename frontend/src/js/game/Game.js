@@ -19,19 +19,23 @@ const DEFAULT_CONTAINER_ID = "game-container";
 export default class Game extends Step {
     /***************************************/
     /*********** CONSTRUCTOR ***************/
-    constructor(containerId = DEFAULT_CONTAINER_ID) {
+    constructor(containerId = DEFAULT_CONTAINER_ID, id) {
         super(containerId);
         this.gameConfig = { scoreLimit: 5, difficulty: 'medium' };
         this.match = null;
+        if (id)
+            this.gameId = id;
+        else
+            this.gameId = "game-" + Date.now();
         this.connection = new GameConnection(this);
         this.renderer = new GameRender(this);
         this.ui = new GameUI(this);
         this.log = {
-            id: "game " + Date.now(),
+            id: this.gameId,
             mode: '',
             playerDetails: { player1: null, player2: null },
             startTime: 0,
-            config: undefined,
+            config: { scoreLimit: 5, difficulty: 'medium' },
             result: { winner: '', loser: '', score: [0, 0] },
             duration: 0,
             tournamentId: null,

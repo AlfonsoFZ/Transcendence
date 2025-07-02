@@ -138,9 +138,7 @@ function handleSocketMessages(socket)
 	// Check for --token argument
 	const tokenArgIndex = process.argv.indexOf('--token');
 	if (tokenArgIndex !== -1 && process.argv[tokenArgIndex + 1])
-	{
 		token = process.argv[tokenArgIndex + 1];
-	}
 	else
 	{
 		console.log('Please log in:');
