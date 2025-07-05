@@ -59,11 +59,30 @@ export default class GameMatch extends Step
 		{
 			this.renderer.canvas = canvas;
 			this.renderer.ctx = canvas.getContext('2d');
-			this.connection.socket?.send(JSON.stringify({ type: 'CLIENT_READY' }));
 		}
-		if (this.ai)
-			this.ai.start();
-		this.controllers.setupControllers();
+		// Modal to select and send CLIENT_READY message
+		const readyModal = document.getElementById('ready-modal');
+		const readyBtn = document.getElementById('ready-btn') as HTMLButtonElement;
+		const waitingMsg = document.getElementById('waiting-msg');
+		const player1 = this.log.playerDetails.player1;
+		const player2 = this.log.playerDetails.player2;
+		(document.getElementById('player1-name') as HTMLElement).textContent = player1?.username || "Esperando jugador 1...";
+		(document.getElementById('player1-avatar') as HTMLImageElement).src = player1?.avatarPath || "/images/default-avatar.png";
+		(document.getElementById('player2-name') as HTMLElement).textContent = player2?.username || "Esperando jugador 2...";
+		(document.getElementById('player2-avatar') as HTMLImageElement).src = player2?.avatarPath || "/images/default-avatar.png";
+
+		// Solo muestra el botón si es el jugador local
+		if (readyBtn && waitingMsg)
+		{
+			readyBtn.onclick = () => {
+				readyBtn.disabled = true;
+				waitingMsg.textContent = "Esperando confirmación del rival...";
+				this.connection.socket?.send(JSON.stringify({ type: 'CLIENT_READY' }));
+				if (this.ai)
+					this.ai.start();
+				this.controllers.setupControllers();
+			};
+		}
 	}
 	
 	/**

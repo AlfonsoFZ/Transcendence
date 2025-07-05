@@ -125,6 +125,7 @@ export function endGame(gamesList)
 	.catch(err => {
 		console.error("Error al guardar gamelog vía endpoint:", err);
 	});
+	// TODO: add another logic for tournament games if needed
 	// Stop and clean up intervals
 	clearInterval(this.gameLoop);
 	clearInterval(this.aiInterval);

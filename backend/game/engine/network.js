@@ -39,6 +39,7 @@ export function	broadcastResponse(responseType)
 					duration: this.metadata.duration,
 					score: this.state.scores
 				}
+				// TODO: maybe add another logic for tournament games if needed
 				break;
 			case 'GAME_START':
 				break;

@@ -94,6 +94,9 @@ export class GameConnection
 								break ;
 							case 'GAME_START':
 								console.log("Game started:", data);
+								const readyModal = document.getElementById('ready-modal');
+								if (readyModal)
+									readyModal.style.display = 'none';
 								this.game.startGameSession();
 								break ;
 							case 'GAME_END':
