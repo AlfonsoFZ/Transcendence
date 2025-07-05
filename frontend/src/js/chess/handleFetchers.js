@@ -25,7 +25,7 @@ export function getUserId(username) {
 }
 export function getConfigHtml() {
     return __awaiter(this, void 0, void 0, function* () {
-        const htmlContent = yield fetch("../../html/chess/launchGame.html");
+        const htmlContent = yield fetch("../../html/chess/lobby.html");
         if (!htmlContent.ok)
             throw new Error("Failed to load the HTML file");
         const htmlText = yield htmlContent.text();
@@ -34,7 +34,7 @@ export function getConfigHtml() {
 }
 export function getChessHtml() {
     return __awaiter(this, void 0, void 0, function* () {
-        const htmlContent = yield fetch("../../html/chess/chess.html");
+        const htmlContent = yield fetch("../../html/chess/game.html");
         if (!htmlContent.ok)
             throw new Error("Failed to load the HTML file");
         const htmlText = yield htmlContent.text();

@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { setupChessboard } from "./drawChessboard.js";
+import { updateLobbyList } from "./lobby.js";
 import { socket, chessboard } from "./state.js";
 function handleSocketOpen() {
     socket.onopen = () => {
@@ -21,8 +22,8 @@ function handleSocketOpen() {
 function handleSocketMessage() {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
-        if (data.type === 'config') {
-            console.log(data);
+        if (data.type === 'lobby') {
+            updateLobbyList(data);
         }
         else if (data.type === 'move') {
             if (data.return === 'true') {

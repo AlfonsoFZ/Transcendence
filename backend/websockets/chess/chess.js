@@ -4,8 +4,7 @@ import { extractUserFromToken } from '../../auth/token.js';
 
 const clients = new Map();
 const lobby = new Map();
-// const games = new Map();
-// const chessboards = new Map();
+const chessboard = new Map();
 
 export async function registerUser(request, socket) {
 
@@ -16,13 +15,51 @@ export async function registerUser(request, socket) {
 	return user;
 }
 
-function createGameLobby(user, data) {
+function sendLobbyToAllClients() {
 
-	lobby.set(user.id, data);
+	const lobbyArray = Array.from(lobby.values());
 	for (const [id, client] of clients) {
-		for (const [id, data] of lobby) {
-			client.send(JSON.stringify(data));
-		}
+		client.send(JSON.stringify({
+			type: 'lobby',
+			object: lobbyArray
+		}));
+	}
+}
+
+function createLobby(user, data) {
+
+	const newLobby = {
+		"userId": user.id,
+		"username": user.username,
+		"rating": "1200",
+		"playerColor": data.playerColor,
+		"timeControl": data.timeControl,
+	}
+	lobby.set(user.id, newLobby);
+	sendLobbyToAllClients();
+}
+
+function deleteLobby(user) {
+
+	if (lobby.has(user.id)) {
+		lobby.delete(user.id);
+		sendLobbyToAllClients();
+	}
+}
+
+function createOnlineGame(user) {
+
+}
+
+function createLocalGame(user) {
+
+	const game = {
+		"userId": user.id,
+		"username": user.username,
+		"rating": "1200",
+		"playerColor": data.playerColor,
+		"timeControl": data.timeControl,
+		
 	}
 }
 
@@ -31,13 +68,22 @@ export async function handleIncomingSocketMessage(user, socket) {
 	socket.on('message', async message => {
 		try {
 			const data = JSON.parse(message.toString());
+			if (data.type === 'lobby')
+				sendLobbyToAllClients();
 			if (data.type === 'config') {
 				if (data.gameMode === 'online') {
-					createGameLobby(user, data);
-					createOnlineGame();
+					createLobby(user, data);
 				}
-				else
-					createLocalGame();
+				else {
+					createLocalGame(user, data);
+				}
+			}
+			if (data.type === 'join') {
+				deleteLobby(user);
+				createOnlineGame(user);
+			}
+			if (data.type === 'cancel') {
+				deleteLobby(user);
 			}
 			if (data.type === 'move') {
 			}
@@ -50,6 +96,8 @@ export async function handleIncomingSocketMessage(user, socket) {
 export function handleSocketClose(user, socket) {
 
 	socket.on('close', () => {
+		deleteLobby(user);
+		clients.delete(user.id);
 	});
 }
 

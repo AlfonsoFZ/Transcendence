@@ -1,15 +1,51 @@
 
 export class Chessboard {
 
-    constructor() {
-        this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
-		this.game = new Map;
-		this.lastMoveFrom = null;
-		this.lastMoveTo = null;
-		this.move = 0;
+	playerColor: string;
+	playerColorView: string;
+	timeControl: string;
+	gameMode: string;
+	minRating: number;
+	maxRating: number;
+	move: number;
+	turn: boolean;
+	lastMoveFrom: string | null;
+	lastMoveTo: string | null;
+	game: Map<number, (string | null)[][]>;
+    board: (string | null)[][];
+
+	constructor(data: any) {
+
+		this.playerColor = data.playerColor;
+		this.playerColorView = data.playerColor;
+		this.timeControl = data.timeControl;
+		this.gameMode = data.gameMode;
+		this.minRating = data.minRating;
+		this.maxRating = data.maxRating;
+		this.move = data.move || 0;
+		this.turn = this.move % 2 === 0;
+		this.lastMoveFrom = data.lastMoveFrom || null;
+		this.lastMoveTo = data.lastMoveTo || null;
+		if (data.game) {
+			this.game = new Map<number, (string | null)[][]>(
+				data.game.map(([key, value]: [number, (string | null)[][]]) => [
+					Number(key),
+					value.map(row => row.slice()),
+				])
+			);
+		}
+		else
+			this.game = new Map<number, (string | null)[][]>();
+		if (data.board)
+			this.board = data.board.map((row: (string | null)[]) => row.slice());
+		else {
+			this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
+			this.initBoard();
+		}
 	}
 
-	init() {
+	initBoard() {
+
 		this.board[0][0] = "br";
 		this.board[0][1] = "bn";
 		this.board[0][2] = "bb";
@@ -43,70 +79,94 @@ export class Chessboard {
 		this.board[6][6] = "wp";
 		this.board[6][7] = "wp";
 		this.game.set(this.move, this.board);
+		this.saveToStorage();
 	}
 
-    setPieceAt(square, piece) {
+    setPieceAt(square: string, piece: string | null) {
 
 		const row = parseInt(square[0]);
 		const col = parseInt(square[1]);
 		this.board[row][col] = piece;
 	}
 
-	setLastMoves(fromSquare, toSquare) {
+	setLastMoves(fromSquare: string | null, toSquare: string | null) {
 
 		this.lastMoveFrom = fromSquare;
 		this.lastMoveTo = toSquare;
 	}
 
-    getPieceAt(square) {
+    getPieceAt(square: string): string | null {
 
 		const row = parseInt(square[0]);
 		const col = parseInt(square[1]);
         return this.board[row][col];
     }
 
-	deletePiece(square) {
+	deletePiece(square: string) {
 
 		const row = parseInt(square[0]);
 		const col = parseInt(square[1]);
 		this.board[row][col] = null;
 	}
 
-    movePiece(fromSquare, toSquare) {
+    movePiece(fromSquare: string , toSquare: string) {
 
 		const piece = this.getPieceAt(fromSquare);
 		this.deletePiece(fromSquare);
 		this.deletePiece(toSquare);
         this.setPieceAt(toSquare, piece);
-		this.game.set(this.move++, this.board);
+		this.game.set(this.move, this.board);
 		this.lastMoveFrom = fromSquare;
 		this.lastMoveTo = toSquare;
+		this.saveToStorage();
+		this.move++;
+		this.turn = this.move % 2 === 0;
     }
 
 	clearBoard() {
 
-		for (let row = 0; row < 8; row++) {
-			for (let col = 0; col < 8; col++) {
+		for (let row = 0; row < 8; row++)
+			for (let col = 0; col < 8; col++)
 				this.board[row][col] = null;
-			}
-		}
-		this.game.clear();
+		this.move = 0;
 		this.lastMoveFrom = null;
 		this.lastMoveTo = null;
-		this.move = 0;
+		this.game.clear();
+		this.deleteStorage();
 	}
 
-	clone() {
+	getData(): any {
 
-		const newBoard = new Chessboard();
-		newBoard.board = this.board.map(row => row.slice());
-		newBoard.game = new Map;
-		this.game.forEach((value, key) => {
-			newBoard.game.set(key, value.map(row => row.slice()));
-		});
-		newBoard.lastMoveFrom = this.lastMoveFrom;
-		newBoard.lastMoveTo = this.lastMoveTo;
-		newBoard.move = this.move;
+		const data = {
+            playerColor: this.playerColor,
+            timeControl: this.timeControl,
+            gameMode: this.gameMode,
+            minRating: this.minRating,
+            maxRating: this.maxRating,
+            move: this.move,
+            lastMoveFrom: this.lastMoveFrom,
+            lastMoveTo: this.lastMoveTo,
+            game: Array.from(this.game.entries()),
+			board: this.board.map(row => row.slice()),
+		}
+		return data;
+	}
+
+	clone(): Chessboard {
+
+		const data = this.getData();
+		const newBoard = new Chessboard(data);
 		return newBoard;
+	}
+
+	saveToStorage() {
+
+		const data  = this.getData();
+		sessionStorage.setItem('chessboard', JSON.stringify(data));
+	}
+
+	deleteStorage() {
+
+		sessionStorage.removeItem('chessboard');
 	}
 }

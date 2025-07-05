@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from '../spa/stepRender.js';
 import { handleSocketEvents } from './handleSocketEvents.js';
-import { setAppContainer, setUserId, setSocket } from './state.js';
+import { setAppContainer, setUserId, setSocket, socket } from './state.js';
 import { checkIfGameIsRunning, launchGame, launchUI } from './launchGame.js';
 export default class Chess extends Step {
     render(appElement) {
@@ -22,12 +22,14 @@ export default class Chess extends Step {
                 yield setUserId(this.username);
                 setAppContainer(appElement);
                 setSocket(Step.socket);
-                handleSocketEvents();
-                const data = checkIfGameIsRunning();
-                if (!data)
-                    launchUI();
-                else
-                    launchGame(data);
+                socket.addEventListener('open', () => {
+                    handleSocketEvents();
+                    const data = checkIfGameIsRunning();
+                    if (!data)
+                        launchUI();
+                    else
+                        launchGame(data);
+                });
             }
             catch (error) {
                 console.log(error);

@@ -1,4 +1,5 @@
 import { setupChessboard } from "./drawChessboard.js";
+import { updateLobbyList } from "./lobby.js";
 import { socket, chessboard } from "./state.js";
 
 function handleSocketOpen() {
@@ -16,8 +17,8 @@ function handleSocketMessage() {
 
 	socket!.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
-		if (data.type === 'config') {
-			console.log(data);
+		if (data.type === 'lobby') {
+			updateLobbyList(data);
 		}
 		else if (data.type === 'move') {
 			if (data.return === 'true') {

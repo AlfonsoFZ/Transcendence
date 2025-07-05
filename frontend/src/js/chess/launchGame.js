@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { handleEvents } from './handleEvents.js';
-import { sendGameConfig } from './handleSenders.js';
 import { getConfigHtml, getChessHtml } from './handleFetchers.js';
 import { preloadImages, setupChessboard } from './drawChessboard.js';
+import { requestLobbyList, sendGameConfig } from './handleSenders.js';
 import { userId, appContainer, chessboard, setChessboard, setCanvas } from './state.js';
 export function checkIfGameIsRunning() {
     const data = sessionStorage.getItem("chessboard") || "";
@@ -44,15 +44,25 @@ function launchConfig() {
     return __awaiter(this, void 0, void 0, function* () {
         appContainer.innerHTML = yield getConfigHtml();
         const start = document.getElementById('start-game');
-        // const modeContainer = document.getElementById('modeContainer') as HTMLDivElement;
+        const modeContainer = document.getElementById('modeContainer');
         const modeSelect = document.getElementById('mode');
-        // function toggleModeVisibility(modeContainer: HTMLDivElement, modeSelect: HTMLSelectElement) {
-        // 	if (modeSelect.value === 'online')
-        // 		modeContainer.classList.remove('hidden');
-        // 	else
-        // 		modeContainer.classList.add('hidden');
-        // }
-        // modeSelect.addEventListener('change', () => toggleModeVisibility(modeContainer, modeSelect));
+        const minRating = document.getElementById('minRating');
+        const maxRating = document.getElementById('maxRating');
+        function blockRatingBracket() {
+            if (modeSelect.value === "local") {
+                minRating.value = 'any';
+                maxRating.value = 'any';
+                minRating.disabled = true;
+                maxRating.disabled = true;
+            }
+            else {
+                minRating.disabled = false;
+                maxRating.disabled = false;
+            }
+        }
+        blockRatingBracket();
+        requestLobbyList();
+        modeSelect.addEventListener('change', () => blockRatingBracket());
         start.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
             const data = getConfig();
             sendGameConfig(data);

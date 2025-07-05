@@ -1,23 +1,8 @@
 export class Chessboard {
     constructor(data) {
-        this.playerColor = data.playerColor;
         this.playerColorView = data.playerColor;
-        this.timeControl = data.timeControl;
-        this.gameMode = data.gameMode;
-        this.minRating = data.minRating;
-        this.maxRating = data.maxRating;
-        this.move = data.move || 0;
-        this.turn = this.move % 2 === 0;
         this.lastMoveFrom = data.lastMoveFrom || null;
         this.lastMoveTo = data.lastMoveTo || null;
-        if (data.game) {
-            this.game = new Map(data.game.map(([key, value]) => [
-                Number(key),
-                value.map(row => row.slice()),
-            ]));
-        }
-        else
-            this.game = new Map();
         if (data.board)
             this.board = data.board.map((row) => row.slice());
         else {
@@ -58,7 +43,6 @@ export class Chessboard {
         this.board[6][5] = "wp";
         this.board[6][6] = "wp";
         this.board[6][7] = "wp";
-        this.game.set(this.move, this.board);
         this.saveToStorage();
     }
     setPieceAt(square, piece) {
@@ -85,34 +69,22 @@ export class Chessboard {
         this.deletePiece(fromSquare);
         this.deletePiece(toSquare);
         this.setPieceAt(toSquare, piece);
-        this.game.set(this.move, this.board);
         this.lastMoveFrom = fromSquare;
         this.lastMoveTo = toSquare;
         this.saveToStorage();
-        this.move++;
-        this.turn = this.move % 2 === 0;
     }
     clearBoard() {
         for (let row = 0; row < 8; row++)
             for (let col = 0; col < 8; col++)
                 this.board[row][col] = null;
-        this.move = 0;
         this.lastMoveFrom = null;
         this.lastMoveTo = null;
-        this.game.clear();
         this.deleteStorage();
     }
     getData() {
         const data = {
-            playerColor: this.playerColor,
-            timeControl: this.timeControl,
-            gameMode: this.gameMode,
-            minRating: this.minRating,
-            maxRating: this.maxRating,
-            move: this.move,
             lastMoveFrom: this.lastMoveFrom,
             lastMoveTo: this.lastMoveTo,
-            game: Array.from(this.game.entries()),
             board: this.board.map(row => row.slice()),
         };
         return data;
@@ -130,3 +102,7 @@ export class Chessboard {
         sessionStorage.removeItem('chessboard');
     }
 }
+//// Los datos de la partida deberían guardarse en el servidor, no en sessionStorage.
+//// Chessboard debería ser una clase que solo maneje la visualización del tablero y las piezas.
+//// Chessboard debería poder edirtarse de esta manera: chessboard.set(data); data sería la información mandada del backend.
+//// Dentro de data debería estar playerColorView, lastMoveFrom, lastMoveTo y board.

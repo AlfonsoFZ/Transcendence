@@ -16,7 +16,7 @@ export async function getUserId(username: string): Promise<string> {
 
 export async function getConfigHtml(): Promise<string> {
 
-	const htmlContent = await fetch("../../html/chess/launchGame.html");
+	const htmlContent = await fetch("../../html/chess/lobby.html");
 	if (!htmlContent.ok)
 		throw new Error("Failed to load the HTML file");
 	const htmlText = await htmlContent.text();
@@ -25,7 +25,7 @@ export async function getConfigHtml(): Promise<string> {
 
 export async function getChessHtml(): Promise<string> {
 
-	const htmlContent = await fetch("../../html/chess/chess.html");
+	const htmlContent = await fetch("../../html/chess/game.html");
 	if (!htmlContent.ok)
 		throw new Error("Failed to load the HTML file");
 	const htmlText = await htmlContent.text();

@@ -1,7 +1,7 @@
 import { handleEvents } from './handleEvents.js'
-import { sendGameConfig } from './handleSenders.js'
 import { getConfigHtml, getChessHtml } from './handleFetchers.js'
 import { preloadImages, setupChessboard } from './drawChessboard.js'
+import { requestLobbyList, sendGameConfig } from './handleSenders.js'
 import { userId, appContainer, chessboard, setChessboard, setCanvas } from './state.js'
 
 export function checkIfGameIsRunning(): any {
@@ -42,16 +42,27 @@ async function launchConfig() {
 
 	appContainer!.innerHTML = await getConfigHtml();
 	const start = document.getElementById('start-game') as HTMLButtonElement;
-	// const modeContainer = document.getElementById('modeContainer') as HTMLDivElement;
+	const modeContainer = document.getElementById('modeContainer') as HTMLDivElement;
 	const modeSelect = document.getElementById('mode') as HTMLSelectElement;
+	const minRating = document.getElementById('minRating') as HTMLSelectElement;
+	const maxRating = document.getElementById('maxRating') as HTMLSelectElement;
 
-	// function toggleModeVisibility(modeContainer: HTMLDivElement, modeSelect: HTMLSelectElement) {
-	// 	if (modeSelect.value === 'online')
-	// 		modeContainer.classList.remove('hidden');
-	// 	else
-	// 		modeContainer.classList.add('hidden');
-	// }
-	// modeSelect.addEventListener('change', () => toggleModeVisibility(modeContainer, modeSelect));
+	function blockRatingBracket() {
+
+		if (modeSelect.value === "local") {
+			minRating.value = 'any';
+			maxRating.value = 'any';
+			minRating.disabled = true;
+			maxRating.disabled = true;
+		}
+		else {
+			minRating.disabled = false;
+			maxRating.disabled = false;
+		}
+	}
+	blockRatingBracket();
+	requestLobbyList();
+	modeSelect.addEventListener('change', () => blockRatingBracket());
 	start.addEventListener('click', async () => {
 		const data = getConfig();
 		sendGameConfig(data);
