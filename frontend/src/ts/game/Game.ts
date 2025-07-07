@@ -113,6 +113,8 @@ export default class Game extends Step
 			this.gameConfig.scoreLimit = config.scoreLimit;
 		if (config.difficulty)
 			this.gameConfig.difficulty = config.difficulty;
+		if (this.log)
+			this.log.config = { ...this.gameConfig };
 	}
 
 	public async setPlayerInfo(playerKey: 'player1' | 'player2', data: {email: string, password: string} | null = null): Promise<void>

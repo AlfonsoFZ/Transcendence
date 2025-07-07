@@ -32,7 +32,6 @@ export default class GameMatch extends Step {
     }
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             try {
                 const response = yield fetch("../../html/game/gameMatch.html");
                 if (!response.ok)
@@ -48,11 +47,29 @@ export default class GameMatch extends Step {
             if (canvas) {
                 this.renderer.canvas = canvas;
                 this.renderer.ctx = canvas.getContext('2d');
-                (_a = this.connection.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({ type: 'CLIENT_READY' }));
             }
-            if (this.ai)
-                this.ai.start();
-            this.controllers.setupControllers();
+            // Modal to select and send CLIENT_READY message
+            const readyModal = document.getElementById('ready-modal');
+            const readyBtn = document.getElementById('ready-btn');
+            const waitingMsg = document.getElementById('waiting-msg');
+            const player1 = this.log.playerDetails.player1;
+            const player2 = this.log.playerDetails.player2;
+            document.getElementById('player1-name').textContent = (player1 === null || player1 === void 0 ? void 0 : player1.username) || "Esperando jugador 1...";
+            document.getElementById('player1-avatar').src = (player1 === null || player1 === void 0 ? void 0 : player1.avatarPath) || "/images/default-avatar.png";
+            document.getElementById('player2-name').textContent = (player2 === null || player2 === void 0 ? void 0 : player2.username) || "Esperando jugador 2...";
+            document.getElementById('player2-avatar').src = (player2 === null || player2 === void 0 ? void 0 : player2.avatarPath) || "/images/default-avatar.png";
+            // Solo muestra el botón si es el jugador local
+            if (readyBtn && waitingMsg) {
+                readyBtn.onclick = () => {
+                    var _a;
+                    readyBtn.disabled = true;
+                    waitingMsg.textContent = "Esperando confirmación del rival...";
+                    (_a = this.connection.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({ type: 'CLIENT_READY' }));
+                    if (this.ai)
+                        this.ai.start();
+                    this.controllers.setupControllers();
+                };
+            }
         });
     }
     /**

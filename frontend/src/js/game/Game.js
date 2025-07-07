@@ -95,6 +95,8 @@ export default class Game extends Step {
             this.gameConfig.scoreLimit = config.scoreLimit;
         if (config.difficulty)
             this.gameConfig.difficulty = config.difficulty;
+        if (this.log)
+            this.log.config = Object.assign({}, this.gameConfig);
     }
     setPlayerInfo(playerKey_1) {
         return __awaiter(this, arguments, void 0, function* (playerKey, data = null) {
