@@ -14,7 +14,7 @@ export async function getUserId(username: string): Promise<string> {
 	return id.text();
 }
 
-export async function getConfigHtml(): Promise<string> {
+export async function getLobbyHtml(): Promise<string> {
 
 	const htmlContent = await fetch("../../html/chess/lobby.html");
 	if (!htmlContent.ok)

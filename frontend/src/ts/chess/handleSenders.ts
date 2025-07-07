@@ -1,22 +1,34 @@
-import { userId, socket, chessboard } from './state.js'
+import { userId, socket } from './state.js'
+
+export function waitForSocketOpen(): Promise<void> {
+
+	return new Promise(resolve => {
+		if (socket?.readyState === WebSocket.OPEN)
+			resolve();
+		else {
+			const interval = setInterval(() => {
+				if (socket?.readyState === WebSocket.OPEN) {
+					clearInterval(interval);
+					resolve();
+				}
+			}, 50);
+		}
+	});
+}
+
+export function checkIfGameIsRunning(){
+
+	const message = {
+		type: 'info',
+		userId: userId,
+	}
+    socket!.send(JSON.stringify(message));
+}
 
 export function requestLobbyList() {
 
 	const message = {
 		type: 'lobby',
-	};
-	socket!.send(JSON.stringify(message));
-}
-
-export function sendPieceMove(fromSquare: string, toSquare: string, piece: string) {
-
-	const message = {
-		type: 'move',
-		userId: userId,
-		piece: piece,
-		moveFrom: fromSquare,
-		moveTo: toSquare,
-		board: chessboard!.board
 	};
 	socket!.send(JSON.stringify(message));
 }
@@ -40,7 +52,7 @@ export function sendOptionSelected(id: string) {
 	let message;
 	if (userId === id) {
 		message = {
-			type: 'cancel'
+			type: 'cancel',
 		}
 	}
 	else {
@@ -49,5 +61,16 @@ export function sendOptionSelected(id: string) {
 			id: id,
 		}
 	}
+	socket!.send(JSON.stringify(message));
+}
+
+export function sendPieceMove(fromSquare: string, toSquare: string) {
+
+	const message = {
+		type: 'move',
+		userId: userId,
+		moveFrom: fromSquare,
+		moveTo: toSquare,
+	};
 	socket!.send(JSON.stringify(message));
 }

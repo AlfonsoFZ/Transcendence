@@ -27,6 +27,7 @@ function getSquare(playerColorView: string, event: MouseEvent): string | null {
 
 function movePiece(event: MouseEvent, fromSquare: string, piece: string, copy: Chessboard) {
 
+	console.log(copy)	
 	const currentSquare = getSquare("white", event);
 	copy.deletePiece(fromSquare);
 	copy.setLastMoves(fromSquare, null);
@@ -36,14 +37,11 @@ function movePiece(event: MouseEvent, fromSquare: string, piece: string, copy: C
 	drawMovingPiece(event, piece);
 }
 
-// If move is ok from backend, then
-// fromSquare and toSquare are always set here. But it should set it only if they are valids.
-// If fromSquare === toSquare, response is false from backend
-function dropPiece(event: MouseEvent, fromSquare: string, piece: string) {
+function dropPiece(event: MouseEvent, fromSquare: string) {
 
 	const toSquare = getSquare(chessboard!.playerColorView, event);
 	if (toSquare)
-		sendPieceMove(fromSquare, toSquare, piece);
+		sendPieceMove(fromSquare, toSquare);
 }
 
 function handleLeftClick(fromSquare: string, piece: string) {
@@ -52,7 +50,7 @@ function handleLeftClick(fromSquare: string, piece: string) {
 		movePiece(event, fromSquare!, piece, chessboard!.clone());
 	}
 	function mouseUpHandler(event: MouseEvent) {
-		dropPiece(event, fromSquare, piece);
+		dropPiece(event, fromSquare);
 		window.removeEventListener("mousemove", mouseMoveHandler);
 		window.removeEventListener("mouseup", mouseUpHandler);
 	}

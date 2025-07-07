@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from '../spa/stepRender.js';
 import { handleSocketEvents } from './handleSocketEvents.js';
-import { setAppContainer, setUserId, setSocket, socket } from './state.js';
-import { checkIfGameIsRunning, launchGame, launchUI } from './launchGame.js';
+import { setAppContainer, setUserId, setSocket } from './state.js';
+import { waitForSocketOpen, checkIfGameIsRunning } from './handleSenders.js';
 export default class Chess extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,15 +21,10 @@ export default class Chess extends Step {
             try {
                 yield setUserId(this.username);
                 setAppContainer(appElement);
-                setSocket(Step.socket);
-                socket.addEventListener('open', () => {
-                    handleSocketEvents();
-                    const data = checkIfGameIsRunning();
-                    if (!data)
-                        launchUI();
-                    else
-                        launchGame(data);
-                });
+                setSocket(Step.chessSocket);
+                handleSocketEvents();
+                yield waitForSocketOpen();
+                checkIfGameIsRunning();
             }
             catch (error) {
                 console.log(error);

@@ -38,6 +38,8 @@ export function setSocket(ws: WebSocket | null) {
 		socket = ws
 }
 
+
+
 export function setChessboard(data: any) {
 
 	chessboard = new Chessboard(data);

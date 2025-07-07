@@ -9,7 +9,5 @@ class ChessPiece {
 
 class Rook extends ChessPiece {
 
-	getLegalMoves() {
-		
-	}
+	
 }

@@ -8,16 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { handleEvents } from './handleEvents.js';
-import { getConfigHtml, getChessHtml } from './handleFetchers.js';
+import { getLobbyHtml, getChessHtml } from './handleFetchers.js';
 import { preloadImages, setupChessboard } from './drawChessboard.js';
 import { requestLobbyList, sendGameConfig } from './handleSenders.js';
 import { userId, appContainer, chessboard, setChessboard, setCanvas } from './state.js';
-export function checkIfGameIsRunning() {
-    const data = sessionStorage.getItem("chessboard") || "";
-    if (data)
-        return JSON.parse(data);
-    return null;
-}
 function getConfig() {
     const playerColor = document.getElementById('color').value;
     const timeControl = document.getElementById('time').value;
@@ -40,11 +34,10 @@ function getConfig() {
     };
     return data;
 }
-function launchConfig() {
+export function launchUI() {
     return __awaiter(this, void 0, void 0, function* () {
-        appContainer.innerHTML = yield getConfigHtml();
+        appContainer.innerHTML = yield getLobbyHtml();
         const start = document.getElementById('start-game');
-        const modeContainer = document.getElementById('modeContainer');
         const modeSelect = document.getElementById('mode');
         const minRating = document.getElementById('minRating');
         const maxRating = document.getElementById('maxRating');
@@ -66,21 +59,10 @@ function launchConfig() {
         start.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
             const data = getConfig();
             sendGameConfig(data);
-            yield launchGame(data);
+            // await launchGame(data)
         }));
     });
 }
-function launchLobby() {
-    return __awaiter(this, void 0, void 0, function* () {
-    });
-}
-export function launchUI() {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield launchConfig();
-        yield launchLobby();
-    });
-}
-// Creo que data es un string y por eso no funciona. Hay que parsearlo a JSON
 export function launchGame(data) {
     return __awaiter(this, void 0, void 0, function* () {
         appContainer.innerHTML = yield getChessHtml();

@@ -1,16 +1,8 @@
 import { handleEvents } from './handleEvents.js'
-import { getConfigHtml, getChessHtml } from './handleFetchers.js'
+import { getLobbyHtml, getChessHtml } from './handleFetchers.js'
 import { preloadImages, setupChessboard } from './drawChessboard.js'
 import { requestLobbyList, sendGameConfig } from './handleSenders.js'
 import { userId, appContainer, chessboard, setChessboard, setCanvas } from './state.js'
-
-export function checkIfGameIsRunning(): any {
-
-	const data = sessionStorage.getItem("chessboard") || "";
-	if (data)
-		return JSON.parse(data);
-	return null;
-}
 
 function getConfig(): any {
 
@@ -38,11 +30,10 @@ function getConfig(): any {
 	return data;
 }
 
-async function launchConfig() {
+export async function launchUI() {
 
-	appContainer!.innerHTML = await getConfigHtml();
+	appContainer!.innerHTML = await getLobbyHtml();
 	const start = document.getElementById('start-game') as HTMLButtonElement;
-	const modeContainer = document.getElementById('modeContainer') as HTMLDivElement;
 	const modeSelect = document.getElementById('mode') as HTMLSelectElement;
 	const minRating = document.getElementById('minRating') as HTMLSelectElement;
 	const maxRating = document.getElementById('maxRating') as HTMLSelectElement;
@@ -67,22 +58,11 @@ async function launchConfig() {
 		const data = getConfig();
 		sendGameConfig(data);
 
-		await launchGame(data)
+		// await launchGame(data)
 	});
 
 }
 
-async function launchLobby() {
-
-}
-
-export async function launchUI() {
-
-	await launchConfig();
-	await launchLobby();
-}
-
-// Creo que data es un string y por eso no funciona. Hay que parsearlo a JSON
 export async function launchGame(data: any) {
 
 	appContainer!.innerHTML = await getChessHtml();

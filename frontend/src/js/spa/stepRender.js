@@ -155,5 +155,5 @@ export class Step {
         });
     }
 }
-Step.socket = null; // Almacena la conexión WebSocket
+Step.chatSocket = null; // Almacena la conexión WebSocket
 Step.chessSocket = null;

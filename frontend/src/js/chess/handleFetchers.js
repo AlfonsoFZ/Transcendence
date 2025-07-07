@@ -23,7 +23,7 @@ export function getUserId(username) {
         return id.text();
     });
 }
-export function getConfigHtml() {
+export function getLobbyHtml() {
     return __awaiter(this, void 0, void 0, function* () {
         const htmlContent = yield fetch("../../html/chess/lobby.html");
         if (!htmlContent.ok)
