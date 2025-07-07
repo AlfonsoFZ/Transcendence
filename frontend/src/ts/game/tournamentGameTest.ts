@@ -107,14 +107,14 @@ export default class Tournament extends Step
 				mode: '1v1',
 				playerDetails: {
 					player1: {
-						id: `player-${i * 2 + 1}`,
+						id: 40 + (i * 2 + 1),
 						username: `Player${i * 2 + 1}`,
 						tournamentUsername: `Player${i * 2 + 1}`,
 						email: `player${i * 2 + 1}@test.com`,
 						avatarPath: 'https://localhost:8443/back/images/avatar-4.png'
 					},
 					player2: {
-						id: `player-${i * 2 + 2}`,
+						id: 40 + (i * 2 + 2),
 						username: `Player${i * 2 + 2}`,
 						tournamentUsername: `Player${i * 2 + 2}`,
 						email: `player${i * 2 + 2}@test.com`,

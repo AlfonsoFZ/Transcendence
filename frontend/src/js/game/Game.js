@@ -105,11 +105,12 @@ export default class Game extends Step {
         });
     }
     setGuestInfo(playerKey, name) {
+        const wildcardID = name === 'guest' ? -1 : -2;
         const tempUser = {
-            id: `${name}-${Date.now().toString(36)}`,
-            username: name,
+            id: wildcardID,
+            username: `${name}-${Date.now().toString(36)}`,
             tournamentUsername: 'name',
-            email: `${name}@email.com`,
+            email: `${name}-${Date.now().toString(36)}@email.com`,
             avatarPath: '/images/default-avatar.png'
         };
         this.log.playerDetails[playerKey] = tempUser;

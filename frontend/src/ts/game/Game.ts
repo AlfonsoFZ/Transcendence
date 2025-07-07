@@ -125,11 +125,12 @@ export default class Game extends Step
 
 	public setGuestInfo(playerKey: 'player1' | 'player2', name: 'ai'| 'guest'): void
 	{
+		const	wildcardID : number = name === 'guest' ? -1 : -2;
 		const tempUser : GamePlayer = {
-			id: `${name}-${Date.now().toString(36)}`,
-			username: name,
+			id: wildcardID,
+			username: `${name}-${Date.now().toString(36)}`,
 			tournamentUsername: 'name',
-			email: `${name}@email.com`,
+			email: `${name}-${Date.now().toString(36)}@email.com`,
 			avatarPath: '/images/default-avatar.png'
 		};
 		this.log.playerDetails[playerKey] = tempUser;

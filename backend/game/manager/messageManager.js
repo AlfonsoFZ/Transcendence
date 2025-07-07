@@ -10,7 +10,6 @@ import { crud } from '../../crud/crud.js';
  */
 export function handleJoinGame(client, data)
 {
-	console.log("Launching handleJoinGame...");
 	const	{ user, connection } = client;
 	const	gameMode = data.mode;
 	const	roomId = data.roomId || `game-${Date.now().toString(36)}`;
@@ -35,28 +34,41 @@ export function handleJoinGame(client, data)
 			};
 		}
 	}
-	// 2. Add player to the game
-	const playerNumber = gameSession.addPlayer(user.id, connection);
-	if (!playerNumber)
+	// 2. Add players to the game
+	// Tournament game: set both player1 and player2 from metadata
+	if (data.tournamentId && data.player1 && data.player2)
 	{
-		connection.send(JSON.stringify({
-			type: 'ERROR',
-			message: 'Game is full'
-		}));
-		return ;
+		gameSession.setPlayerDetails('player1', data.player1);
+		gameSession.setPlayerDetails('player2', data.player2);
+		gameSession.setTournamentId(data.tournamentId);
+		gameSession.players.set(user.id, { connection, playerNumber: 'player1', ready: false });
+		clients.set(user.id, { connection, roomId });
 	}
-	// 3. Store game player logs! TODO: check if should wait if shouldStart()
-	gameSession.setPlayerDetails(playerNumber, user);
-	clients.set(user.id, { connection, roomId });
+	// Standard game: set this socket connected user to corresponding palyer slot
+	else
+	{
+		const playerNumber = gameSession.addPlayer(user.id, connection);
+		if (!playerNumber)
+		{
+			connection.send(JSON.stringify({
+				type: 'ERROR',
+				message: 'Game is full'
+			}));
+			return ;
+		}
+		// 3. Store game player logs!
+		gameSession.setPlayerDetails(playerNumber, user);
+		clients.set(user.id, { connection, roomId });
+		// 4. Set second playerInfo if 1v1 or 1vAI - no more connections needed
+		if (secondPlayerInfo && (gameMode === '1vAI' || gameMode === '1v1'))
+			gameSession.setPlayerDetails('player2', secondPlayerInfo);
+	}
 	// 4. Send initial game data
 	connection.send(JSON.stringify({
 		type: 'GAME_INIT',
-		playerNumber,
-		config: gameSession.getConfig()
+		config: gameSession.getConfig(),
+		metadata: gameSession.metadata
 	}));
-	// 5. Set second playerInfo if 1v1 or 1vAI - no more connections needed
-	if (secondPlayerInfo && (gameMode === '1vAI' || gameMode === '1v1'))
-		gameSession.setPlayerDetails('player2', secondPlayerInfo);
 }
 
 export function handleRestartGame(client, data)
@@ -65,13 +77,14 @@ export function handleRestartGame(client, data)
 	const clientData = clients.get(user.id);
 	// Delete old game session if it exists
 	const oldGameSession = gamesList.get(clientData?.roomId);
-	if (oldGameSession)
+	if (!data.rematch)
 	{	
-		gamesList.delete(clientData.roomId);
-		if (!data.rematch)
-			return ;
+		if (oldGameSession)
+			gamesList.delete(clientData.roomId);
+		return ;
 	}
-
+	if (oldGameSession)
+		gamesList.delete(clientData.roomId);
 	// Create a new game with same config
 	const gameMode = data.mode || (oldGameSession ? oldGameSession.gameMode : '1v1');
 	const roomId = `game-${Date.now().toString(36)}`;

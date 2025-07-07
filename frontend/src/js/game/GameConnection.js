@@ -76,6 +76,8 @@ export class GameConnection {
                                     break;
                                 case 'GAME_INIT':
                                     const spa = SPA.getInstance();
+                                    if (data.metadata)
+                                        this.game.setGameLog(data.metadata);
                                     if (window.location.hash === '#game-match' && ((_a = spa.currentGame) === null || _a === void 0 ? void 0 : _a.getGameMatch())) {
                                         const appElement = document.getElementById('app-container');
                                         if (appElement)

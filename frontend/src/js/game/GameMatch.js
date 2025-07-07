@@ -93,7 +93,7 @@ export default class GameMatch extends Step {
             durationElement.textContent = duration.toString();
         }
         const playAgainBtn = document.getElementById('play-again-btn');
-        if (playAgainBtn && gameData.tournamentId)
+        if (playAgainBtn && (gameData.tournamentId || gameData.mode === 'remote'))
             playAgainBtn.hidden = true;
         else if (playAgainBtn)
             playAgainBtn.hidden = false;
@@ -109,8 +109,10 @@ export default class GameMatch extends Step {
             this.controllers.cleanup();
             this.controllers.destroy();
             // TODO: change SPA route 'test' for 'tournament' when ready
-            SPA.getInstance().navigate(this.log.tournamentId ? 'test' : 'game-lobby');
             this.destroy();
+            const spa = SPA.getInstance();
+            spa.currentGame = null;
+            spa.navigate(this.log.tournamentId ? 'test' : 'game-lobby');
         });
     }
     /**

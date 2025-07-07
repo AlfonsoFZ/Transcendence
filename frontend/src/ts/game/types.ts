@@ -45,7 +45,7 @@ export interface	GameConfig
 // but keeping it similar to backend just in case
 export interface GamePlayer
 {
-	id: string;
+	id: number;
 	username: string;
 	tournamentUsername: string;
 	email: string;
