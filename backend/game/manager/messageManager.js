@@ -182,6 +182,8 @@ export function handleClientReady(client, data)
 	const { user } = client;
 	const clientData = clients.get(user.id);
 	const gameSession = gamesList.get(clientData.roomId);
+	const COUNTDOWN_SECONDS = 5;
+
 	if (!gameSession)
 		return;
 	const player = gameSession.players.get(user.id);
@@ -194,8 +196,13 @@ export function handleClientReady(client, data)
 		if (allReady && !gameSession.gameLoop)
 		{
 			gameSession.state = gameSession.resetState();
-			gameSession.broadcastResponse('GAME_START');
-			gameSession.startGameLoop(gamesList);
+			gameSession.broadcastResponse('GAME_COUNTDOWN', { seconds: COUNTDOWN_SECONDS });
+			setTimeout(() => {
+				gameSession.broadcastResponse('GAME_START');
+				setTimeout(() => {
+					gameSession.startGameLoop(gamesList);
+				}, 1000); // 1 second freeze after GAME_START
+			}, COUNTDOWN_SECONDS * 1000); // Countdown duration
 		}
 	}
 }

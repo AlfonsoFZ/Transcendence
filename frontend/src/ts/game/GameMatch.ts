@@ -182,6 +182,30 @@ export default class GameMatch extends Step
 		player2Ready.textContent = readyStates.player2 ? "Ready" : "";
 	}
 
+	public showCountdown(seconds: number = 3)
+	{
+		const overlay = document.getElementById('countdown-overlay');
+		const number = document.getElementById('countdown-number');
+		if (!overlay || !number)
+			return ;
+		overlay.style.display = 'flex';
+		let count = seconds;
+		number.textContent = count.toString();
+		const interval = setInterval(() => {
+			count--;
+			if (count > 0)
+				number.textContent = count.toString();
+			else
+			{
+				number.textContent = "GO!";
+				setTimeout(() => {
+					overlay.style.display = 'none';
+				}, 800);
+				clearInterval(interval);
+			}
+		}, 1000);
+	}
+
 	public destroy()
 	{
 		this.controllers.cleanup();

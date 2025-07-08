@@ -96,12 +96,6 @@ export class GameConnection
 								break ;
 							case 'GAME_START':
 								console.log("Game started:", data);
-								const readyModal = document.getElementById('ready-modal');
-								if (readyModal)
-								{
-									readyModal.style.display = 'none';
-									this.game.getGameMatch()?.stopReadyStatePolling();
-								}
 								this.game.startGameSession();
 								break ;
 							case 'GAME_END':
@@ -124,6 +118,15 @@ export class GameConnection
 							case 'READY_STATE':
 								this.game.getGameMatch()?.updateReadyModal(data.playerDetails, data.readyStates);
 								break ;
+							case 'GAME_COUNTDOWN':
+								const readyModal = document.getElementById('ready-modal');
+								if (readyModal)
+								{
+									readyModal.style.display = 'none';
+									this.game.getGameMatch()?.stopReadyStatePolling();
+								}
+								this.game.getGameMatch()?.showCountdown(data.seconds || 3);
+								break;
 							default:
 								console.log(`Received message with type: ${data.type}`);
 						}

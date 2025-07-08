@@ -1,8 +1,17 @@
 <!-- Game canvas, by default-->
-<div class="game-container" id="game-container" style="display: block; width: 100%; max-width: 1200px; margin: 0 auto; text-align: center;">
-	<canvas id="game-canvas" width="800" height="600" style="background-color: black; margin: 0 auto; display: block; max-width: 100%; height: auto;"></canvas>
+<div
+  id="game-container"
+  class="w-full max-w-[1200px] mx-auto text-center flex flex-col items-center"
+>
+  <canvas
+	id="game-canvas"
+	width="800"
+	height="600"
+	class="bg-black mx-auto block max-w-full h-auto"
+  ></canvas>
 </div>
 
+<!-- Ready-waiting players modal overlay -->
 <div id="ready-modal"
   class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
   style="display: flex;">
@@ -25,6 +34,13 @@
 		<div id="player2-ready" class="text-green-400 font-bold"></div>
 	</div>
   </div>
+</div>
+
+<!-- Start game countdown overlay, hidden by default -->
+<div id="countdown-overlay"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
+  style="display: none;">
+  <span class="text-white text-[15vw] font-extrabold font-[Tektur] drop-shadow-lg" id="countdown-number"></span>
 </div>
 
 <!-- Game results overlay, hidden by default -->

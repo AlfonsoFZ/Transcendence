@@ -13,22 +13,23 @@ export function	getConnections()
 }
 
 // Send game state to all players
-export function	broadcastResponse(responseType)
+export function	broadcastResponse(responseType, payload = {})
 {
 	const	connections = this.getConnections();
 
 	connections.forEach((connection, playerId) => {
 		if (connection.readyState !== 1)
-			return;
+			return ;
 		let response = {
 			type: responseType,
 			timestamp: Date.now(),
+			...payload
 		};
 		switch (responseType)
 		{
 			case 'GAME_STATE':
 				response.state = this.getPlayerView(playerId);
-				break;
+				break ;
 			case 'GAME_END':
 				response.result = {
 					winner: this.metadata.result.winner?.username,
@@ -40,12 +41,14 @@ export function	broadcastResponse(responseType)
 					score: this.state.scores
 				}
 				// TODO: maybe add another logic for tournament games if needed
-				break;
+				break ;
 			case 'GAME_START':
-				break;
+				break ;
+			case 'GAME_COUNTDOWN':
+				break ;
 			default:
 				console.error(`Unknown responseType to broadcast: ${responseType}`);
-				return;
+				return ;
 		}
 		connection.send(JSON.stringify(response));
 	});
