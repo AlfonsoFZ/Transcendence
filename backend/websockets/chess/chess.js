@@ -1,5 +1,5 @@
 import { parse } from 'cookie';
-import { Chessboard } from './chessboard.js'
+import { Chessboard } from './chessboardClass.js'
 import { extractUserFromToken } from '../../auth/token.js';
 
 const clients = new Map(); //Number-socket
@@ -40,7 +40,7 @@ function sendInfoToClient(user, data) {
 			playerColorView: (user.id === board.hostId) ? board.hostColorView : board.guestColorView,
 			lastMoveFrom: board.lastMoveFrom,
 			lastMoveTo: board.lastMoveTo,
-			board: board.board,
+			board: board.getBoard(),
 		}
 	}
 	else {
@@ -98,7 +98,7 @@ function createOnlineGame(user, data) {
 		inGame: true,
 		lastMoveFrom: board.lastMoveFrom,
 		lastMoveTo: board.lastMoveTo,
-    	board: board.board,
+    	board: board.getBoard(),
 	}
 	sendMsgToClient(Number(data.id), { ...message, playerColorView: board.hostColorView, });
 	sendMsgToClient(user.id, { ...message, playerColorView: board.guestColorView, });
@@ -144,7 +144,7 @@ function createLocalGame(user, data) {
 		playerColorView: board.hostColorView,
 		lastMoveFrom: board.lastMoveFrom,
 		lastMoveTo: board.lastMoveTo,
-    	board: board.board,
+    	board: board.getBoard(),
 	}
 	sendMsgToClient(user.id, message);
 }
@@ -155,10 +155,10 @@ function movePiece(user, data) {
 		const board = chessboard.get(user.id);
 		board.handleMove(data.moveFrom, data.moveTo);
 		const message = {
-			type: 'move', 
+			type: 'move',
 			lastMoveFrom: board.lastMoveFrom,
 			lastMoveTo: board.lastMoveTo,
-    		board: board.board,
+    		board: board.getBoard(),
 		}
 		sendMsgToClient(board.hostId, { ...message, playerColorView: board.hostColorView, });
 		sendMsgToClient(board.guestId, { ...message, playerColorView: board.guestColorView, });
