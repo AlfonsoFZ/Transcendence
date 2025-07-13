@@ -7,183 +7,214 @@ export class ChessPiece {
 	}
 
 	set(square) {
-		this.square = square
+		this.square = square;
 	}
 	getColor() {
 		return this.color;
 	}
-	getNotation(){}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {}
+	getSquare() {
+		return this.square;
+	}
+	clone() {}
+	getNotation() {}
+	legalMoves() {}
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {}
 }
 
 export class Pawn extends ChessPiece {
 
+	clone() {
+		return new Pawn(this.color, this.square);
+	}
+
 	getNotation() {
 		return this.color[0] + 'p';
 	}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {
 
-		return true
+	isPromotion(toSquare) {
+
+		const trow = Math.floor(toSquare / 10);
+		const promotionRow = this.getColor() === 'white' ? 0 : 7;
+
+		if (trow === promotionRow)
+			return true;
+		return false;
 	}
-}
 
-export class Knight extends ChessPiece {
+	isEnPassant(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
 
-	getNotation() {
-		return this.color[0] + 'n';
+		const frow = Math.floor(fromSquare / 10);
+		const color = this.getColor();
+		const direction = color === 'white' ? -10 : 10;
+		const capture = [direction - 1, direction + 1];
+		const lmtrow = Math.floor(lastMoveTo / 10);
+		const lmtcol = lastMoveTo % 10;
+		const enemyColor = color === 'white' ? 'black' : 'white';
+		const ennemyLastMove = Math.abs(lastMoveFrom - lastMoveTo);
+		const enPassantRow = color === 'white' ? 3 : 4;
+
+		if (capture.includes(toSquare - fromSquare) && frow === enPassantRow && ennemyLastMove === 20 && toSquare === (lastMoveTo + direction) && board[lmtrow][lmtcol].getNotation() === enemyColor[0] + 'p') {
+			return true;
+		}
+		return false;
 	}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {
 
-		return true		
-	}
-}
-
-export class Bishop extends ChessPiece {
-
-	getNotation() {
-		return this.color[0] + 'b';
-	}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {
-
-		if (fromSquare === toSquare)
-			return false;
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
 
 		const frow = Math.floor(fromSquare / 10);
 		const fcol = fromSquare % 10;
 		const trow = Math.floor(toSquare / 10);
 		const tcol = toSquare % 10;
-		let diff = toSquare - fromSquare;
+		const color = this.getColor();
+		const direction = color === 'white' ? -10 : 10;
+		const rowDirection = color === 'white' ? -1 : 1;
+		const capture = [direction - 1, direction + 1];
+		const enemyColor = color === 'white' ? 'black' : 'white';
+		const startRow = color === 'white' ? 6 : 1;
 
-		if (board[trow][tcol] !== null && board[trow][tcol][0] === this.getColor()[0])
+		if (fromSquare === toSquare)
 			return false;
+		if (board[trow][tcol] === null && toSquare === fromSquare + direction)
+			return true;
+		if (capture.includes(toSquare - fromSquare) && board[trow][tcol] !== null && board[trow][tcol].getColor() === enemyColor)
+			return true;
+		if (board[trow][tcol] === null && board[frow + rowDirection][fcol] === null && frow === startRow && toSquare === fromSquare + 2 * direction)
+			return true;
+		if (this.isEnPassant(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo))
+			return true;
+		return false;
+	}
 
-	// 	if (diff % 9 === 0) {
-	// 		if (Math.floor(diff / 9) > 0) {
-	// 			for (let square = fromSquare + 9; square != toSquare; square += 9) {
-	// 				const srow = Math.floor(square / 10);
-	// 				const scol = square % 10;
-	// 				if (board[srow][scol] !== null)
-	// 					return false;
-	// 			}
-	// 			return true;
-	// 		}
-	// 		else {
-	// 			for (let square = fromSquare - 9; square != toSquare; square -= 9) {
-	// 				const srow = Math.floor(square / 10);
-	// 				const scol = square % 10;
-	// 				if (board[srow][scol] !== null)
-	// 					return false;
-	// 			}
-	// 			return true;
-	// 		}
-	// 	}
-	// 	else if (diff % 11 === 0) {
-	// 		if (Math.floor(diff / 11) > 0) {
-	// 			for (let square = fromSquare + 11; square != toSquare; square += 11) {
-	// 				const srow = Math.floor(square / 10);
-	// 				const scol = square % 10;
-	// 				if (board[srow][scol] !== null)
-	// 					return false;
-	// 			}
-	// 			return true;
-	// 		}
-	// 		else {
-	// 			for (let square = fromSquare - 11; square != toSquare; square -= 11) {
-	// 				const srow = Math.floor(square / 10);
-	// 				const scol = square % 10;
-	// 				if (board[srow][scol] !== null)
-	// 					return false;
-	// 			}
-	// 			return true;
-	// 		}
-	// 	}
-	// 	return false
+	legalMoves() {
+
+
+	}
+}
+
+export class Knight extends ChessPiece {
+
+	clone() {
+		return new Knight(this.color, this.square);
+	}
+
+	getNotation() {
+		return this.color[0] + 'n';
+	}
+
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
+
+		const trow = Math.floor(toSquare / 10);
+		const tcol = toSquare % 10;
+
+		if (fromSquare === toSquare)
+			return false;
+		if (board[trow][tcol] !== null && board[trow][tcol].getColor() === this.getColor())
+			return false;
+		const moves = [21, -21, 19, -19, 12, -12, 8, -8];
+		if (moves.includes(toSquare - fromSquare))
+			return true;
+		return false;
+	}
+}
+
+export class Bishop extends ChessPiece {
+
+	clone() {
+		return new Bishop(this.color, this.square);
+	}
+
+	getNotation() {
+		return this.color[0] + 'b';
+	}
+
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
+
+		const frow = Math.floor(fromSquare / 10);
+		const fcol = fromSquare % 10;
+		const trow = Math.floor(toSquare / 10);
+		const tcol = toSquare % 10;
+
+		if (fromSquare === toSquare)
+			return false;
+		if (board[trow][tcol] !== null && board[trow][tcol].getColor() === this.getColor())
+			return false;
 
 		const rowDiff = trow - frow;
 		const colDiff = tcol - fcol;
 
-		// No es diagonal
-		if (Math.abs(rowDiff) !== Math.abs(colDiff)) return false;
+		if (Math.abs(rowDiff) !== Math.abs(colDiff))
+			return false;
 
 		const rowStep = rowDiff > 0 ? 1 : -1;
 		const colStep = colDiff > 0 ? 1 : -1;
 
 		let row = frow + rowStep;
 		let col = fcol + colStep;
-
 		while (row !== trow && col !== tcol) {
-			if (board[row][col] !== null) return false;
+			if (board[row][col] !== null)
+				return false;
 			row += rowStep;
 			col += colStep;
 		}
-
 		return true;
-
 	}
 }
 
 export class Rook extends ChessPiece {
 
+	clone() {
+		return new Rook(this.color, this.square);
+	}
+
 	getNotation() {
 		return this.color[0] + 'r';
 	}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {
 
-		if (fromSquare === toSquare)
-			return false;
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
 
 		const frow = Math.floor(fromSquare / 10);
 		const fcol = fromSquare % 10;
 		const trow = Math.floor(toSquare / 10);
 		const tcol = toSquare % 10;
 
-		if (board[trow][tcol] !== null && board[trow][tcol][0] === this.getColor()[0])
+		if (fromSquare === toSquare)
 			return false;
-		// if (frow === trow) {
-		// 	for (let i = tcol - fcol; i !== 0; tcol > fcol ? i-- : i++)
-		// 		if ((tcol - i) !== tcol && (tcol - i) !== fcol && board[trow][tcol - i] !== null)
-		// 			return false;
-		// 	return true;
-		// }
-		// else if (fcol === tcol) {
-		// 	for (let i = trow - frow; i !== 0; trow > frow ? i-- : i++)
-		// 		if ((trow - i) !== trow && (trow - i) !== frow && board[trow - i][tcol] !== null)
-		// 			return false;
-		// 	return true;
-		// }
-		// return false;
-		// Movimiento horizontal
+		if (board[trow][tcol] !== null && board[trow][tcol].getColor() === this.getColor())
+			return false;
 		if (frow === trow) {
 			const step = tcol > fcol ? 1 : -1;
-			for (let col = fcol + step; col !== tcol; col += step) {
-				if (board[frow][col] !== null) return false;
-			}
+			for (let col = fcol + step; col !== tcol; col += step)
+				if (board[frow][col] !== null)
+					return false;
 			return true;
 		}
-
-		// Movimiento vertical
-		if (fcol === tcol) {
+		else if (fcol === tcol) {
 			const step = trow > frow ? 1 : -1;
-			for (let row = frow + step; row !== trow; row += step) {
-				if (board[row][fcol] !== null) return false;
-			}
+			for (let row = frow + step; row !== trow; row += step)
+				if (board[row][fcol] !== null)
+					return false;
 			return true;
 		}
-
-		// No es ni horizontal ni vertical
 		return false;
 	}
 }
 
 export class Queen extends ChessPiece {
 
+	clone() {
+		return new Queen(this.color, this.square);
+	}
+
 	getNotation() {
 		return this.color[0] + 'q';
 	}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {
+
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
+	
 		const rook = new Rook(this.color, fromSquare);
 		const bishop = new Bishop(this.color, fromSquare);
-		if (rook.isLegalMove(fromSquare, toSquare, board, lastMoveTo) || bishop.isLegalMove(fromSquare, toSquare, board, lastMoveTo))
+	
+		if (rook.isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) || bishop.isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo))
 			return true;
 		return false;
 	}
@@ -193,11 +224,69 @@ export class King extends ChessPiece {
 
 	castle = true;
 
+	clone() {
+		return new King(this.color, this.square);
+	}
+
 	getNotation() {
 		return this.color[0] + 'k';
 	}
-	isLegalMove(fromSquare, toSquare, board, lastMoveTo) {
 
-		return true		
-	}	
+	isQueenSideCastle(fromSquare, toSquare, board) {
+
+		const frow = Math.floor(fromSquare / 10);
+		const fcol = fromSquare % 10;
+		const trow = Math.floor(toSquare / 10);
+		const tcol = toSquare % 10;
+
+		if (this.castle === true && this.getColor() === 'white' && toSquare === 72 && board[frow][fcol - 1] === null && board[trow][tcol] === null && board[trow][0] != null) {
+			const rook = board[trow][0];
+			if (rook.getNotation() === 'wr')
+				return true;
+		}
+		if (this.castle === true && this.getColor() === 'black' && toSquare === 2 && board[frow][fcol - 1] === null && board[trow][tcol] === null && board[trow][0] != null) {
+			const rook = board[trow][0];
+			if (rook.getNotation() === 'br')
+				return true;
+		}
+		return false;
+	}
+
+	isKingSideCastle(fromSquare, toSquare, board) {
+
+		const frow = Math.floor(fromSquare / 10);
+		const fcol = fromSquare % 10;
+		const trow = Math.floor(toSquare / 10);
+		const tcol = toSquare % 10;
+
+		if (this.castle === true && this.getColor() === 'white' && toSquare === 76 && board[frow][fcol + 1] === null && board[trow][tcol] === null && board[trow][7] != null) {
+			const rook = board[trow][7];
+			if (rook.getNotation() === 'wr')
+				return true;
+		}
+		if (this.castle === true && this.getColor() === 'black' && toSquare === 6 && board[frow][fcol + 1] === null && board[trow][tcol] === null && board[trow][7] != null) {
+			const rook = board[trow][7];
+			if (rook.getNotation() === 'br')
+				return true;
+		}
+		return false;
+	}
+
+	isLegalMove(fromSquare, toSquare, board, lastMoveFrom, lastMoveTo) {
+
+		const trow = Math.floor(toSquare / 10);
+		const tcol = toSquare % 10;
+
+		if (fromSquare === toSquare)
+			return false;
+		if (board[trow][tcol] !== null && board[trow][tcol].getColor() === this.getColor())
+			return false;
+
+		const moves = [11, -11, 10, -10, 9, -9, 1, -1];
+		if (moves.includes(toSquare - fromSquare))
+			return true;
+		if (this.isKingSideCastle(fromSquare, toSquare, board) || this.isQueenSideCastle(fromSquare, toSquare, board))
+			return true;
+		return false		
+	}
 }

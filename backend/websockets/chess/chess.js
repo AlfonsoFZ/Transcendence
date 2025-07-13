@@ -38,8 +38,8 @@ function sendInfoToClient(user, data) {
 			type: 'info',
 			inGame: true,
 			playerColorView: (user.id === board.hostId) ? board.hostColorView : board.guestColorView,
-			lastMoveFrom: board.lastMoveFrom,
-			lastMoveTo: board.lastMoveTo,
+			lastMoveFrom: board.lastMoveFrom === null ? null : board.lastMoveFrom.toString(),
+			lastMoveTo: board.lastMoveTo === null ? null : board.lastMoveTo.toString(),
 			board: board.getBoard(),
 		}
 	}
@@ -96,8 +96,8 @@ function createOnlineGame(user, data) {
 	const message = {
 		type: 'info',
 		inGame: true,
-		lastMoveFrom: board.lastMoveFrom,
-		lastMoveTo: board.lastMoveTo,
+		lastMoveFrom: board.lastMoveFrom === null ? null : board.lastMoveFrom.toString(),
+		lastMoveTo: board.lastMoveTo === null ? null : board.lastMoveTo.toString(),
     	board: board.getBoard(),
 	}
 	sendMsgToClient(Number(data.id), { ...message, playerColorView: board.hostColorView, });
@@ -142,8 +142,8 @@ function createLocalGame(user, data) {
 		type: 'info',
 		inGame: true,
 		playerColorView: board.hostColorView,
-		lastMoveFrom: board.lastMoveFrom,
-		lastMoveTo: board.lastMoveTo,
+		lastMoveFrom: board.lastMoveFrom === null ? null : board.lastMoveFrom.toString(),
+		lastMoveTo: board.lastMoveTo === null ? null : board.lastMoveTo.toString(),
     	board: board.getBoard(),
 	}
 	sendMsgToClient(user.id, message);
@@ -153,11 +153,11 @@ function movePiece(user, data) {
 
 	if (chessboard.has(user.id)) {
 		const board = chessboard.get(user.id);
-		board.handleMove(data.moveFrom, data.moveTo);
+		board.handleMove(data.moveFrom, data.moveTo, user.id);
 		const message = {
 			type: 'move',
-			lastMoveFrom: board.lastMoveFrom,
-			lastMoveTo: board.lastMoveTo,
+			lastMoveFrom: board.lastMoveFrom === null ? null : board.lastMoveFrom.toString(),
+			lastMoveTo: board.lastMoveTo === null ? null : board.lastMoveTo.toString(),
     		board: board.getBoard(),
 		}
 		sendMsgToClient(board.hostId, { ...message, playerColorView: board.hostColorView, });

@@ -72,21 +72,26 @@ export class Chessboard {
 	}
 
 	getGuestColor() {
-
 		return (this.hostColor !== 'white') ? 'white' : 'black';
 	}
 
 	getTurn() {
-
 		return (this.move % 2 !== 0) ? 'white' : 'black';
 	}
 
 	setPieceAt(square, piece) {
 
-		const row = parseInt(square[0]);
-		const col = parseInt(square[1]);
+		const row = Math.floor(square / 10);
+		const col = square % 10;
 		this.board[row][col] = piece;
-		piece.set(square[0] + square[1])
+		piece.set(square)
+	}
+
+	deletePieceAt(square) {
+
+		const row = Math.floor(square / 10);
+		const col = square % 10;
+		this.board[row][col] = null;
 	}
 
 	setLastMoves(fromSquare, toSquare) {
@@ -97,37 +102,91 @@ export class Chessboard {
 
 	getPieceAt(square) {
 
-		const row = parseInt(square[0]);
-		const col = parseInt(square[1]);
+		const row = Math.floor(square / 10);
+		const col = square % 10;
 		return this.board[row][col];
 	}
 
-	deletePiece(square) {
+	findKing(color, board) {
 
-		const row = parseInt(square[0]);
-		const col = parseInt(square[1]);
-		this.board[row][col] = null;
+		const notation = (color === 'white' ? 'wk' : 'bk');
+
+		for (let row = 0; row < board.length; row++) {
+			for (let col = 0; col < board[row].length; col++) {
+				const piece = board[row][col];
+				if (piece && piece.getNotation() === notation)
+					return piece;
+			}
+		}
+		return null;
 	}
 
-	handleMove(fromSquare, toSquare) {
+	isCheck(fromSquare, toSquare, color) {
 
+		const steps = Math.abs(toSquare - fromSquare);
+		const isKingRow = Math.floor(fromSquare / 10);
+		const isKingCol = fromSquare % 10;;
+		const isKing = this.board[isKingRow][isKingCol];
+
+		if (isKing.getNotation()[1] === 'k' && isKing.castle === true && steps === 2)
+			if (this.isCheck(fromSquare, fromSquare, color) || this.isCheck(fromSquare, fromSquare < toSquare ? fromSquare + 1 : fromSquare - 1, color))
+				return true;
+
+		const copy = this.clone();
+		const board = copy.board;
+		copy.movePiece(fromSquare, toSquare);
+		const kingPiece = copy.findKing(color, board);
+		const square = kingPiece.getSquare();
+
+		for (let row = 0; row < board.length; row++) {
+			for (let col = 0; col < board[row].length; col++) {
+				const piece = board[row][col];
+				if (piece && piece.getColor() !== color) {
+					if (piece.isLegalMove(piece.getSquare(), square, copy.board, copy.lastMoveFrom, copy.lastMoveTo)) 
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	isCheckMate(fromSquare, toSquare, color) {
+
+		if (this.isCheck(fromSquare, toSquare, color === 'white' ? 'black' : 'white')) {
+			console.log("ennemy is in check")
+
+		}
+		return false;
+	}
+
+	handleMove(fSquare, tSquare, id) {
+
+		const fromSquare = Number(fSquare);
+		const toSquare = Number(tSquare);
 		const piece = this.getPieceAt(fromSquare);
-		// if (this.getTurn() !== piece.color)
-		// 	return;
-		if (!piece.isLegalMove(Number(fromSquare), Number(toSquare), this.getBoard(), this.lastMoveTo))
-			return;
-		
-		// isInCheck();
-		// isCheckMate();
+		const color = this.getTurn();
 
+		if (color !== piece.color)
+			return;
+		if (this.gameMode === 'online' && ((id === this.hostId ? this.hostColor : this.guestColor) !== color))
+			return;
+		if (!piece.isLegalMove(fromSquare, toSquare, this.board, this.lastMoveFrom, this.lastMoveTo))
+			return;
+		// isPromotion();
+		if (this.isCheck(fromSquare, toSquare, color))
+			return;
+		if (this.isCheckMate(fromSquare, toSquare, color))
+			console.log("")
+		// if (this.isStaleMate(fromSquare, toSquare))
+		// 	console.log("ennemy is in stalemate")
 		this.movePiece(fromSquare, toSquare);
 	}
 
 	movePiece(fromSquare, toSquare) {
 
 		const piece = this.getPieceAt(fromSquare);
-		this.deletePiece(fromSquare);
-		this.deletePiece(toSquare);
+		this.deletePieceAt(fromSquare);
+		this.deletePieceAt(toSquare);
 		this.setPieceAt(toSquare, piece);
 		this.lastMoveFrom = fromSquare;
 		this.lastMoveTo = toSquare;
@@ -159,7 +218,7 @@ export class Chessboard {
 			lastMoveFrom: this.lastMoveFrom,
 			lastMoveTo: this.lastMoveTo,
 			game: Array.from(this.game.entries()),
-			board: this.board.map(row => row.slice()),
+			board: this.board.map(row => row.map(piece => piece ? piece.clone() : null)),
 		}
 		return data;
 	}
