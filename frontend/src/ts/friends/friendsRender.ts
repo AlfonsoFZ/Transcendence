@@ -35,6 +35,10 @@ export default class Friends extends Step {
 			const relationsContainer = document.getElementById("relations-container") as HTMLDivElement;
 			await renderRelations(relationsContainer!, userId);
 
+			window.addEventListener("onlineUsersUpdated", async () => {
+            	await renderRelations(relationsContainer!, userId);
+            });
+
 		}catch (error) {
 				console.error("Error loading HTML file:", error);
 				appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;

@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { BasicComponent } from './BasicComponent.js';
 import { showMessage } from '../modal/showMessage.js';
 import { searchUsersFriends } from './friendsSearchUsers.js';
+import { renderRelations } from './renderRelations.js';
+import { currentUserId } from './friendsRender.js';
 export class BcRemoveBlockItem extends BasicComponent {
     constructor() {
         super('../../html/friends/BcRemoveBlockItem.html', () => {
@@ -47,6 +49,8 @@ export class BcRemoveBlockItem extends BasicComponent {
                 if (response.ok) {
                     showMessage(`Friend removed successfully:`, null);
                     searchUsersFriends('codigo');
+                    const relationsContainer = document.getElementById('relations-container');
+                    yield renderRelations(relationsContainer, currentUserId);
                 }
                 else {
                     const errorMessage = yield response.json();
@@ -86,6 +90,8 @@ export class BcRemoveBlockItem extends BasicComponent {
                 if (response.ok) {
                     showMessage(`Friend blocked successfully:`, null);
                     searchUsersFriends('codigo');
+                    const relationsContainer = document.getElementById('relations-container');
+                    yield renderRelations(relationsContainer, currentUserId);
                 }
                 else {
                     const errorMessage = yield response.json();

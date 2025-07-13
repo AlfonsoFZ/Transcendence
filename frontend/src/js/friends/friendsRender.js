@@ -9,6 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Step } from '../spa/stepRender.js';
 import { searchUsersFriends } from './friendsSearchUsers.js';
+import { renderRelations } from './renderRelations.js';
+import { getUserId } from '../chat/handleSenders.js';
+export let currentUserId = "";
 export default class Friends extends Step {
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,6 +31,17 @@ export default class Friends extends Step {
                     btnSearch = document.getElementById("btnSearch");
                 }
                 btnSearch.addEventListener("click", (event) => searchUsersFriends('boton', event));
+                const userId = yield getUserId(this.username);
+                currentUserId = userId;
+                if (!userId) {
+                    throw new Error("User ID not found");
+                }
+                console.log("User ID:", userId);
+                const relationsContainer = document.getElementById("relations-container");
+                yield renderRelations(relationsContainer, userId);
+                window.addEventListener("onlineUsersUpdated", () => __awaiter(this, void 0, void 0, function* () {
+                    yield renderRelations(relationsContainer, userId);
+                }));
             }
             catch (error) {
                 console.error("Error loading HTML file:", error);

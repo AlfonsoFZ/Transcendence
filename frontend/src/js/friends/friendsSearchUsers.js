@@ -30,18 +30,17 @@ export function searchUsersFriends(origen, event) {
             return;
         }
         const requestBody = { keyword: searchValue };
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("searchValue antes del try :" + searchValue);
-        console.log("requestBody antes del try :" + requestBody);
-        ;
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("searchValue antes del try :" + searchValue);
+        // console.log("requestBody antes del try :" + requestBody);;
         try {
             const response = yield fetch("https://localhost:8443/back/get_all_users_coincidences", {
                 method: "POST",
@@ -102,7 +101,7 @@ export function searchUsersFriends(origen, event) {
                     statusCode = 4;
                 else if (status === "blocked" && role === "active")
                     statusCode = 5;
-                console.log("user antes del SearchResultItem:", user);
+                //console.log("user antes del SearchResultItem:", user);
                 new SearchResultItem("search_results", [user.id, user.username], statusCode);
             }
         }

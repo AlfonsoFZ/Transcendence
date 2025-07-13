@@ -1,5 +1,6 @@
 import { Step } from "./stepRender.js";
 import { showMessage } from "../modal/showMessage.js";
+import { initOnlineSocket, onlineSocket } from "../friends/onlineUsersSocket.js";
 
 export class SPA {
     private container: HTMLElement;
@@ -101,6 +102,10 @@ export class SPA {
 			const user = await stepInstance.checkAuth();
 			if (user) {
 				console.log("Usuario autenticado: ", user);
+				// Si el usuario está autenticado, inicializamos el socket de usuarios online
+				if (!onlineSocket || onlineSocket.readyState === WebSocket.CLOSED) {
+					initOnlineSocket();
+				}
 			} else {
 				console.log("Usuario no autenticado: ", user);
 			}

@@ -4,6 +4,7 @@ import { configureImageRoutes } from './image.js';
 import { configureGamelogRoutes } from './gamelog.js';
 import { configureFriendRoutes } from './friend.js';
 import { configureChatRoutes } from './chat.js';
+import { configureOnlineSocket } from '../websockets/online/onlineUsers.js';
 
 export default function configureRoutes(fastify, sequelize) {
 
@@ -23,6 +24,7 @@ export default function configureRoutes(fastify, sequelize) {
 
 	configureUserRoutes(fastify);
 	configureAuthRoutes(fastify);
+	configureOnlineSocket(fastify);
 	configureImageRoutes(fastify);
 	configureGamelogRoutes(fastify);
 	configureFriendRoutes(fastify);

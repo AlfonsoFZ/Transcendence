@@ -29,14 +29,14 @@ export class SearchResultItem {
         this.user = user;
         this.userStatus = userStatus; // Inicializa el estado de usuarios
         this.init();
-        console.log("userStatus en SearchResultItem:", this.userStatus);
+        //console.log("userStatus en SearchResultItem:", this.userStatus);
     }
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("En SearchResultItem render");
-            console.log("userStatus:", this.userStatus);
-            console.log("user:", this.user);
-            console.log("containerId:", this.container.id);
+            // console.log("En SearchResultItem render");
+            // console.log("userStatus:", this.userStatus);
+            // console.log("user:", this.user);
+            // console.log("containerId:", this.container.id);
             const placeholders = {
                 "id": this.user ? this.user[0] : "",
                 "username": this.user ? this.user[1] : "",
@@ -64,7 +64,7 @@ export class SearchResultItem {
                 else {
                     console.error("Component is undefined for userStatus:", this.userStatus);
                 }
-                console.log("Justo despues de renderizar el componente en SearchResultItem");
+                //console.log("Justo despues de renderizar el componente en SearchResultItem");	
             }
             catch (error) {
                 console.error("Error loading HTML file:", error);

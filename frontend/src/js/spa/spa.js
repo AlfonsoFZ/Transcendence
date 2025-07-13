@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { showMessage } from "../modal/showMessage.js";
+import { initOnlineSocket, onlineSocket } from "../friends/onlineUsersSocket.js";
 export class SPA {
     constructor(containerId) {
         this.routes = {
@@ -99,6 +100,10 @@ export class SPA {
                 const user = yield stepInstance.checkAuth();
                 if (user) {
                     console.log("Usuario autenticado: ", user);
+                    // Si el usuario está autenticado, inicializamos el socket de usuarios online
+                    if (!onlineSocket || onlineSocket.readyState === WebSocket.CLOSED) {
+                        initOnlineSocket();
+                    }
                 }
                 else {
                     console.log("Usuario no autenticado: ", user);

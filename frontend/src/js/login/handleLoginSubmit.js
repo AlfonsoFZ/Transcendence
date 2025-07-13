@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { SPA } from '../spa/spa.js';
 import { showMessage } from '../modal/showMessage.js';
+import { initOnlineSocket } from '../friends/onlineUsersSocket.js';
 export function handleLoginSubmit(event) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("handleLoginSubmit:", event);
@@ -31,6 +32,7 @@ export function handleLoginSubmit(event) {
             else {
                 const result = yield response.json();
                 console.log("Login exitoso:", result);
+                initOnlineSocket(); // Inicia el socket aquí
                 const app = SPA.getInstance();
                 app.navigate("home");
             }

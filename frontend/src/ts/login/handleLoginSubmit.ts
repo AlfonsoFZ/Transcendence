@@ -1,5 +1,6 @@
 import { SPA } from '../spa/spa.js';
 import { showMessage } from '../modal/showMessage.js';
+import { initOnlineSocket } from '../friends/onlineUsersSocket.js';
 
 export async function handleLoginSubmit(event: SubmitEvent) {
 	console.log("handleLoginSubmit:", event);
@@ -23,6 +24,7 @@ export async function handleLoginSubmit(event: SubmitEvent) {
         } else {
             const result = await response.json();
             console.log("Login exitoso:", result);
+            initOnlineSocket(); // Inicia el socket aquí
             const app = SPA.getInstance();
             app.navigate("home");
         }
