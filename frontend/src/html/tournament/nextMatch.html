@@ -10,18 +10,18 @@
       		<!-- player 1 -->
 			<div class=" basis-auto bracketPlayer max-w-xs max-h-[64px] flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
 	       		<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
-	          		<img class="w-full h-full object-cover" src="nextPlayer-1.avatar" alt="Player 3 Avatar">
+	          		<img class="w-full h-full object-cover" src="nextPlayer-1.avatar" alt="Player 1 Avatar">
 	        	</div>
 
 	        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs ">
-					nextPlayer-1.tounamentName
+					nextPlayer-1.tournamentName
 				</div>
 			</div>
 
 		    <!-- VS -->
 			 <div class="basis-auto flex flex-row md:flex-col items-center justify-center"> 
 				<div class="hidden md:block p-4 flex text-center text-sm text-green-500 ">
-					Match&nbsp;1
+					{{ roundName }}
 				</div>
 	    		<div class="versus text-center text-md text-green-400 font-bold mx-4">vs</div>
 			</div>
@@ -29,13 +29,13 @@
   			<!-- player 2 -->
       		<div class="bracketPlayer basis-auto max-w-xs flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
 	       		<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
-	          		<img class="w-full h-full object-cover" src="nextPlayer-2.avatar" alt="Player 3 Avatar">
+	          		<img class="w-full h-full object-cover" src="nextPlayer-2.avatar" alt="Player 2 Avatar">
 	        	</div>
 
 	        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs ">
-					nextPlayer-2.tounamentName
+					nextPlayer-2.tournamentName
 				</div>
 			</div>
 			</div>
-				<button id="StartNextMatch" class="w-[200px] md:w-[300px] lg:w-[400px] py-3 mt-2 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Start Match</button>
+				<button id="launch-match-btn" class="w-[200px] md:w-[300px] lg:w-[400px] py-3 mt-2 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Start Match</button>
 			</div>

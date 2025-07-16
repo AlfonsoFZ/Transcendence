@@ -52,8 +52,6 @@ export class TournamentUI {
         this.checkRepeatedPlayer = (tournamentName, email) => {
             const players = this.tournament.getTournamentPlayers();
             for (const player of players) {
-                // console.log("Checking player:", player.gameplayer.tournamentUsername, player.gameplayer.email);
-                // console.log("Checking against:", tournamentName, email);
                 if (email && player.gameplayer.email === email) {
                     return true; // Player with the same email already exists
                 }
@@ -203,16 +201,12 @@ export class TournamentUI {
         const numberOfPlayers = this.tournament.getTournamentConfig().numberOfPlayers;
         const numberOfPendingPlayers = this.tournament.getPendingPlayersCount();
         if (numberOfPendingPlayers === 0) {
-            this.launchTournament(this.tournament); // No pending players to prepare
+            this.tournament.launchTournament(this.tournament); // No pending players to prepare
         }
         const players = this.tournament.getTournamentPlayers();
         console.log("Current tournament players:", players);
         console.log("Jugadores (JSON):", JSON.stringify(players));
         let i = players.length + 1;
-        // console.log("this.tournament.getTournamentPlayers.length:_____________", players.length);
-        // console.log("numberOfPlayers:_____________", numberOfPlayers);
-        // console.log("numberOfPendingPlayers:_____________", numberOfPendingPlayers);
-        // console.log("Preparing player card for player:_____________", i);
         const playersContainer = document.getElementById('select-player-container');
         if (playersContainer) {
             playersContainer.innerHTML = ''; // Clear previous content
@@ -273,9 +267,9 @@ export class TournamentUI {
                 }
                 else if (selectedOption === 3) { // AI 
                     tournamentPlayer.gameplayer = {
-                        id: '',
-                        username: `Ai${tournamentPlayer.Index}`,
-                        tournamentUsername: `Ai${tournamentPlayer.Index}`,
+                        id: `${tournamentPlayer.Index} + 5`,
+                        username: `Ai00${tournamentPlayer.Index}`,
+                        tournamentUsername: `Ai00${tournamentPlayer.Index}`,
                         email: `ai${tournamentPlayer.Index}@transcendence.com`,
                         avatarPath: `https://localhost:8443/back/images/avatar-1${i}.png`
                     };
@@ -289,7 +283,7 @@ export class TournamentUI {
                 }
                 else {
                     console.log("All players are ready. Launching tournament.");
-                    yield this.launchTournament(this.tournament);
+                    yield this.tournament.launchTournament(this.tournament);
                 }
             });
         }
@@ -304,172 +298,122 @@ export class TournamentUI {
         // 	}
         // }
     }
-    launchTournament(tournament) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // incluir lógica para lanzar el torneo
-            const tounamentData = {
-                Tid: tournament.getTournamentId(),
-                Players: tournament.getTournamentPlayers(),
-                Tconfig: tournament.getTournamentConfig()
-            };
-            console.log("Launching tournament: ", JSON.stringify(tounamentData));
-            this.showOnly('tournament-container');
-            try {
-                const response = yield fetch("https://localhost:8443/back/prepareBracket", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(tounamentData),
-                });
-                const data = yield response.json();
-                if (response.ok) {
-                    // const FirsGameui = new GameUI(new Game());
-                    console.log("Tournament bracket prepared successfully:", data);
-                    this.tournament.setTournamentBracket(data);
-                    this.renderBracket(data);
-                    yield new Promise(resolve => setTimeout(resolve, 5000));
-                    console.log("Antes de new GameFirst game log set:");
-                    console.log("this.tournament.getGameDataArray", JSON.stringify(this.tournament.getGameDataArray()));
-                    // let gameconfig 
-                    // // const firstGame = new Game();
-                    // const firstGame = new Game(DEFAULT_CONTAINER_ID, "tournament-game");
-                    // firstGame.setGameMode('1v1');
-                    // const firstGameData=
-                    // {
-                    // 	id: "game-" + Date.now(),
-                    // 	mode: '1v1',
-                    // 	player1: this.tournament.getTournamentPlayers()[0].gameplayer,
-                    // 	player2: this.tournament.getTournamentPlayers()[1].gameplayer,
-                    // 	startTime: Date.now(),
-                    // 	config: tounamentData.Tconfig,
-                    // 	result: {winner: '', loser: '', score: [0, 0] as [number, number]},
-                    // 	duration: 0,
-                    // 	tournamentId: tounamentData.Tid ? tounamentData.Tid : 0,
-                    // 	readyState: true
-                    // }
-                    // firstGame.setGameLog(firstGameData);
-                    // firstGame.setGameConfig({
-                    // 	scoreLimit: tounamentData.Tconfig.scoreLimit,
-                    // 	difficulty: tounamentData.Tconfig.difficulty
-                    // });
-                    // const	spa = SPA.getInstance();
-                    // spa.currentGame = firstGame;
-                    // firstGame.getGameUI().launchGame();
-                    // 	const panel = document.getElementById('current-match-panel');
-                    // 	if (!panel || !this.tournament.getGameDataArray())
-                    // 		return;
-                    // 	const match = firstGameData;
-                    // 	if (!match)
-                    // 	{
-                    // 		panel.innerHTML = "<p>No more matches.</p>";
-                    // 		return;
-                    // 	}
-                    // 	panel.innerHTML = `
-                    // 	<div class="bg-gray-800 border-2 border-[#00ff99] rounded-xl shadow-lg p-6 max-w-md mx-auto my-8 text-white">
-                    // 		<h3 class="text-[#00ff99] text-xl font-bold mb-4 text-center tracking-wide">Current Match</h3>
-                    // 		<div class="flex items-center justify-center gap-8 mb-4">
-                    // 			<div class="flex flex-col items-center">
-                    // 				<img src="${match.player1?.avatarPath || '/images/default-avatar.png'}" alt="Avatar" class="w-14 h-14 rounded-full border-2 border-[#00ff99] mb-2">
-                    // 				<span class="font-semibold">${match.player1?.username}</span>
-                    // 			</div>
-                    // 			<span class="text-2xl font-bold text-[#00ff99]">VS</span>
-                    // 			<div class="flex flex-col items-center">
-                    // 				<img src="${match.player2?.avatarPath || '/images/default-avatar.png'}" alt="Avatar" class="w-14 h-14 rounded-full border-2 border-[#00ff99] mb-2">
-                    // 				<span class="font-semibold">${match.player2?.username}</span>
-                    // 			</div>
-                    // 		</div>
-                    // 		<div class="flex justify-between text-sm text-gray-300 mb-2">
-                    // 			<span>Match ID:</span>
-                    // 			<span class="font-medium text-white">${match.id}</span>
-                    // 		</div>
-                    // 		<div class="flex justify-between text-sm text-gray-300">
-                    // 			<span>Score Limit:</span>
-                    // 			<span class="font-medium text-white">${match.config?.scoreLimit}</span>
-                    // 			<span class="ml-4">Difficulty:</span>
-                    // 			<span class="font-medium text-white">${match.config?.difficulty}</span>
-                    // 		</div>
-                    // 	</div>
-                    // `;
-                    // this.showOnly('game-container');
-                    // await firstGame.getGameConnection().establishConnection().then(() => {
-                    // 	console.log("Game connection established for first game.");
-                    // 	firstGame.getGameUI().launchGame();
-                    // 	console.log("First game launched with players:", firstGame.getGameLog().player1, firstGame.getGameLog().player2);
-                    // });
-                    // console.log("First game log set:", firstGame.getGameLog());
-                    // // firstGame.setTournamentId(tounamentData.Tid? tounamentData.Tid : 0);
-                    // firstGame.setTournamentPlayers(
-                    // 	tounamentData.Players[0].gameplayer, tounamentData.Players[1].gameplayer);
-                    // }
-                    // if (!response.ok) {
-                    // 	console.error("Error preparing tournament bracket:", data.message);
-                    // 	showMessage(`Error: ${data.message}`, null);
-                    // 	return;
-                    // }
-                    // console.log("Tournament bracket prepared successfully:", data);
-                    // const appElement = document.getElementById('tournament-bracket-container');
-                    // if (!appElement) {
-                    // 	console.error("Tournament bracket container not found");
-                    // 	return;
-                    // }tournamentId
-                    // appElement.innerHTML = `
-                    // 	<div id="pong-container">
-                    // 		<h2>Tournament Bracket</h2>
-                    // 		<div id="tournament-bracket">
-                    // 			<!-- Aquí se generará el bracket del torneo -->
-                    // 			${data.bracketHtml}
-                    // 		</div>
-                    // 	</div>
-                    // `;
-                }
+    // Todo: pendiente de probar en la final
+    getTournamentRoundName() {
+        const nextGameIndex = this.tournament.getNextGameIndex();
+        const playersCount = this.tournament.getTournamentConfig().numberOfPlayers;
+        let roundName = `Match\u00A0${nextGameIndex + 1}`;
+        let finalIndex = -1;
+        // Determine the final match index based on the number of players
+        if (playersCount === 4) {
+            finalIndex = 2; // 2 semis (0,1) + 1 final (2)
+        }
+        else if (playersCount === 6) {
+            finalIndex = 4; // 4 quarters (0-3) + 1 semi (4) + 1 final (5) -> but usually 5 matches, adjust as needed
+        }
+        else if (playersCount === 8) {
+            finalIndex = 6; // 4 quarters (0-3) + 2 semis (4,5) + 1 final (6)
+        }
+        if (nextGameIndex === finalIndex) {
+            roundName = "Final";
+        }
+        return roundName;
+    }
+    renderNextMatchInfo(appElement) {
+        this.loadTemplate('../../html/tournament/nextMatch.html').then(nextMatchHtml => {
+            let parsed = nextMatchHtml;
+            const gameDataArray = this.tournament.getGameDataArray();
+            const player1 = gameDataArray[this.tournament.getNextGameIndex()].player1;
+            const player2 = gameDataArray[this.tournament.getNextGameIndex()].player2;
+            if (!player1 || !player2) {
+                console.error("Player data is missing for next match.");
+                return;
             }
-            catch (error) {
-                console.error("Error while preparing the tournament bracket:", error);
-            }
-            finally {
-                this.showOnly('tournament-bracket-container');
-            }
-            // if (!tournament.checkTournamentPlayers()) {
-            // 	console.error("Cannot start tournament: not all players are ready");
-            // 	return;
-            // }
-            // 	tournament.setTournamentData({
-            // 		id: 'tournament-' + Date.now(),
-            // 		mode: 'local',
-            // 		players: tournament.getTournamentPlayers().map(player => player.gameplayer),
-            // 		startTime: Date.now(),
-            // 		config: tournament.getTournamentConfig(),
-            // 		result: null,
-            // 		gameIds: [],
-            // 		readyState: true
-            // 	} as TournamentData);
-            // 	console.log("Tournament started with data:", tournament.getTournamentData());
-            // 	this.showOnly('tournament-container');
-            // 	this.renderRegisteredPlayers(tournament.getTournamentPlayers());
-            // }
+            parsed = parsed
+                // .replace(new RegExp(`roundName`, 'g'), player1.tournamentUsername)
+                .replace('{{ roundName }}', this.getTournamentRoundName())
+                .replace(new RegExp(`nextPlayer-1.tournamentName`, 'g'), player1.tournamentUsername)
+                .replace(new RegExp(`nextPlayer-1.avatar`, 'g'), player1.avatarPath)
+                .replace(new RegExp(`nextPlayer-2.tournamentName`, 'g'), player2.tournamentUsername)
+                .replace(new RegExp(`nextPlayer-2.avatar`, 'g'), player2.avatarPath);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'next-match-bracket';
+            wrapper.innerHTML = parsed;
+            appElement.appendChild(wrapper);
         });
     }
+    // todo: Pendiente de ver en actualizacones de torneo
     renderBracket(data) {
         const appElement = document.getElementById('tournament-bracket-container');
         if (!appElement) {
             console.error("Tournament bracket container not found");
             return;
         }
-        var html_Brackert_template = `../../html/tournament/bracket-template-${data.length}.html`;
-        // var html_Brackert_template =  `../../html/tournament/bracket-template-3.html`;
-        this.loadTemplate(html_Brackert_template).then(BracketHtml => {
+        var html_Bracket_template = `../../html/tournament/bracket-template-${data.length}.html`;
+        // var html_Bracket_template =  `../../html/tournament/bracket-template-3.html`;
+        this.loadTemplate(html_Bracket_template).then(BracketHtml => {
             let parsed = BracketHtml;
             for (let i = 0; i < data.length; i++) {
                 const player = data[i];
                 parsed = parsed
-                    .replace(new RegExp(`player-${i + 1}\\.tounamentName`, 'g'), player.gameplayer.tournamentUsername)
+                    .replace(new RegExp(`player-${i + 1}\\.tournamentName`, 'g'), player.gameplayer.tournamentUsername)
                     .replace(new RegExp(`player-${i + 1}\\.avatar`, 'g'), player.gameplayer.avatarPath);
             }
             const wrapper = document.createElement('div');
             wrapper.className = 'tournament-bracket';
             wrapper.innerHTML = parsed;
             appElement.appendChild(wrapper);
+            this.renderNextMatchInfo(appElement);
+        });
+    }
+    /**
+     * Updates the tournament bracket UI with the latest data.
+     * This method clears the previous bracket and renders the new one.
+     * @param data Array of TournamentPlayer objects representing the current bracket state.
+     */
+    updateRenderBracket(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const appElement = document.getElementById('tournament-bracket-container');
+            if (!appElement) {
+                console.error("Tournament bracket container not found");
+                return;
+            }
+            appElement.innerHTML = '';
+            const numberOfPlayers = this.tournament.getTournamentConfig().numberOfPlayers;
+            const html_Bracket_template = `../../html/tournament/bracket-template-${numberOfPlayers}.html`;
+            this.loadTemplate(html_Bracket_template).then(BracketHtml => {
+                let parsed = BracketHtml;
+                console.log("Bracket data:", JSON.stringify(data));
+                console.log("Bracket data length:", data.length);
+                console.log(typeof data);
+                // Iterar por los jugadores
+                for (let i = 0; i < Object.keys(data).length; i++) {
+                    const player = data[i];
+                    if (i < numberOfPlayers) {
+                        parsed = parsed
+                            .replace(new RegExp(`player-${i + 1}\\.tournamentName`, 'g'), player.tournamentUsername)
+                            .replace(new RegExp(`player-${i + 1}\\.avatar`, 'g'), player.avatarPath);
+                    }
+                    else {
+                        var matchIndex;
+                        if (numberOfPlayers === 6 && i === 10) {
+                            matchIndex = 3;
+                        }
+                        else {
+                            matchIndex = i - numberOfPlayers + 1; // Adjust index for matches
+                        }
+                        parsed = parsed.replace(new RegExp(`winner Match ${matchIndex}`, 'g'), data[i].tournamentUsername);
+                        console.log(`winner_match_{matchIndex}_img`, `winner_match_${matchIndex}_img`);
+                        // Replace the src attribute for the winner's avatar directly in the HTML template
+                        parsed = parsed.replace(new RegExp(`(<img[^>]*id=["']winner_match_${matchIndex}_img["'][^>]*src=["'])[^"']*(['"][^>]*>)`), `$1${data[i].avatarPath}$2`);
+                    }
+                }
+                const wrapper = document.createElement('div');
+                wrapper.className = 'tournament-bracket';
+                wrapper.innerHTML = parsed;
+                appElement.appendChild(wrapper);
+                this.renderNextMatchInfo(appElement);
+            });
         });
     }
     getFirstPlayer() {
@@ -509,6 +453,7 @@ export class TournamentUI {
     checkGuestPlayer(index, guestTournamentName) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(`Guest Player en checkguestPlayer: ${index} name: ${guestTournamentName}`);
+            console.log("Checking int torunamentId:", this.tournament.getTournamentId());
             if (!guestTournamentName || guestTournamentName.trim() === '') {
                 const AvatarPath = `https://localhost:8443/back/images/avatar-${index}.png`;
                 return {
@@ -538,6 +483,8 @@ export class TournamentUI {
                         showMessage(`Error: ${result.error}`, null);
                         return null;
                     }
+                    this.tournament.setTournamentId(result.tournamentId);
+                    // if (this.tournament.getTournamentId() === -42 && !result.tournamentId) {
                     return {
                         Index: '',
                         status: 'ready',

@@ -7,6 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { showMessage } from '../modal/showMessage.js';
+import Game from '../game/Game.js';
+import { SPA } from '../spa/spa.js';
 import { Step } from '../spa/stepRender.js';
 import { TournamentUI } from '../tournament/TournamentUI.js';
 // import { game } from '../game/Game.js';
@@ -16,29 +19,18 @@ export default class Tournament extends Step {
     /*********** CONSTRUCTOR ***************/
     constructor(containerId = DEFAULT_CONTAINER_ID) {
         super(containerId);
-        this.tournamentId = null;
+        this.tournamentId = -42;
         this.tournamentPlayers = [];
         this.tournamentConfig = { numberOfPlayers: 4, scoreLimit: 5, difficulty: 'medium' };
         this.bracket = [];
         this.gameDataArray = [];
         this.tournamentPendingPlayers = this.tournamentConfig.numberOfPlayers;
-        this.findNextTournamentId().then(id => {
-            this.tournamentId = id;
-        });
+        this.nextGameIndex = 0; // Index to track the next game to be played
+        this.TournamentWinner = null; // To store the tournament winner
         this.ui = new TournamentUI(this);
-        // todo: inicializarlo para usarlo como Gamedata
-        // this.log = {
-        // 	id: "tournament " + Date.now(),
-        // 	mode: '',
-        // 	player1: null,
-        // 	player2: null,
-        // 	startTime: 0,
-        // 	config: undefined,
-        // 	result: {winner: '', loser: '', score: [0,0]},
-        // 	duration: 0,
-        // 	tournamentId: null,
-        // 	readyState: false
-        // };
+        // todo: check and complete. at thismoment is initialized as empty object and filled in saveTournament()
+        this.log = {};
+        this.game = new Game(DEFAULT_CONTAINER_ID, "tournament-game");
     }
     setTournamentId(tournamentId) {
         this.tournamentId = tournamentId;
@@ -48,7 +40,57 @@ export default class Tournament extends Step {
     }
     findNextTournamentId() {
         return __awaiter(this, void 0, void 0, function* () {
-            return 42; // insert the functionto retrieve next tournament ID available
+            try {
+                const response = yield fetch("https://localhost:8443/back/get_next_tournamentlog", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = yield response.json();
+                if (response.ok) {
+                    console.log("Tournament get id successfully:", data);
+                    if (data && data.nextTournamentlogId) {
+                        this.tournamentId = data.nextTournamentlogId;
+                        console.log("Next tournament ID available:", this.tournamentId);
+                        return data.nextTournamentlogId; // insert the functionto retrieve next tournament ID available
+                    }
+                }
+            }
+            catch (error) {
+                console.error("Error while retrieving next tournament ID:", error);
+            }
+            return -1; // Return -1 or any other value to indicate an error or no ID available
+        });
+    }
+    saveTournament() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.log = {
+                tournamentId: this.tournamentId,
+                playerscount: this.tournamentPlayers.length,
+                config: this.tournamentConfig,
+                users: this.tournamentPlayers,
+                gamesData: this.gameDataArray,
+                winner: this.TournamentWinner ? this.TournamentWinner : null
+            };
+            try {
+                const response = yield fetch("https://localhost:8443/back/update_tournamentlog", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(this.log),
+                });
+                const data = yield response.json();
+                if (response.ok) {
+                    console.log("Tournament Information saved successfully:");
+                    return 0;
+                }
+            }
+            catch (error) {
+                console.error("Error while saving tournament Information:", error);
+            }
+            return -1; // Return -1 or any other value to indicate an error or no ID available
         });
     }
     render(appElement) {
@@ -101,7 +143,7 @@ export default class Tournament extends Step {
     }
     checkTournamentPlayers() {
         if (this.tournamentPlayers.length === 0) {
-            console.warn("No players in the tournament.");
+            console.warn("No players in the ");
             return false;
         }
         for (const player of this.tournamentPlayers) {
@@ -113,6 +155,21 @@ export default class Tournament extends Step {
     }
     getTournamentPlayers() {
         return this.tournamentPlayers;
+    }
+    /**
+     * Convierte un array de GamePlayer en un array de TournamentPlayer,
+     * asignando status 'ready' y el índice correspondiente.
+     */
+    gamePlayersToTournamentPlayers(gamePlayers) {
+        if (!Array.isArray(gamePlayers)) {
+            console.error("gamePlayersToTournamentPlayers: input is not an array", gamePlayers);
+            return [];
+        }
+        return gamePlayers.map((gp, idx) => ({
+            Index: idx.toString(),
+            status: 'ready',
+            gameplayer: gp
+        }));
     }
     getTournamentPlayerByIndex(index) {
         const player = this.tournamentPlayers[index];
@@ -162,7 +219,8 @@ export default class Tournament extends Step {
     returnMode(player1, player2) {
         console.log("Returning mode for players:", player1, player2);
         if (player1.email.includes('ai') && player1.email.includes('@transcendence.com')
-            && player2.email.includes('ai') && player2.email.includes('@transcendence.com')) {
+            && player2.email.includes('ai') && player2.email.includes('@transcendence.com')
+            || player1.id == "2" || player2.id == "2") { // todo quitarme del metodo automático elimina referencias a id=="2"
             return 'auto';
         }
         else if ((player1.email.includes('ai') && player1.email.includes('@transcendence.com'))
@@ -195,35 +253,267 @@ export default class Tournament extends Step {
         };
         this.addGameData(newGameData);
     }
+    /**
+     *
+     * @param bracket Array of TournamentPlayer objects
+     * Using the bracket info we get the gamedata for each initial game and save the tournament in DB
+     * @returns Promise<void>
+     * @throws Error if the bracket is invalid or if saving the tournament fails
+     */
     setTournamentBracket(bracket) {
-        for (const player of bracket) {
-            if (!player.gameplayer) {
-                console.error("Invalid player data in bracket:", player);
-                return;
+        return __awaiter(this, void 0, void 0, function* () {
+            this.bracket = []; // Reset bracket to avoid duplicates if called multiple times
+            for (const player of bracket) {
+                if (!player.gameplayer) {
+                    console.error("Invalid player data in bracket:", player);
+                    throw new Error("Invalid player data in bracket");
+                }
+                else {
+                    this.bracket.push(player.gameplayer);
+                }
+            }
+            console.log("Setting tournament bracket with players:", this.bracket);
+            if (this.tournamentId === -42) {
+                const id = yield this.findNextTournamentId();
+                const saved = yield this.saveTournament();
+                if (id !== -1 && saved === 0) {
+                    this.setTournamentId(id);
+                    console.log("Tournament ID set to:", this.tournamentId);
+                    switch (this.tournamentConfig.numberOfPlayers) {
+                        case 4:
+                            console.log("Initializing game data for 4 players.");
+                            console.log('tournamentId', this.tournamentId);
+                            this.initialGameData(0, 1);
+                            this.initialGameData(2, 3);
+                            break;
+                        case 6:
+                            this.initialGameData(0, 1);
+                            this.initialGameData(2, 3);
+                            this.initialGameData(4, 5);
+                            break;
+                        case 8:
+                            this.initialGameData(0, 1);
+                            this.initialGameData(2, 3);
+                            this.initialGameData(4, 5);
+                            this.initialGameData(6, 7);
+                            break;
+                    }
+                }
+                else {
+                    console.error("Failed to set tournament ID.");
+                    throw new Error("Failed to set tournament ID");
+                }
             }
             else {
-                this.bracket.push(player.gameplayer);
+                switch (this.bracket.length) {
+                    case 4:
+                        console.log("Initializing game data for 4 players.");
+                        console.log('tournamentId', this.tournamentId);
+                        this.initialGameData(0, 1);
+                        this.initialGameData(2, 3);
+                        break;
+                    case 6:
+                        this.initialGameData(0, 1);
+                        this.initialGameData(2, 3);
+                        this.initialGameData(4, 5);
+                        break;
+                    case 8:
+                        this.initialGameData(0, 1);
+                        this.initialGameData(2, 3);
+                        this.initialGameData(4, 5);
+                        this.initialGameData(6, 7);
+                        break;
+                }
+            }
+            const savedData = yield this.saveTournament();
+            if (savedData !== 0) {
+                console.error("Failed to savedItitialGameData");
+                throw new Error("Failed to savedItitialGameData");
+            }
+        });
+    }
+    // public updateBracket(){
+    // }
+    launchTournament(tournament) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // incluir lógica para lanzar el torneo
+            const tounamentData = {
+                Tid: this.getTournamentId(),
+                Players: this.getTournamentPlayers(),
+                Tconfig: this.getTournamentConfig()
+            };
+            console.log("Launching tournament: ", JSON.stringify(tounamentData));
+            this.ui.showOnly('tournament-container');
+            try {
+                const response = yield fetch("https://localhost:8443/back/prepareBracket", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(tounamentData),
+                });
+                const data = yield response.json();
+                if (response.ok) {
+                    // const FirsGameui = new GameUI(new Game());
+                    console.log("Tournament bracket prepared successfully:", data);
+                    yield this.setTournamentBracket(data);
+                    console.log("Tournament bracket set successfully:", this.bracket);
+                    this.ui.renderBracket(data);
+                    yield new Promise(resolve => setTimeout(resolve, 5000));
+                    const spa = SPA.getInstance();
+                    spa.currentGame = this.game;
+                    yield this.game.getGameConnection().establishConnection();
+                    const launchBtn = document.getElementById('launch-match-btn');
+                    if (launchBtn)
+                        launchBtn.addEventListener('click', () => this.launchNextMatch());
+                    this.displayCurrentMatch();
+                }
+            }
+            catch (error) {
+                console.error("Error while preparing the tournament bracket:", error);
+            }
+            finally {
+                this.ui.showOnly('tournament-bracket-container');
+            }
+        });
+    }
+    getNextGameIndex() {
+        return this.nextGameIndex;
+    }
+    setNextGameIndex(index) {
+        this.nextGameIndex = index;
+        console.log("Next game index set to:", this.nextGameIndex);
+    }
+    displayCurrentMatch() {
+        var _a, _b, _c, _d, _e, _f;
+        const panel = document.getElementById('current-match-panel');
+        if (!panel || !this.gameDataArray)
+            return;
+        const match = this.gameDataArray[this.nextGameIndex];
+        if (!match) {
+            panel.innerHTML = "<p>No more matches.</p>";
+            return;
+        }
+        panel.innerHTML = `
+		<div class="bg-gray-800 border-2 border-[#00ff99] rounded-xl shadow-lg p-6 max-w-md mx-auto my-8 text-white">
+			<h3 class="text-[#00ff99] text-xl font-bold mb-4 text-center tracking-wide">Current Match</h3>
+			<div class="flex items-center justify-center gap-8 mb-4">
+				<div class="flex flex-col items-center">
+					<img src="${((_a = match.player1) === null || _a === void 0 ? void 0 : _a.avatarPath) || '/images/default-avatar.png'}" alt="Avatar" class="w-14 h-14 rounded-full border-2 border-[#00ff99] mb-2">
+					<span class="font-semibold">${(_b = match.player1) === null || _b === void 0 ? void 0 : _b.username}</span>
+				</div>
+				<span class="text-2xl font-bold text-[#00ff99]">VS</span>
+				<div class="flex flex-col items-center">
+					<img src="${((_c = match.player2) === null || _c === void 0 ? void 0 : _c.avatarPath) || '/images/default-avatar.png'}" alt="Avatar" class="w-14 h-14 rounded-full border-2 border-[#00ff99] mb-2">
+					<span class="font-semibold">${(_d = match.player2) === null || _d === void 0 ? void 0 : _d.username}</span>
+				</div>
+			</div>
+			<div class="flex justify-between text-sm text-gray-300 mb-2">
+				<span>Match ID:</span>
+				<span class="font-medium text-white">${match.id}</span>
+			</div>
+			<div class="flex justify-between text-sm text-gray-300">
+				<span>Score Limit:</span>
+				<span class="font-medium text-white">${(_e = match.config) === null || _e === void 0 ? void 0 : _e.scoreLimit}</span>
+				<span class="ml-4">Difficulty:</span>
+				<span class="font-medium text-white">${(_f = match.config) === null || _f === void 0 ? void 0 : _f.difficulty}</span>
+			</div>
+		</div>
+	`;
+    }
+    // "Recycle" game instance with current match data and launchGame, which will
+    // start the game API workflow and go to match-render step
+    launchNextMatch() {
+        var _a, _b;
+        if (this.bracket && this.nextGameIndex < this.gameDataArray.length && this.game) {
+            const matchData = this.gameDataArray[this.nextGameIndex];
+            if (matchData.mode === 'auto') {
+                // Simulate a random winner (1 or 2 with equal probability)
+                const winnerIndex = Math.random() < 0.5 ? 0 : 1;
+                const winner = winnerIndex === 0 ? matchData.player1 : matchData.player2;
+                const loser = winnerIndex === 0 ? matchData.player2 : matchData.player1;
+                if (!winner || !loser) {
+                    console.error("Invalid winner or loser data:", winner, loser);
+                    return;
+                }
+                matchData.result = {
+                    winner: winner.id,
+                    loser: loser.id,
+                    score: winnerIndex === 0 ? [((_a = matchData.config) === null || _a === void 0 ? void 0 : _a.scoreLimit) || 5, 0] : [0, ((_b = matchData.config) === null || _b === void 0 ? void 0 : _b.scoreLimit) || 5]
+                };
+                matchData.readyState = true;
+                this.nextGameIndex++;
+                showMessage(`Auto match result: ${winner.username} wins!`, 5000); //replace with the funtion do display the winner
+                this.handleMatchResult(matchData);
+            }
+            else {
+                this.game.setGameLog(matchData);
+                if (matchData.config)
+                    this.game.setGameConfig(matchData.config);
+                const spa = SPA.getInstance();
+                spa.currentGame = this.game;
+                this.game.getGameUI().launchGame();
+                this.nextGameIndex++;
+                this.displayCurrentMatch();
             }
         }
-        console.log("Setting tournament bracket with players:", this.bracket);
-        switch (this.bracket.length) {
-            case 4:
-                this.initialGameData(0, 1);
-                this.initialGameData(2, 3);
-                break;
-            case 6:
-                this.initialGameData(0, 1);
-                this.initialGameData(2, 3);
-                this.initialGameData(4, 5);
-                break;
-            case 8:
-                this.initialGameData(0, 1);
-                this.initialGameData(2, 3);
-                this.initialGameData(4, 5);
-                this.initialGameData(6, 7);
-                break;
-        }
     }
-    updateBracket() {
+    // Receive and gather game results - may need to improve gameMatch class to pass this info
+    // Also, may need to call it or implement it on a wait/promise manner?
+    handleMatchResult(result) {
+        // Aux method -> Update bracket, increment currentMatchIndex, etc.
+        if (!result || !result.result || !result.player1 || !result.player2) {
+            console.error("Invalid match result data:", result);
+            return;
+        }
+        console.log("Handling match result:", result);
+        console.log("el array de partidas es", this.gameDataArray);
+        this.updateTournamentBracket();
+    }
+    /** todo: esta función de actualizar se podría modificar para que solo hiciera la llamada
+    * 	y obtuviera la información de la base de datos si con la partida se puede actualizar sin
+    *   que esto dependa del front de esa manera seŕia más dificil que se modificaran los resultados
+    *   con llamadas post ,es decir el backend se encargaría de actualizar info y el front solo de mostrarlo
+    */
+    updateTournamentBracket() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Sanitize gameDataArray to ensure all objects are serializable
+                const sanitizedGameDataArray = this.gameDataArray.map(game => (Object.assign(Object.assign({}, game), { player1: Object.assign({}, game.player1), player2: Object.assign({}, game.player2), config: game.config ? Object.assign({}, game.config) : undefined, result: game.result ? Object.assign({}, game.result) : undefined })));
+                console.log("Updating tournament bracket with sanitized game data:", sanitizedGameDataArray);
+                // Ensure the backend expects an object, not an array
+                const payload = { games: sanitizedGameDataArray };
+                const response = yield fetch("https://localhost:8443/back/updateBracket", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
+                const data = yield response.json();
+                if (response.ok) {
+                    // const FirsGameui = new GameUI(new Game());
+                    console.log("Tournament bracket updated successfully:", data);
+                    //todo: crear funcion para actualizar el bracket o modificar esta funcion - se recibe el array de GamePlayers
+                    yield this.setTournamentBracket(this.gamePlayersToTournamentPlayers(data.players));
+                    console.log("Tournament bracket set successfully:", this.getBracket());
+                    this.ui.updateRenderBracket(data.players);
+                    yield new Promise(resolve => setTimeout(resolve, 5000));
+                    const launchBtn = document.getElementById('launch-match-btn');
+                    if (launchBtn)
+                        launchBtn.addEventListener('click', () => this.launchNextMatch());
+                    this.displayCurrentMatch();
+                }
+            }
+            catch (error) {
+                console.error("Error while preparing the tournament bracket:", error);
+            }
+            finally {
+                this.ui.showOnly('tournament-bracket-container');
+            }
+        });
+    }
+    getBracket() {
+        return this.bracket;
     }
 }

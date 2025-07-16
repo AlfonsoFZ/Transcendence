@@ -9,11 +9,12 @@ module.exports = (sequelize, DataTypes) => {
 		tournamentId: {
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			defaultValue: null
+			defaultValue: -42,
+			unique: true // Agrega la condición de único
 		},
 		playerscount: {
 			type: DataTypes.INTEGER,
-			allowNull: false,
+			allowNull: true,
 			defaultValue: 4
 		},
 		config: {
@@ -22,12 +23,14 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: {}
 		},
 		users: {
-			type: DataTypes.ARRAY(DataTypes.INTEGER),
+			type: DataTypes.JSONB,
 			allowNull: true,
+			defaultValue: {}
 		},
-		games: {
-			type: DataTypes.ARRAY(DataTypes.INTEGER),
-			allowNull: true,	
+		gamesData: {
+			type: DataTypes.JSONB,
+			allowNull: true,
+			defaultValue: {}
 		},
 		winner: {
 			type: DataTypes.INTEGER,
@@ -42,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE,
 			allowNull: false,
 			defaultValue: DataTypes.NOW
-		}
+		},
 	}, {
 	sequelize,
 	modelName: 'Tournamentlog',

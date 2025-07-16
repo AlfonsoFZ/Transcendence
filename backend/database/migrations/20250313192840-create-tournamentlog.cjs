@@ -6,11 +6,12 @@ module.exports = {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
+				unique: true,
 				type: Sequelize.INTEGER
 			},
 			playerscount: {
 				type: Sequelize.INTEGER,
-				allowNull: false,
+				allowNull: true,
 				defaultValue: 4
 			},
 			config: {
@@ -19,16 +20,18 @@ module.exports = {
 				defaultValue: {}
 			},
 			users: {
-				type: Sequelize.ARRAY(Sequelize.INTEGER),
-				allowNull: false
+				type: Sequelize.JSONB,
+				allowNull: true,
+				defaultValue: {}
 			},
-			games: {
-				type: Sequelize.INTEGER,
-				allowNull: false,
+			gamesData: {
+				type: Sequelize.JSONB,
+				allowNull: true,
+				defaultValue: {}
 			},
 			winner: {
 				type: Sequelize.INTEGER,
-				allowNull: false,
+				allowNull: true,
 			},
 			created_at: {
 				allowNull: false,
