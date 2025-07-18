@@ -120,8 +120,8 @@ export class Chessboard {
 			type: type,
 			moveFrom: fromSquare,
 			moveTo: toSquare,
-			lastMoveFrom: this.lastMoveFrom === null ? null : this.lastMoveFrom.toString(),
-			lastMoveTo: this.lastMoveTo === null ? null : this.lastMoveTo.toString(),
+			lastMoveFrom: this.lastMoveFrom === null ? null : this.lastMoveFrom.toString().padStart(2, "0"),
+			lastMoveTo: this.lastMoveTo === null ? null : this.lastMoveTo.toString().padStart(2, "0"),
 			board: this.getBoard(),
 		};
 	}

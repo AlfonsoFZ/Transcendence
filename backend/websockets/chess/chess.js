@@ -157,9 +157,9 @@ function movePiece(user, data) {
 	if (chessboard.has(user.id)) {
 		const board = chessboard.get(user.id);
 		message = board.handleMove(data, user.id);
+		console.log(message);
 		if (message.type === 'promote')
 			sendMsgToClient(user.id, { ...message, playerColorView: user.id === board.hostId ? board.hostColorView : board.guestColorView });
-
 		else {
 			sendMsgToClient(board.hostId, { ...message, playerColorView: board.hostColorView, });
 			if (board.gameMode === 'online')

@@ -44,6 +44,18 @@ function handleSocketMessage() {
                 setupChessboard(chessboard, null, null);
                 showPromotionOptions();
                 break;
+            case 'check':
+                chessboard.set(data);
+                setupChessboard(chessboard, null, null);
+                break;
+            case 'checkmate':
+                chessboard.set(data);
+                setupChessboard(chessboard, null, null);
+                break;
+            case 'stalemate':
+                chessboard.set(data);
+                setupChessboard(chessboard, null, null);
+                break;
         }
     });
 }
