@@ -25,8 +25,8 @@ function handleSocketOpen() {
 function handleSocketMessage() {
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
-        console.log(data);
-        setData(data);
+        if (data.type != 'time')
+            setData(data);
         switch (data.type) {
             case 'info':
                 if (data.inGame === false)

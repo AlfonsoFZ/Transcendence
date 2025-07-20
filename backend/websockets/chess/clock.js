@@ -21,7 +21,6 @@ export class Clock {
 
 				if (chessboard.gameOver || chessboard.hostTime <= 0 || chessboard.guestTime <= 0) {
 					chessboard.gameOver = true;
-					console.log("I AM HERE. STOPPED")
 					this.stop();
 					return;
 				}

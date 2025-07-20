@@ -298,7 +298,7 @@ export class Chessboard {
 	}
 
 	handleMove(data, id) {
-
+		
 		const fromSquare = Number(data.moveFrom);
 		const toSquare = Number(data.moveTo);
 		const piece = this.getPieceAt(fromSquare);
@@ -344,6 +344,7 @@ export class Chessboard {
 			hostColorView: this.hostColorView,
 			guestColorView: this.guestColorView,
 			gameMode: this.gameMode,
+			clock: new Clock(),
 			intervalId: this.intervalId,
 			timeControl: this.timeControl,
 			hostTime: this.hostTime,
