@@ -180,7 +180,6 @@ export function configureTournamentRoutes(fastify) {
 			fastify.log.error(err);
 			reply.status(500).send({ error: 'Error updating tournamentlog' + err.message });
 		}
-
 	});
 	
 }

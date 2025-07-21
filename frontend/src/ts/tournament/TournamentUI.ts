@@ -21,7 +21,11 @@ export class TournamentUI
 	constructor(tournament: Tournament)
 	{
 		this.tournament = tournament;
+		this.boundOnLeavingTournamentLobby = this.onLeavingTournamentLobby.bind(this);
 	}
+
+
+
 
 	showOnly(divId: string, displayStyle: string = "block") : void
 	{
@@ -141,6 +145,7 @@ export class TournamentUI
 					});
 				
 			}
+				this.enableTournamentHashGuard();
 		});
 		document.getElementById('remoteTournament')?.addEventListener('click', async () => {
 			// await this.game.setPlayerInfo('player1', null);
@@ -155,6 +160,17 @@ export class TournamentUI
 			// this.game.setGameMode('remote');
 			this.showOnly('tournament-config-panel');
 		});
+		// window.onhashchange = function (event) {
+		// 	const confirmChange = confirm("Estás seguro de que quieres cambiar de sección?");
+		// 	if (!confirmChange) {
+		// 		// Revertir el cambio de hash
+		// 		history.pushState(null, '', event.oldURL);
+		// 	} else {
+		// 		// Proseguir con el cambio
+		// 		console.log("Hash actual:", location.hash);
+		// 	}
+		// };
+		// Asumiendo que ya agregaste algo al historial con pushState
 
 	}
 
@@ -171,12 +187,8 @@ export class TournamentUI
 		const numberOfPendingPlayers = this.tournament.getPendingPlayersCount();
 		if (numberOfPendingPlayers === 0) {
 			this.tournament.launchTournament(this.tournament); // No pending players to prepare
-		}
-		
+		}	
 		const players = this.tournament.getTournamentPlayers();
-		console.log("Current tournament players:", players);
-		console.log("Jugadores (JSON):", JSON.stringify(players));
-
 		let i = players.length + 1;
 		const playersContainer = document.getElementById('select-player-container');
 		if (playersContainer) {
@@ -188,7 +200,6 @@ export class TournamentUI
 				this.tournament.getTournamentId() !== null ? this.tournament.getTournamentId()!.toString() : undefined
 			);
 			playerCard.onPlayerFilled = async (tournamentPlayer: TournamentPlayer, selectedOption: number) => {
-				console.log("Player card filled for player:", tournamentPlayer.gameplayer.email);
 				if (selectedOption === 1) {
 					const playerEmail = document.getElementById(`players-email-${tournamentPlayer.Index}`) as HTMLInputElement;
 					const playerPassword = document.getElementById(`players-password-${tournamentPlayer.Index}`) as HTMLInputElement;
@@ -200,7 +211,6 @@ export class TournamentUI
 					}
 					const playerData = await this.checkPlayer(i, playerEmail.value, playerPassword.value);
 					if (playerData) {
-						console.log("Player data received:", playerData);
 						tournamentPlayer.gameplayer = playerData.gameplayer;
 						tournamentPlayer.status = 'ready';
 					} else {
@@ -211,8 +221,8 @@ export class TournamentUI
 					const guestTournamentName = document.getElementById(`guest-tournament-name-${tournamentPlayer.Index}`) as HTMLInputElement;
 					if (!guestTournamentName || guestTournamentName.value.trim() === '') {
 						tournamentPlayer.gameplayer = {
-							id: '',
-							username: '',
+							id: `${tournamentPlayer.Index}+_Guest00${tournamentPlayer.Index}`,
+							username: `Guest00${i}`,
 							tournamentUsername: `Guest00${i}`,
 							email: '',
 							avatarPath: `https://localhost:8443/back/images/avatar-${i}.png`
@@ -226,11 +236,11 @@ export class TournamentUI
 							guestTournamentName.value = '';
 							return; // Exit if the player is already registered
 						}
-
 						const guestData = await this.checkGuestPlayer(i, guestTournamentName.value);
-						console.log("Guest data received:", guestData);
 						if (guestData) {
 							tournamentPlayer.gameplayer = guestData.gameplayer;
+							tournamentPlayer.gameplayer.id = `${tournamentPlayer.Index}+_Guest00${tournamentPlayer.Index}`,
+							tournamentPlayer.gameplayer.username =`Guest00${i}`,
 							tournamentPlayer.status = 'ready';
 						} else {
 							showMessage("Tournament name already exists", null);
@@ -240,7 +250,7 @@ export class TournamentUI
 					}
 				} else if (selectedOption === 3) {// AI 
 					tournamentPlayer.gameplayer = {
-						id: `${tournamentPlayer.Index} + 5`,
+						id: `${tournamentPlayer.Index}+_Ai00${tournamentPlayer.Index}`,
 						username: `Ai00${tournamentPlayer.Index}`,
 						tournamentUsername: `Ai00${tournamentPlayer.Index}`,
 						email: `ai${tournamentPlayer.Index}@transcendence.com`,
@@ -289,13 +299,19 @@ export class TournamentUI
 
 	renderNextMatchInfo(appElement: HTMLElement): void {
 
+		let nextMatchIndex =  this.tournament.getNextGameIndex();
+		const gameDataArray = this.tournament.getGameDataArray();
+
+		if (gameDataArray[nextMatchIndex].id.includes('Bye')) {
+			this.tournament.launchNextMatch()
+			return;
+		}
 		this.loadTemplate('../../html/tournament/nextMatch.html').then(nextMatchHtml => {
 			let parsed = nextMatchHtml;
-
-			const gameDataArray = this.tournament.getGameDataArray();
-			const player1 = gameDataArray[this.tournament.getNextGameIndex()].player1;
-			const player2 = gameDataArray[this.tournament.getNextGameIndex()].player2;
-
+			console.log("En renderNextMatchInfo data array:", gameDataArray);
+			console.log("renderNextMatchInfo: Next game index:", nextMatchIndex);
+			const player1 = gameDataArray[nextMatchIndex].player1;
+			const player2 = gameDataArray[nextMatchIndex].player2;
 			if (!player1 || !player2) {
 				console.error("Player data is missing for next match.");
 				return;
@@ -307,7 +323,6 @@ export class TournamentUI
 				.replace(new RegExp(`nextPlayer-1.avatar`, 'g'), player1.avatarPath)
 				.replace(new RegExp(`nextPlayer-2.tournamentName`, 'g'), player2.tournamentUsername)
 				.replace(new RegExp(`nextPlayer-2.avatar`, 'g'), player2.avatarPath);
-
 			const wrapper = document.createElement('div');
 			wrapper.className = 'next-match-bracket';
 			wrapper.innerHTML = parsed;
@@ -381,8 +396,8 @@ export class TournamentUI
 							console.log(`winner_match_{matchIndex}_img`, `winner_match_${matchIndex}_img`);
 							// Replace the src attribute for the winner's avatar directly in the HTML template
 							parsed = parsed.replace(
-								new RegExp(`(<img[^>]*id=["']winner_match_${matchIndex}_img["'][^>]*src=["'])[^"']*(['"][^>]*>)`),
-								`$1${data[i].avatarPath}$2`
+								new RegExp(`(<img[^>]*id=["']winner_match_${matchIndex}_img(\\.\\d+)?["'][^>]*src=["'])[^"']*(['"][^>]*>)`, 'g'),
+								`$1${data[i].avatarPath}$3`
 							);
 					}
 				}
@@ -506,6 +521,7 @@ export class TournamentUI
 					return null;
 				}
 				this.tournament.setTournamentId(result.tournamentId);
+				console.log("Tournament ID set to:", this.tournament.getTournamentId());
 				// if (this.tournament.getTournamentId() === -42 && !result.tournamentId) {
 				return {
 					Index: '',
@@ -559,5 +575,47 @@ export class TournamentUI
 	private async loadTemplate(template:string): Promise<string> {
 	  	const response = await fetch(template);
 	  return await response.text();
+	}
+	
+	private boundOnLeavingTournamentLobby: (event: HashChangeEvent) => void;
+
+	onLeavingTournamentLobby(event: HashChangeEvent) {
+		const fromHash = new URL(event.oldURL).hash;
+		const toHash = new URL(event.newURL).hash;
+		console.log("onLeavingTournamentLobby called");
+		// Solo si salimos de #tournament-lobby
+		if (fromHash === "#tournament-lobby") {
+			const confirmChange = confirm("Estás saliendo del lobby del torneo. ¿Quieres continuar?");
+			if (!confirmChange) {
+				// Revertir al lobby
+				location.hash = fromHash;
+			}
+			else {
+				// Si el torneo tiene un ID válido, eliminar los usuarios temporales
+				console.log("En else Confirm change to:", toHash);
+				if (this.tournament){
+					console.log("En if antes de getTournamentId");
+					let Tid = this.tournament.getTournamentId()?? -42;
+					console.log("Deleting temp users for tournamentId:", Tid);
+					try {
+						this.tournament.deleteTempUsers(Tid);
+					} catch (error) {
+						console.error("Error deleting temp users by tournamentId:", error);
+					}
+				}
+				this.disableTournamentHashGuard();
+			}
+		}
+
+	}
+
+	// Activar protección
+	enableTournamentHashGuard() {
+		window.addEventListener('hashchange', this.boundOnLeavingTournamentLobby);
+	}
+
+	// Desactivar protección
+	disableTournamentHashGuard() {
+		window.removeEventListener('hashchange', this.boundOnLeavingTournamentLobby);
 	}
 }

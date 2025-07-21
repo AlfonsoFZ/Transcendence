@@ -1,5 +1,4 @@
 
-
 // ***************************************************************//
 //	     La siguiente petición crea un usuario:                   //
 // ***************************************************************//
@@ -333,7 +332,7 @@ DELETE https://localhost:8443/back/delete_user_by_tournament_id HTTP/1.1
 Content-Type: application/json
 
 {
-	"TournamentId": "42"
+	"TournamentId": "26"
 }
 
 DELETE https://localhost:8443/back/delete_all_temp_users HTTP/1.1
