@@ -20,8 +20,10 @@ function handleSocketMessage() {
 
 	socket!.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
-		if (data.type != 'time')
+		if (data.type != 'time') {
 			setData(data);
+		}
+		console.log(data);
 		switch (data.type) {
 			case 'info':
 				if (data.inGame === false)
@@ -54,6 +56,8 @@ function handleSocketMessage() {
 			case 'stalemate':
 				chessboard!.set(data);
 				setupChessboard(chessboard!, null, null);
+				break;
+			case 'timeout':
 				break;
 		}
 	}

@@ -34,11 +34,16 @@ function formatTime(time) {
 	const totalSeconds = Math.floor(time / 1000);
 	const minutes = Math.floor(totalSeconds / 60);
 	const seconds = totalSeconds % 60;
+	const tenths = Math.floor((time % 1000) / 100);
 
 	const formattedMinutes = minutes.toString().padStart(2, '0');
 	const formattedSeconds = seconds.toString().padStart(2, '0');
 
-	return `${formattedMinutes}:${formattedSeconds}`;
+	if (time < 20000) {
+		return `${formattedMinutes}:${formattedSeconds}.${tenths}`;
+	} else {
+		return `${formattedMinutes}:${formattedSeconds}`;
+	}
 }
 
 function sendInfoToClient(user, data) {
@@ -192,7 +197,7 @@ async function createOnlineGame(user, data) {
 		board: board.getBoard(),
 	}
 	sendMsgToClient(user.id, guestMessage);
-	sendTime(board);
+	updateTimePlayers(board);
 }
 
 async function createLocalGame(user, data) {
@@ -217,32 +222,49 @@ async function createLocalGame(user, data) {
 		board: board.getBoard(),
 	}
 	sendMsgToClient(user.id, message);
-	sendTime(board);
+	updateTimePlayers(board);
 }
 
-function sendTime(board) {
+function updateTimePlayers(board) {
 
 	board.intervalId = setInterval(() => {
 
-		if (board.gameOver) {
+		if (board.mateType) {
 			clearInterval(board.intervalId);
 			return;
 		}
 
+		if (board.timeOut) {
+			clearInterval(board.intervalId);
+			sendMsgToClient(board.hostId, {
+				type: 'timeout',
+				loser: board.timeOut,
+				winner: board.timeOut === board.hostName ? board.guestName : board.hostName,
+			});
+			if (board.gameMode === 'online') {
+				sendMsgToClient(board.guestId, {
+					type: 'timeout',
+					loser: board.timeOut,
+					winner: board.timeOut === board.hostName ? board.guestName : board.hostName,
+				});
+			}
+			return;
+		}
+
 		sendMsgToClient(board.hostId, {
-			type: "time",
+			type: 'time',
 			playerTime: formatTime(board.hostTime),
 			opponentTime: formatTime(board.guestTime),
 		});
 
 		if (board.gameMode === 'online') {
 			sendMsgToClient(board.guestId, {
-				type: "time",
+				type: 'time',
 				playerTime: formatTime(board.guestTime),
 				opponentTime: formatTime(board.hostTime),
 			});
 		}
-	}, 200);
+	}, 100);
 }
 
 function movePiece(user, data) {

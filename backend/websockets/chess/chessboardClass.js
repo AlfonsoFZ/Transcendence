@@ -1,4 +1,3 @@
-import { Clock } from './clock.js'
 import { Pawn, Knight, Bishop, Rook, Queen, King } from './chessPieceClass.js'
 
 export class Chessboard {
@@ -17,20 +16,19 @@ export class Chessboard {
 		this.guestColor = this.getGuestColor();
 		this.hostColorView = data.hostColorView || this.hostColor;
 		this.guestColorView = data.guestColorView || this.guestColor;
-		this.gameMode = data.gameMode;
-		this.clock = new Clock();
-		this.intervalId = data.intervalId || null;
-		this.timeControl = data.timeControl;
-		this.hostTime = this.setTime();
-		this.guestTime = this.setTime()
-		this.timeIncrement = this.setIncrement();
 		this.move = data.move || 0;
 		this.turn = this.getTurn();
 		this.lastMoveFrom = data.lastMoveFrom || null;
 		this.lastMoveTo = data.lastMoveTo || null;
-		this.wk = data.wk || null;
-		this.bk = data.bk || null;
-		this.gameOver = data.gameOver || false;
+		this.gameMode = data.gameMode;
+		this.timeControl = data.timeControl;
+		this.timeIncrement = this.setIncrement();
+		this.intervalId = data.intervalId || null;
+		this.interval = data.interval || null;
+		this.hostTime = this.setTime();
+		this.guestTime = this.setTime();
+		this.timeOut = data.timeOut || null;
+		this.mateType = data.mateType || null;
 		if (data.game) {
 			this.game = new Map(
 				data.game.map(([key, value]) => [
@@ -47,6 +45,8 @@ export class Chessboard {
 			this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
 			this.initBoard();
 		}
+		this.whiteKing = this.findKing('white');
+		this.blackKing = this.findKing('black');
 	}
 
 	initBoard() {
@@ -84,8 +84,6 @@ export class Chessboard {
 		this.board[6][6] = new Pawn('white', 66);
 		this.board[6][7] = new Pawn('white', 67);
 		this.game.set(this.move++, this.board);
-		this.wk = this.board[7][4];
-		this.bk = this.board[0][4];
 	}
 
 	getGuestColor() {
@@ -109,7 +107,7 @@ export class Chessboard {
 		const row = Math.floor(square / 10);
 		const col = square % 10;
 		this.board[row][col] = piece;
-		piece.set(square)
+		piece.set(square);
 	}
 
 	deletePieceAt(square) {
@@ -139,16 +137,28 @@ export class Chessboard {
 		this.setPieceAt(toSquare, piece);
 	}
 
+	findKing(color) {
+
+		for (let row = 0; row < this.board.length; row++) {
+			for (let col = 0; col < this.board[row].length; col++) {
+				const piece = this.board[row][col];
+				if (piece instanceof King && piece.getColor() === color)
+					return piece;
+			}
+		}
+		return null;
+	}
+
 	getKing(color) {
 
 		if (color === 'white')
-			return this.wk;
-		return this.bk;
+			return this.whiteKing;
+		return this.blackKing;
 	}
 
 	buildClientMessage(type, fromSquare, toSquare) {
 
-		return {
+		const message = {
 			type: type,
 			moveFrom: fromSquare,
 			moveTo: toSquare,
@@ -156,6 +166,11 @@ export class Chessboard {
 			lastMoveTo: this.lastMoveTo === null ? null : this.lastMoveTo.toString().padStart(2, "0"),
 			board: this.getBoard(),
 		};
+		if (type === 'checkmate') {
+			message.loser = this.getTurn() === this.hostColor ? this.hostName : this.guestName;
+			message.winner = this.getTurn() === this.hostColor ? this.guestName : this.hostName;
+		}
+		return message;
 	}
 
 	isPromotion(piece, toSquare) {
@@ -216,7 +231,7 @@ export class Chessboard {
 			for (let col = 0; col < board[row].length; col++) {
 				const piece = board[row][col];
 				if (piece && piece.getColor() !== color)
-					if (piece.isLegalMove(piece.getSquare(), square, copy.board, copy.lastMoveFrom, copy.lastMoveTo))
+					if (piece.isLegalMove(piece.getSquare(), square, board, copy.lastMoveFrom, copy.lastMoveTo))
 						return true;
 			}
 		}
@@ -244,19 +259,49 @@ export class Chessboard {
 		return mateType;
 	}
 
-	updateTime() {
+	startTimer() {
 
-		this.clock.stop();
-		this.clock.start(this);
+		if (this.getTurn() === this.hostColor)
+			this.guestTime += this.timeIncrement;
+		else
+			this.hostTime += this.timeIncrement;
+
+		this.interval = setInterval(() => {
+			if (this.timeOut || this.hostTime <= 0 || this.guestTime <= 0) {
+				this.timeOut = this.getTurn() === this.hostColor ? this.hostName : this.guestName;
+				this.stopTimer();
+				return;
+			}
+			if (this.getTurn() === this.hostColor)
+				this.hostTime -= 100;
+			else
+				this.guestTime -= 100;
+		}, 100);
 	}
 
-	saveMove(fromSquare, toSquare) {
+	stopTimer() {
+
+		if (this.interval !== null) {
+			clearInterval(this.interval);
+			this.interval = null;
+		}
+	}
+
+	updateTime() {
+
+		this.stopTimer();
+		this.startTimer();
+	}
+
+	saveMove(type, fromSquare, toSquare) {
 
 		this.lastMoveFrom = fromSquare;
 		this.lastMoveTo = toSquare;
 		this.game.set(this.move, this.board);
 		this.move++;
 		this.turn = this.move % 2 === 0;
+		if (type === 'checkmate' || type === 'stalemate')
+			this.mateType = true;
 	}
 
 	handlePromotion(fromSquare, toSquare, promoteTo) {
@@ -290,10 +335,6 @@ export class Chessboard {
 		}
 		if (piece.getNotation()[1] === 'k' ||  piece.getNotation()[1] === 'r')
 			piece.invalidCastling();
-		if (piece.getNotation() === 'wk')
-			this.wk = piece;
-		if (piece.getNotation() === 'bk')
-			this.bk = piece;
 		this.movePiece(piece, fromSquare, toSquare);
 	}
 
@@ -316,7 +357,7 @@ export class Chessboard {
 		const result = this.isCheckMateOrStaleMate(fromSquare, toSquare, opponentColor);
 		const type = result ? result : 'move';
 		this.makeMove(fromSquare, toSquare);
-		this.saveMove(fromSquare, toSquare);
+		this.saveMove(type, fromSquare, toSquare);
 		this.updateTime();
 		return this.buildClientMessage(type, data.moveFrom, data.moveTo);
 	}
@@ -343,19 +384,18 @@ export class Chessboard {
 			guestColor: this.guestColor,
 			hostColorView: this.hostColorView,
 			guestColorView: this.guestColorView,
-			gameMode: this.gameMode,
-			clock: new Clock(),
-			intervalId: this.intervalId,
-			timeControl: this.timeControl,
-			hostTime: this.hostTime,
-			guestTime: this.guestTime,
-			timeIncrement: this.timeIncrement,
 			move: this.move,
 			turn: this.turn,
 			lastMoveFrom: this.lastMoveFrom,
 			lastMoveTo: this.lastMoveTo,
-			wk: this.wk,
-			bk: this.bk,
+			gameMode: this.gameMode,
+			timeControl: this.timeControl,
+			timeIncrement: this.timeIncrement,
+			intervalId: this.intervalId,
+			hostTime: this.hostTime,
+			guestTime: this.guestTime,
+			timeOut: this.timeOut,
+			mateType: this.mateType,
 			game: Array.from(this.game.entries()),
 			board: this.board.map(row => row.map(piece => piece ? piece.clone() : null)),
 		}
