@@ -43,11 +43,27 @@ export function	broadcastResponse(responseType, payload = {})
 				// TODO: maybe add another logic for tournament games if needed
 				break ;
 			case 'GAME_PAUSED':
-				response.remainingTime = payload.remainingTime;
-				break;
+				response = {
+					...response,
+					maxPauseDuration: payload.maxPauseDuration,
+					pauseStartTime: payload.pauseStartTime,
+					reason: payload.reason,
+					pausingUser: payload.username
+				};
+				break ;		
+			case 'GAME_RESUMED':
+				response = {
+					...response,
+					reason: payload.reason,
+					resumingUser: payload.username
+				};
+				break ;
 			case 'GAME_ABANDONED':
-				response.reason = payload.reason;
-				break;	
+				response = {
+					...response,
+					reason: payload.reason
+				};
+				break ;	
 			default:
 				break ;
 		}

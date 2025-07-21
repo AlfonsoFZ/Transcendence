@@ -260,7 +260,9 @@ export function handlePauseGame(client, data)
 		gameSession.broadcastResponse('GAME_PAUSED', { 
 			reason,
 			username: user.username, 
-			userId: user.id 
+			userId: user.id,
+			maxPauseDuration: gameSession.maxPauseDuration,
+			pauseStartTime: Date.now()
 		});
 	}
 }
