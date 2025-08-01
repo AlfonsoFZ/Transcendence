@@ -25,7 +25,7 @@ export class SPA {
 
     public constructor(containerId: string) {
         this.container = document.getElementById(containerId) as HTMLElement;
-		SPA.instance = this; // Guardamos la instancia en la propiedad estática para poder exportarla
+		SPA.instance = this;
         this.loadHEaderAndFooter();	
 		this.loadStep();
 		// Changes to advise the user when they leave a tournament in progress
@@ -34,6 +34,7 @@ export class SPA {
 			if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
 				const tournamentId = this.currentTournament.getTournamentId();
 				const warningFlag = this.currentTournament.LeaveWithoutWarningFLAG;
+				// If the tournament is in progress, show a warning message is it is not already shown
 				if (typeof tournamentId !== 'undefined' && tournamentId !== null && tournamentId > -42
 					&& warningFlag!== true) {
 					showMessage("Tournament in progress aborted?", 5000);
@@ -41,13 +42,11 @@ export class SPA {
 					if (tournamentUI && typeof tournamentUI.resetTournament === 'function') {
 						tournamentUI.resetTournament();
 					}
+					// loop to wait for the message to be closed
 					const messageContainer = document.getElementById("message-container");
-
-						// En lugar de usar async/await, puedes usar un setInterval para comprobar periódicamente si el modal está oculto y luego ejecutar el código necesario.
 						const intervalId = setInterval(() => {
 							if (messageContainer?.style.display === 'none') {
 								clearInterval(intervalId);
-								// Aquí puedes colocar el código que quieras ejecutar después de que el modal se cierre
 							}
 						}, 1000);
 					
@@ -60,8 +59,6 @@ export class SPA {
 				}
 			}
 		
-		// this.navigate('home');
-
 		window.addEventListener("pageshow", (event) => {
 			if (event.persisted && location.hash === '#login') {
 				console.log("Recargando el step de login" );
@@ -69,7 +66,7 @@ export class SPA {
 				if (appContainer) {
 					appContainer.innerHTML = '';
 				}
-				this.loadStep(); // Vuelve a cargar el step para forzar la lógica
+				this.loadStep();
 			}
 		});
     }
@@ -113,26 +110,9 @@ export class SPA {
 
 	async loadStep() {
 		let step = location.hash.replace('#', '') || 'home';
-		// this.navigate(step);
-
-		// // Obtener la URL actual
-		// let currentUrl = window.location.href;
-
-		// // Eliminar todo lo que está después de la última barra
-		// let baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-
-		// // Modificar la URL para que termine con /#home
-		// let newUrl = baseUrl + '#home';
-
-		// // Actualizar la URL sin recargar la página
-		// history.replaceState(null, '', newUrl);
-		console.log('loadStep currentTournament: ', this.currentTournament);
-
 		const routeConfig = this.routes[step];
 		if (routeConfig) {
-			//importamos el módulo correspondiente
 			const module = await import(`./${routeConfig.module}`);
-			// game-lobby <-> game-match communication
 			let stepInstance;
 			if (step === 'game-match')
 			{	
@@ -153,7 +133,6 @@ export class SPA {
 			}
 			else
 				stepInstance = new module.default('app-container');
-			// Verificamos si el usuario está autenticado
 			const user = await stepInstance.checkAuth();
 			if (user) {
 				console.log("Usuario autenticado: ", user);
@@ -162,26 +141,14 @@ export class SPA {
 			}
 			if (routeConfig.protected && !user) {
 				console.warn(`Acceso denegado a la ruta protegida: ${step}`);
-				this.navigate('login'); // Redirigir al usuario a la página de login
+				this.navigate('login');
 				return;
 			}
-			await stepInstance.init(); // Inicializar el módulo
-		} else {
+			await stepInstance.init();
 			showMessage('url does not exist', 2000);
 			window.location.hash = '#home'; 
 		}
 	}
-
-    // isAuthenticated(): boolean {
-	// 	//hardcode para las pruebas
-    //     // return false; // Aquí iría la lógica real de autenticación
-	// 	return true; // Para pruebas, siempre autenticado
-    // }
-
-    // // Método estático para acceder a la instancia de SPA
-    // static getInstance(): SPA {
-    //     return SPA.instance;
-    // }
 
 	public static getInstance(): SPA {
 		return SPA.instance;

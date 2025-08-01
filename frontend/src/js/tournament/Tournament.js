@@ -212,7 +212,6 @@ export default class Tournament extends Step {
         // }
     }
     initialGameData(player1Index, player2Index) {
-        console.log("Initializing game data for players at indices:", player1Index, player2Index);
         if (player1Index > -1) {
             var mode = this.returnMode(this.bracket[player1Index], this.bracket[player2Index]);
             var player1 = this.bracket[player1Index];
@@ -282,7 +281,7 @@ export default class Tournament extends Step {
                             console.log('tournamentId', this.tournamentId);
                             this.initialGameData(0, 1);
                             this.initialGameData(2, 3);
-                            this.initialGameData(-42, -1); //Final match
+                            this.initialGameData(-42, -1); // Final match
                             break;
                         case 6:
                             this.initialGameData(0, 1);
@@ -290,7 +289,7 @@ export default class Tournament extends Step {
                             this.initialGameData(4, 5);
                             this.initialGameData(-1, -1);
                             this.initialGameData(-21, -1); // Bye game 
-                            this.initialGameData(-42, -1); //Final match
+                            this.initialGameData(-42, -1); // Final match
                             break;
                         case 8:
                             this.initialGameData(0, 1);
@@ -299,7 +298,7 @@ export default class Tournament extends Step {
                             this.initialGameData(6, 7);
                             this.initialGameData(-1, -1);
                             this.initialGameData(-1, -1);
-                            this.initialGameData(-42, -1); //Final match
+                            this.initialGameData(-42, -1); // Final match
                             break;
                     }
                 }
@@ -466,7 +465,7 @@ export default class Tournament extends Step {
                 //TODO: replace with the function to display the Match winner
                 console.log("matchData.id: " + matchData.id);
                 if (!matchData.id.includes('final')) {
-                    showMessage(`${nameToDisplay} wins!`, null); //replace with the function to display the winner
+                    showMessage(`${nameToDisplay} wins!`, null);
                 }
                 this.handleMatchResult(matchData);
             }
@@ -482,8 +481,11 @@ export default class Tournament extends Step {
             }
         }
     }
-    // Receive and gather game results - may need to improve gameMatch class to pass this info
-    // Also, may need to call it or implement it on a wait/promise manner?
+    // Todo: Pedro - this method should be called from the game step when the match is finished
+    /**
+    * Handles the match result, updates the tournament bracket, and increments the currentMatchIndex.
+    * @param result - The result of the match containing player data and result information.
+    */
     handleMatchResult(result) {
         // Aux method -> Update bracket, increment currentMatchIndex, etc.
         if (!result || !result.result || !result.player1 || !result.player2) {
@@ -494,17 +496,17 @@ export default class Tournament extends Step {
         console.log("el array de partidas es", this.gameDataArray);
         this.updateTournamentBracket(result);
     }
-    /** todo: esta función de actualizar se podría modificar para que solo hiciera la llamada
-    * 	y obtuviera la información de la base de datos si con la partida se puede actualizar sin
-    *   que esto dependa del front de esa manera seŕia más dificil que se modificaran los resultados
-    *   con llamadas post ,es decir el backend se encargaría de actualizar info y el front solo de mostrarlo
+    /** TODO: This update function could be modified so that it only makes the call
+    *   and retrieves the information from the database, if the match can be updated without
+    *   depending on the frontend. That way, it would be harder to modify the results
+    *   with POST requests; in other words, the backend would handle updating the info and the frontend would only display it.
     */
     updateTournamentBracket(result) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Sanitize gameDataArray to ensure all objects are serializable
+                // ... copy the gameDataArray to avoid mutating the original array
                 const gamesData = this.gameDataArray.map(game => (Object.assign(Object.assign({}, game), { player1: Object.assign({}, game.player1), player2: Object.assign({}, game.player2), config: game.config ? Object.assign({}, game.config) : undefined, result: game.result ? Object.assign({}, game.result) : undefined })));
-                console.log("Updating tournament bracket with sanitized game data:", gamesData);
                 const payload = { gamesData: gamesData, playerscount: this.tournamentConfig.numberOfPlayers };
                 const response = yield fetch("https://localhost:8443/back/updateBracket", {
                     method: "POST",
@@ -515,20 +517,17 @@ export default class Tournament extends Step {
                 });
                 const data = yield response.json();
                 if (response.ok) {
-                    // const FirsGameui = new GameUI(new Game());
-                    console.log("Tournament bracket updated successfully:", data);
-                    //todo: crear funcion para actualizar el bracket o modificar esta funcion - se recibe el array de GamePlayers
+                    //todo: it is posible to improve the way we receive the array of GamePlayers
                     let winnerPlayer = null;
                     if (result.result && result.result.winner) {
                         winnerPlayer = this.bracket.find(player => player.id === result.result.winner);
-                        console.log("Winner player:", winnerPlayer);
                         if (winnerPlayer) {
                             this.bracket.push(winnerPlayer);
                         }
                     }
                     this.gameDataArray = data.gamesData;
                     if (result.id.includes('final')) {
-                        //TODO: llamar a la función de renderizar el final del torneo
+                        // Todo: replace with the function to display the tournament winner if we want to improve it
                         showWinnerMessage(`${winnerPlayer ? winnerPlayer.tournamentUsername : 'Unknown'}`, null);
                         const appContainer = document.getElementById('app-container');
                         if (appContainer) {
@@ -582,11 +581,11 @@ export default class Tournament extends Step {
                     console.log("Temporary users deleted successfully for Tournament ID:", TournamentId);
                 }
                 else {
-                    console.error("Failed to delete temporary users for Tournament ID:", TournamentId);
+                    console.log("Failed to delete temporary users for Tournament ID:", TournamentId);
                 }
             }
             catch (error) {
-                console.error("Error while deleting temporary users:", error);
+                console.log("Error while deleting temporary users:", error);
             }
         });
     }
@@ -622,7 +621,6 @@ export default class Tournament extends Step {
         }).catch((error) => {
             console.error("Error while deleting temporary users:", error);
         });
-        console.log("Resetting tournament...");
         this.tournamentId = -42;
         this.tournamentPlayers = [];
         // TODO_GAME: check if this is necessary
