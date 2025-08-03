@@ -197,19 +197,20 @@ export default class Tournament extends Step {
         console.log("Current game data array length:", this.gameDataArray.length);
     }
     returnMode(player1, player2) {
-        return 'auto'; // HARDCODED FOR TESTING PURPOSES
+        // return'auto'; // HARDCODED FOR TESTING PURPOSES
         //TODO: descomentar y eliminar return 'auto';
-        // console.log("Returning mode for players:", player1, player2);
-        // if (player1.email.includes('ai') && player1.email.includes('@transcendence.com') 
-        // 		&& player2.email.includes('ai') && player2.email.includes('@transcendence.com') 
-        // 		|| player1.id == "2" || player2.id == "2" ) { // todo quitarme del metodo automático elimina referencias a id=="2"
-        // 	return 'auto';
-        // } else if ((player1.email.includes('ai') && player1.email.includes('@transcendence.com')) 
-        // 		|| ( player2.email.includes('ai') && player2.email.includes('@transcendence.com'))) {
-        // 	return '1vAI';
-        // } else {
-        // 	return '1v1';
-        // }
+        console.log("Returning mode for players:", player1, player2);
+        if (player1.email.includes('ai') && player1.email.includes('@transcendence.com')
+            && player2.email.includes('ai') && player2.email.includes('@transcendence.com')) {
+            return 'auto';
+        }
+        else if ((player1.email.includes('ai') && player1.email.includes('@transcendence.com'))
+            || (player2.email.includes('ai') && player2.email.includes('@transcendence.com'))) {
+            return '1vAI';
+        }
+        else {
+            return '1v1';
+        }
     }
     initialGameData(player1Index, player2Index) {
         if (player1Index > -1) {

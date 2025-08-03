@@ -150,7 +150,6 @@ export class SPA {
 			window.location.hash = '#home'; 
 		}
 	}
-
 	public static getInstance(): SPA {
 		return SPA.instance;
 	}

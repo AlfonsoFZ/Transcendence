@@ -283,7 +283,7 @@ export class TournamentUI
 						username: `Ai00${tournamentPlayer.Index}`,
 						tournamentUsername: `Ai00${tournamentPlayer.Index}`,
 						email: `ai${tournamentPlayer.Index}@transcendence.com`,
-						avatarPath: `https://localhost:8443/back/images/avatar-1${i}.png`
+						avatarPath: `https://localhost:8443/back/images/avatar_ai_${i-1}.png`
 					};
 					tournamentPlayer.status = 'ready';
 				}
