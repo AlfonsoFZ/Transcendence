@@ -11,17 +11,21 @@ import { showMessage } from "../modal/showMessage.js";
 import { initOnlineSocket, onlineSocket } from "../friends/onlineUsersSocket.js";
 export class SPA {
     constructor(containerId) {
+        this.currentGame = null;
+        this.currentStep = null;
         this.routes = {
             'home': { module: '../home/homeRender.js', protected: false },
             'login': { module: '../login/loginRender.js', protected: false },
             'register': { module: '../login/registerRender.js', protected: false },
-            'play-pong': { module: '../game/playPongRender.js', protected: true },
+            'game-lobby': { module: '../game/Game.js', protected: true },
+            'game-match': { module: '../game/GameMatch.js', protected: true },
             'play-tournament': { module: '../tournament/playTournamentRender.js', protected: true },
             'friends': { module: '../friends/friendsRender.js', protected: true },
             'chat': { module: '../chat/chatRender.js', protected: true },
             'stats': { module: '../stats/statsRender.js', protected: true },
             'logout': { module: '../login/logoutRender.js', protected: true },
-            'profile': { module: '../profile/userProfileRender.js', protected: true }
+            'profile': { module: '../profile/userProfileRender.js', protected: true },
+            'test': { module: '../game/tournamentGameTest.js', protected: true }
         };
         this.container = document.getElementById(containerId);
         SPA.instance = this; // Guardamos la instancia en la propiedad estática para poder exportarla
@@ -29,6 +33,7 @@ export class SPA {
         this.loadStep();
         window.onpopstate = () => this.loadStep();
         // this.navigate('home');
+        this.currentStep = null;
         window.addEventListener("pageshow", (event) => {
             if (event.persisted && location.hash === '#login') {
                 console.log("Recargando el step de login");
@@ -80,6 +85,7 @@ export class SPA {
     }
     loadStep() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d;
             let step = location.hash.replace('#', '') || 'home';
             // this.navigate(step);
             // // Obtener la URL actual
@@ -90,12 +96,38 @@ export class SPA {
             // let newUrl = baseUrl + '#home';
             // // Actualizar la URL sin recargar la página
             // history.replaceState(null, '', newUrl);
+            // Handle leaving game-match step on active game
+            if (this.currentStep === 'game-match' && step !== 'game-match' &&
+                this.currentGame && this.currentGame.getGameConnection() &&
+                this.currentGame.getGameConnection().socket &&
+                this.currentGame.isGameActive()) {
+                const log = this.currentGame.getGameLog();
+                const username = this.currentGame.getGameIsHost()
+                    ? (_a = log.playerDetails.player1) === null || _a === void 0 ? void 0 : _a.username
+                    : (_b = log.playerDetails.player2) === null || _b === void 0 ? void 0 : _b.username;
+                (_d = (_c = this.currentGame.getGameConnection()) === null || _c === void 0 ? void 0 : _c.socket) === null || _d === void 0 ? void 0 : _d.send(JSON.stringify({
+                    type: 'PAUSE_GAME',
+                    reason: `${username} left the game`
+                }));
+            }
+            this.currentStep = step;
             const routeConfig = this.routes[step];
             if (routeConfig) {
                 //importamos el módulo correspondiente
                 const module = yield import(`./${routeConfig.module}`);
-                // Creamos una instancia del módulo
-                const stepInstance = new module.default('app-container');
+                // game-lobby <-> game-match communication
+                let stepInstance;
+                if (step === 'game-match') {
+                    stepInstance = new module.default(this.currentGame);
+                    if (this.currentGame && stepInstance)
+                        this.currentGame.setGameMatch(stepInstance);
+                }
+                else if (step === 'game-lobby') {
+                    stepInstance = new module.default('app-container');
+                    this.currentGame = stepInstance;
+                }
+                else
+                    stepInstance = new module.default('app-container');
                 // Verificamos si el usuario está autenticado
                 const user = yield stepInstance.checkAuth();
                 if (user) {

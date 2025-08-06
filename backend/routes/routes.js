@@ -5,6 +5,7 @@ import { configureGamelogRoutes } from './gamelog.js';
 import { configureFriendRoutes } from './friend.js';
 import { configureChatRoutes } from './chat.js';
 import { configureOnlineSocket } from '../websockets/online/onlineUsers.js';
+import { configureGameRoutes } from './game.js';
 
 export default function configureRoutes(fastify, sequelize) {
 
@@ -29,5 +30,5 @@ export default function configureRoutes(fastify, sequelize) {
 	configureGamelogRoutes(fastify);
 	configureFriendRoutes(fastify);
 	configureChatRoutes(fastify);
+	configureGameRoutes(fastify);
 }
-
