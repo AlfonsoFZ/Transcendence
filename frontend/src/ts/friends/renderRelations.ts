@@ -11,7 +11,8 @@ export async function renderRelations(relationsContainer: HTMLElement, userId: s
 		}
 		const relations = await getRelationsForUserId(userId);
 		//console.log("Relations:", relations);
-		if (!relations || relations.length === 0) {
+		
+ 		if (!relations || relations.length === 0) {
 			relationsContainer.innerHTML = `
 				<div id="pong-container" class="flex flex-col items-center justify-center py-8 text-gray-500">
 					<svg width="80" height="80" viewBox="0 0 24 24" fill="none">

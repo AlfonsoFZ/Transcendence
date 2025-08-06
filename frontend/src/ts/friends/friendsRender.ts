@@ -35,9 +35,16 @@ export default class Friends extends Step {
 			const relationsContainer = document.getElementById("relations-container") as HTMLDivElement;
 			await renderRelations(relationsContainer!, userId);
 
-			window.addEventListener("onlineUsersUpdated", async () => {
-            	await renderRelations(relationsContainer!, userId);
-            });
+			const eventKey = "onlineUsersUpdated";
+			const listener = async () => {
+				await renderRelations(relationsContainer!, userId);
+			};
+			// @ts-ignore
+			if (!window._onlineUsersUpdatedListenerAdded) {
+				window.addEventListener(eventKey, listener);
+				// @ts-ignore
+				window._onlineUsersUpdatedListenerAdded = true;
+			}
 
 		}catch (error) {
 				console.error("Error loading HTML file:", error);

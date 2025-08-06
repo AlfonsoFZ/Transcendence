@@ -4,7 +4,7 @@ export function initOnlineSocket() {
 	if (!onlineSocket || onlineSocket.readyState === WebSocket.CLOSED) {
 		onlineSocket = new WebSocket("wss://localhost:8443/back/ws/online");
 		console.log("Online socket initialized");
-
+		
 		onlineSocket.onopen = () => {
 			console.log("Online socket connection established");
 		};
