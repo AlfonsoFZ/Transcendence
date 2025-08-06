@@ -11,11 +11,25 @@ let globalGameSocket: WebSocket | null = null;
 
 export class GameConnection
 {
-	private game: Game;
-	public	socket: WebSocket | null = null;
-	public	connectionStat: boolean = false;
-	public	pendingUserInfoResolve: ((user: any) => void) | null = null;
-
+	private game: Game;	// Reference to the Game instance
+	public	socket: WebSocket | null = null; 	// WebSocket instance
+	public	connectionStat: boolean = false; 	// Connection status
+	/**
+	 * A callback function that is invoked to resolve pending user information requests.
+	 * 
+	 * When set, this function should be called with the user data once it becomes available.
+	 * If there is no pending request, this property is `null`.
+	 *
+	 * @remarks
+	 * This is typically used in asynchronous flows where user information needs to be fetched or confirmed before proceeding.
+	 *
+	 * @param user - The user information object to be passed to the resolver.
+	 */
+	public	pendingUserInfoResolve: ((user: any) => void) | null = null;  
+	/**
+	 * Creates an instance of GameConnection.
+	 * @param game - The Game instance that this connection will manage.
+	 */
 	constructor(game: Game)
 	{
 		this.game = game;
@@ -65,9 +79,12 @@ export class GameConnection
 					try
 					{
 						const data = JSON.parse(event.data);
-						console.log("Parsed server message:", data);
+						// console.log("Parsed server message:", data);
 						switch(data.type)
-						{
+						{		
+							/*Cuando el servidor responde con un mensaje de tipo USER_INFO, 
+							el manejador de mensajes del WebSocket verifica si pendingUserInfoResolve está definido. 
+							Si es así, la llama pasando el usuario recibido y luego la limpia (la pone en null).*/
 							case 'USER_INFO':
 								if (this.pendingUserInfoResolve)
 								{
@@ -201,6 +218,8 @@ export class GameConnection
 				console.error("Error while checking external player:", error);
 			}
 		}
+		/*Cuando se solicita información del usuario, se crea una nueva promesa 
+		y se asigna su función resolve a pendingUserInfoResolve.*/
 		return new Promise((resolve) => {
 			this.pendingUserInfoResolve = resolve;
 			this.socket?.send(JSON.stringify({
@@ -211,6 +230,14 @@ export class GameConnection
 		});
 	}
 
+
+	/**
+	 * Verifies a player's credentials by sending a POST request to the backend.
+	 *
+	 * @param data - An object containing the player's email and password.
+	 * @returns A promise that resolves to `true` if the credentials are valid, or `false` if invalid.
+	 *          Logs errors to the console if the request fails or if the credentials are incorrect.
+	 */
 	public async	checkPlayer(data: {email: string, password: string})
 	{
 		try
@@ -236,6 +263,13 @@ export class GameConnection
 		}
 	};
 	
+	/**
+	 * Cleans up the WebSocket connection by removing all event handlers and closing the socket.
+	 * Also clears any pending user information resolution callbacks.
+	 *
+	 * This method should be called when the connection is no longer needed to prevent memory leaks
+	 * and ensure proper resource cleanup.
+	 */
 	public destroy()
 	{
 		if (this.socket)

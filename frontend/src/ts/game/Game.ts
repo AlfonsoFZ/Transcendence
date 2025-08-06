@@ -17,7 +17,9 @@ export default class Game extends Step
 {
 	/********** COMPONENTS ****************/
 	/*********** ATTRIBUTES ***************/
+	
 	protected	connection: GameConnection;
+
 	protected	renderer: GameRender;
 	protected	ui: GameUI;
 	protected	log: GameData;
