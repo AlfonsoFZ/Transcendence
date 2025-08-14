@@ -75,11 +75,11 @@ export class GameConnection {
                 // Always assign the message handler after connection is established
                 if (this.socket) {
                     this.socket.onmessage = (event) => {
-                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-                        console.log("Message received from server:", event.data);
+                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
                         try {
                             const data = JSON.parse(event.data);
-                            // console.log("Parsed server message:", data);
+                            if (data.type != 'GAME_STATE')
+                                console.log("Message received from server:", event.data);
                             switch (data.type) {
                                 /*Cuando el servidor responde con un mensaje de tipo USER_INFO,
                                 el manejador de mensajes del WebSocket verifica si pendingUserInfoResolve está definido.
@@ -134,19 +134,22 @@ export class GameConnection {
                                     (_e = this.game.getGameMatch()) === null || _e === void 0 ? void 0 : _e.updateReadyModal(data.playerDetails, data.readyStates);
                                     break;
                                 case 'GAME_COUNTDOWN':
-                                    const readyModal = document.getElementById('ready-modal');
-                                    if (readyModal) {
-                                        readyModal.style.display = 'none';
-                                        (_f = this.game.getGameMatch()) === null || _f === void 0 ? void 0 : _f.stopReadyStatePolling();
-                                    }
-                                    (_g = this.game.getGameMatch()) === null || _g === void 0 ? void 0 : _g.showCountdown(data.seconds || 3, data.reason);
+                                    // const readyModal = document.getElementById('ready-modal');
+                                    // if (readyModal)
+                                    // {
+                                    // 	readyModal.style.display = 'none';
+                                    // 	this.game.getGameMatch()?.stopReadyStatePolling();
+                                    // }
+                                    (_f = this.game.getGameUI()) === null || _f === void 0 ? void 0 : _f.showOnly('countdown-overlay');
+                                    (_g = this.game.getGameMatch()) === null || _g === void 0 ? void 0 : _g.stopReadyStatePolling();
+                                    (_h = this.game.getGameMatch()) === null || _h === void 0 ? void 0 : _h.showCountdown(data.seconds || 3, data.reason);
                                     break;
                                 case 'GAME_PAUSED':
-                                    (_h = this.game.getGameMatch()) === null || _h === void 0 ? void 0 : _h.showPauseModal(data.reason, data.userId);
+                                    (_j = this.game.getGameMatch()) === null || _j === void 0 ? void 0 : _j.showPauseModal(data.reason, data.userId);
                                     break;
                                 case 'GAME_RESUMED':
-                                    (_j = this.game.getGameMatch()) === null || _j === void 0 ? void 0 : _j.hidePauseModal();
-                                    (_k = this.game.getGameMatch()) === null || _k === void 0 ? void 0 : _k.showCountdown(3, data.reason);
+                                    (_k = this.game.getGameMatch()) === null || _k === void 0 ? void 0 : _k.hidePauseModal();
+                                    (_l = this.game.getGameMatch()) === null || _l === void 0 ? void 0 : _l.showCountdown(3, data.reason);
                                     break;
                                 default:
                                     console.log(`Received message with type: ${data.type}`);

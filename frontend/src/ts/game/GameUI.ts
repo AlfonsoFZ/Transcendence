@@ -16,13 +16,25 @@ export class GameUI
 
 	showOnly(divId: string, displayStyle: string = "block") : void
 	{
+		console.warn("showOnly div = ", divId);
 		const divIndex = [
 			'initial-screen',
 			'config-panel',
-			'game-container',
 			'game-results',
-			'player2-login-panel'
+			'player2-login-panel',
+			'ready-modal',
+			'countdown-overlay',
+			'pause-modal'
 		];
+		if (divId === "hide_all")
+		{
+			divIndex.forEach(id => {
+			const	checkDiv = document.getElementById(id);
+			if (checkDiv)
+				checkDiv.style.display = "none";
+		});
+			return ;
+		}
 		divIndex.forEach(id => {
 			const	checkDiv = document.getElementById(id);
 			if (checkDiv)

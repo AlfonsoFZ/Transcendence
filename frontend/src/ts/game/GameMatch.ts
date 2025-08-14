@@ -27,6 +27,7 @@ export default class GameMatch extends Step
 	private	connection: GameConnection;
 	private	ai: GameAI | null = null;
 	private readyStateInterval: number | null = null;
+	private countdownInterval: number | null = null;
 
 	constructor(game: Game, tournament?: Tournament | null)
 	{
@@ -92,6 +93,8 @@ export default class GameMatch extends Step
 		if (pauseModal && resumeBtn)
 		{
 			resumeBtn.onclick = () => {
+				console.warn("resume-btn-clicked");
+				//pauseModal.style.display = 'none';
 				this.connection.socket?.send(JSON.stringify({ type: 'RESUME_GAME' }));
 			};
 		}
@@ -184,7 +187,7 @@ export default class GameMatch extends Step
 		this.ui.showOnly('game-results', 'flex');
 		// Add event listeners for the buttons (these need to be set each time)
 		playAgainBtn?.addEventListener('click', () => {
-			this.ui.showOnly('game-container')
+			this.ui.showOnly('hide-all')
 			this.rematchGame(true);
 		});
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
@@ -254,22 +257,31 @@ export default class GameMatch extends Step
 		const reasonElem = document.getElementById('countdown-reason');
 		if (!overlay || !number)
 			return ;
-		overlay.style.display = 'flex';
+
+		if (this.countdownInterval)
+		{
+			clearInterval(this.countdownInterval);
+			this.countdownInterval = null;
+		}
+	
 		let count = seconds;
+		overlay.style.display = 'flex';
 		number.textContent = count.toString();
 		if (reasonElem)
 			reasonElem.textContent = reason || '';
-		const interval = setInterval(() => {
+
+		this.countdownInterval = window.setInterval(() => {
 			count--;
 			if (count > 0)
 				number.textContent = count.toString();
-			else
+			else if (count == 0)
 			{
 				number.textContent = "GO!";
+				clearInterval(this.countdownInterval!);
+				this.countdownInterval = null;
 				setTimeout(() => {
 					overlay.style.display = 'none';
-				}, 800);
-				clearInterval(interval);
+				}, 400);
 			}
 		}, 1000);
 	}

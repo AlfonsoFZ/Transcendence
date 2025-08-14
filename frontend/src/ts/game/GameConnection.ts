@@ -75,11 +75,11 @@ export class GameConnection
 			if (this.socket) 
 			{
 				this.socket.onmessage = (event) => {
-					console.log("Message received from server:", event.data);
 					try
 					{
 						const data = JSON.parse(event.data);
-						// console.log("Parsed server message:", data);
+						if (data.type != 'GAME_STATE')
+							console.log("Message received from server:", event.data);
 						switch(data.type)
 						{		
 							/*Cuando el servidor responde con un mensaje de tipo USER_INFO, 
@@ -137,12 +137,14 @@ export class GameConnection
 								this.game.getGameMatch()?.updateReadyModal(data.playerDetails, data.readyStates);
 								break ;
 							case 'GAME_COUNTDOWN':
-								const readyModal = document.getElementById('ready-modal');
-								if (readyModal)
-								{
-									readyModal.style.display = 'none';
-									this.game.getGameMatch()?.stopReadyStatePolling();
-								}
+								// const readyModal = document.getElementById('ready-modal');
+								// if (readyModal)
+								// {
+								// 	readyModal.style.display = 'none';
+								// 	this.game.getGameMatch()?.stopReadyStatePolling();
+								// }
+								this.game.getGameUI()?.showOnly('countdown-overlay');
+								this.game.getGameMatch()?.stopReadyStatePolling();
 								this.game.getGameMatch()?.showCountdown(data.seconds || 3, data.reason);
 								break ;
 							case 'GAME_PAUSED':

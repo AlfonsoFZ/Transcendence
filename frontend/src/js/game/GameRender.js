@@ -12,7 +12,6 @@ export class GameRender {
         this.game = game;
     }
     renderGameState(state) {
-        console.log("Received new game state:", state);
         this.lastKnownState = this.game.gameState;
         this.gameState = state;
         this.stateTimestamp = Date.now();
@@ -56,7 +55,6 @@ export class GameRender {
             console.error("Cannot draw: missing game state");
             return;
         }
-        console.log("Drawing game with state:", this.gameState);
         // Clear the canvas
         this.ctx.fillStyle = "black";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
