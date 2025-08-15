@@ -8,10 +8,10 @@
 		width="800"
 		height="600"
 		class="bg-black mx-auto block max-w-full h-auto"
-  ></canvas>
+></canvas>
 	<button
 		id="pause-btn"
-		class="mt-6 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-lg shadow-lg transition duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
+		class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-green-600"
 		type="button"
 	>
 	⏸ Pause
@@ -20,9 +20,9 @@
 
 <!-- Ready-waiting players modal overlay -->
 <div id="ready-modal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
-  style="display: flex;">
-  <div class="flex flex-row items-center justify-center w-full max-w-xl px-4">
+class="fixed inset-0 z-50 flex items-center justify-center bg-overlays"
+style="display: flex;">
+<div class="flex flex-row items-center justify-center w-full max-w-xl px-8 py-8 border-4 border-[#00ff99] bg-overlays rounded-lg shadow-xl backdrop-blur">
 	<div class="flex flex-col items-center flex-1 min-w-0">
 		<img id="player1-avatar" src="/images/default-avatar.png" class="w-28 h-28 rounded-full border-4 border-white bg-gray-200 mb-2" />
 		<div id="player1-name" class="text-white text-lg font-semibold mb-1 w-full truncate text-center">Waiting for player 1...</div>
@@ -33,29 +33,30 @@
 			class="bg-green-500 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-green-600 transition">
 			Ready to play!
 		</button>
-	  <div id="waiting-msg" class="text-gray-300 text-center min-h-[1.5em]"></div>
+	<div id="waiting-msg" class="text-gray-300 text-center min-h-[1.5em]"></div>
 	</div>
 	<div class="flex flex-col items-center flex-1 min-w-0">
 		<img id="player2-avatar" src="/images/default-avatar.png" class="w-28 h-28 rounded-full border-4 border-white bg-gray-200 mb-2" />
 		<div id="player2-name" class="text-white text-lg font-semibold mb-1 w-full truncate text-center">Waiting for player 2...</div>
 		<div id="player2-ready" class="text-green-400 font-bold"></div>
 	</div>
-  </div>
+</div>
 </div>
 
 <!-- Start game countdown overlay, hidden by default -->
 <div id="countdown-overlay"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-  style="display: none;">
-	<div class="flex flex-col items-center">
+class="fixed inset-0 z-50 flex items-center justify-center bg-overlays"
+style="display: none;">
+	<div class="flex flex-col items-center rounded-lg px-8 py-6 shadow-xl backdrop-blur">
 		<span class="text-white text-[15vw] font-extrabold font-[Tektur] drop-shadow-lg" id="countdown-number"></span>
 		<div id="countdown-reason" class="text-white text-2xl mt-4 font-semibold text-center"></div>
 	</div>
 </div>
 
 <!-- Game results overlay, hidden by default -->
-<div id="game-results" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80" style="display: none;">
-	<div class="bg-[#272727] border-4 border-[#00ff99] rounded-lg px-8 py-6 w-full max-w-2xl min-w-[600px] text-white text-center shadow-lg" style="box-shadow: 0 0 20px rgba(0, 255, 153, 0.5);">
+<div id="game-results" class="fixed inset-0 z-50 flex items-center justify-center bg-overlays" style="display: none;">
+	<div class="border-4 border-[#00ff99] rounded-lg px-8 py-6 w-full max-w-2xl min-w-[600px] text-white text-center shadow-lg bg-overlays backdrop-blur"
+		style="box-shadow: 0 0 20px rgba(0, 255, 153, 0.5);">
 	
 	<h2 class="text-4xl font-bold text-[#00ff99] mb-6 font-[Tektur]">Game Over</h2>
 
@@ -79,20 +80,20 @@
 	</div>
 </div>
 
-<!-- Game Paused overlay, hidden by default -->
+<!-- Pause modal (match border and background style) -->
 <div id="pause-modal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
-  style="display: none;">
-  <div class="bg-white rounded-lg px-8 py-6 flex flex-col items-center shadow-xl">
-	<span class="text-4xl font-bold text-yellow-500 mb-6 font-[Tektur] flex items-center gap-2">
-	  <svg class="w-8 h-8 text-yellow-500 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-	  Game Paused
-	</span>
-	<div id="pause-reason" class="text-gray-700 text-lg mb-4"></div>
-	<button id="resume-btn"
-	  class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-	  type="button">
-	  ▶ Resume
-	</button>
-  </div>
+	class="fixed inset-0 z-50 flex items-center justify-center bg-overlays"
+	style="display: none;">
+	<div class="rounded-lg px-8 py-6 flex flex-col items-center shadow-xl bg-overlays border-4 border-[#00ff99] backdrop-blur">
+		<span class="text-4xl font-bold text-[#00ff99] mb-6 font-[Tektur] flex items-center gap-2">
+			<svg class="w-8 h-8 text-[#00ff99] inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+			Game Paused
+		</span>
+		<div id="pause-reason" class="text-white text-lg mb-4"></div>
+		<button id="resume-btn"
+			class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+			type="button">
+			▶ Resume
+		</button>
+	</div>
 </div>

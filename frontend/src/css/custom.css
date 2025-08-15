@@ -101,6 +101,10 @@ body {
 	background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
+.bg-overlays {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
 /************************************************************/
 /* 					 Winner message  						*/
 /************************************************************/
