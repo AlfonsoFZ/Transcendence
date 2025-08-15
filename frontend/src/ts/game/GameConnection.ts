@@ -137,12 +137,6 @@ export class GameConnection
 								this.game.getGameMatch()?.updateReadyModal(data.playerDetails, data.readyStates);
 								break ;
 							case 'GAME_COUNTDOWN':
-								// const readyModal = document.getElementById('ready-modal');
-								// if (readyModal)
-								// {
-								// 	readyModal.style.display = 'none';
-								// 	this.game.getGameMatch()?.stopReadyStatePolling();
-								// }
 								this.game.getGameUI()?.showOnly('countdown-overlay');
 								this.game.getGameMatch()?.stopReadyStatePolling();
 								this.game.getGameMatch()?.showCountdown(data.seconds || 3, data.reason);
@@ -152,7 +146,6 @@ export class GameConnection
 								break ;
 							case 'GAME_RESUMED':
 								this.game.getGameMatch()?.hidePauseModal();
-								this.game.getGameMatch()?.showCountdown(3, data.reason);
 								break ;
 							default:
 								console.log(`Received message with type: ${data.type}`);

@@ -11,6 +11,24 @@ export class GameRender {
         this.stateTimestamp = 0;
         this.game = game;
     }
+    drawInitialState() {
+        if (!this.canvas || !this.ctx) {
+            console.error("Cannot draw initial canvas state: missing canvas or context");
+            return;
+        }
+        // (!) IMPORTANT - default state HAS TO MATCH backend's initial state
+        const initialState = {
+            paddles: {
+                player1: { y: 0.5 },
+                player2: { y: 0.5 }
+            },
+            ball: { x: 0.5, y: 0.5 },
+            scores: [0, 0]
+        };
+        this.gameState = initialState;
+        console.warn("pregame-canvas-draw with state: ", this.gameState);
+        this.drawGame();
+    }
     renderGameState(state) {
         this.lastKnownState = this.game.gameState;
         this.gameState = state;

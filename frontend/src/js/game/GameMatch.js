@@ -51,6 +51,7 @@ export default class GameMatch extends Step {
             if (canvas) {
                 this.renderer.canvas = canvas;
                 this.renderer.ctx = canvas.getContext('2d');
+                this.renderer.drawInitialState();
             }
             this.showReadyModal();
             const pauseModal = document.getElementById('pause-modal');
