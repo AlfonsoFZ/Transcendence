@@ -44,8 +44,8 @@ export default class Game extends Step {
             readyState: false
         };
         this.isHost = true;
-        console.log("Game instance created with container ID:", containerId);
-        console.log("Game log initialized:", this.log);
+        // console.log("Game instance created with container ID:", containerId);
+        // console.log("Game log initialized:", this.log);
     }
     /************ CORE *****************/
     /*********** METHODS ***************/
@@ -57,13 +57,13 @@ export default class Game extends Step {
     }
     startGameSession() {
         this.log.startTime = Date.now();
-        console.log(`Starting game session. Mode: ${this.log.mode}`);
+        // console.log(`Starting game session. Mode: ${this.log.mode}`);
         this.log.readyState = true;
     }
     endGameSession(result) {
         this.log.duration = Date.now() - this.log.startTime;
         this.log.result = result;
-        console.log("Game session ended:", this.log);
+        // console.log("Game session ended:", this.log);
         this.renderer.stopRenderLoop();
         this.log.readyState = false;
     }

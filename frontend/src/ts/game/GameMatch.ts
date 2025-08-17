@@ -160,8 +160,22 @@ export default class GameMatch extends Step
 		const winnerElement = document.getElementById('winner-name');
 		const scoreElement = document.getElementById('final-score');
 		const durationElement = document.getElementById('game-duration');
+
 		if (winnerElement)
 			winnerElement.textContent = gameData.result?.winner || 'Unknown';
+		// TODO: Eliminar comentarios si dejamos el código
+		/** para mostrar el tournamentUsername */
+		if (this.tournament && this.tournament.getTournamentId() !== -42 && winnerElement) {
+			const winnerUsername = gameData.result?.winner;
+			const players = gameData.playerDetails;
+			const winnerPlayer = [players.player1, players.player2].find(
+				(p: any) => p?.username === winnerUsername
+			);
+			if (winnerPlayer && winnerPlayer.tournamentUsername) {
+				winnerElement.textContent = winnerPlayer.tournamentUsername;
+			}
+		}
+		/** fin del cambio */
 		if (scoreElement)
 		{
 			const score = gameData.result?.score || [0, 0];
@@ -184,11 +198,17 @@ export default class GameMatch extends Step
 			this.ui.showOnly('game-container')
 			this.rematchGame(true);
 		});
+		
 		document.getElementById('return-lobby-btn')?.addEventListener('click', () => {
 			this.rematchGame(false);
 			this.controllers.cleanup();
 			this.controllers.destroy();
 			this.destroy();
+			if(this.tournament){
+				console.log("FROM showGameResults, Handling match result for tournament:", this.tournament.getTournamentId());
+				console.log("Match result data:", gameData);
+				this.tournament.handleMatchResult(gameData);
+			}
 			const spa = SPA.getInstance();
 			spa.currentGame = null;
 			spa.navigate(this.log.tournamentId ? 'tournament-lobby' : 'game-lobby');

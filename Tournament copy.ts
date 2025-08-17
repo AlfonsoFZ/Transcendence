@@ -28,21 +28,14 @@ export default class Tournament extends Step {
 
 
 	/*********** CONSTRUCTOR ***************/
-	constructor(containerId: string = DEFAULT_CONTAINER_ID, tournament: Tournament | null = null)
+	constructor(containerId: string = DEFAULT_CONTAINER_ID)
 	{
 		super(containerId);
-		if(!tournament){
-			console.log("Creating Tournament with containerId:", containerId);
-			this.ui = new TournamentUI(this);
-			// todo: check and complete. at thismoment is initialized as empty object and filled in saveTournament()
-			this.log = {};
-			this.game = new Game(DEFAULT_CONTAINER_ID, "tournament-game");
-		}else{
-			this.tournamentId = tournament.tournamentId;
-			this.ui = tournament.ui;
-			this.log = tournament.log;
-			this.game = tournament.game;
-		}
+		this.ui = new TournamentUI(this);
+		// todo: check and complete. at thismoment is initialized as empty object and filled in saveTournament()
+		this.log = {};
+		this.game = new Game(DEFAULT_CONTAINER_ID, "tournament-game");
+
 	}
 	
 	public setTournamentId(tournamentId: number): void {
@@ -457,10 +450,8 @@ export default class Tournament extends Step {
 	`;
 	}
 	
-	/** TODO: 
-	 * Adaptar el mensaje al mismo estilo que el mensaje de Game-match showGameResults o
-	 * al revés dependiendo de cual sea más responsive o fácil de adaptar.
-	 */
+	// "Recycle" game instance with current match data and launchGame, which will
+	// start the game API workflow and go to match-render step
 	launchNextMatch()
 	{
 		if (this.bracket && this.nextGameIndex < this.gameDataArray.length && this.game)
@@ -515,11 +506,6 @@ export default class Tournament extends Step {
 		}
 	}
 
-	public resumeTournament(): void {
-		console.log("Resuming tournament from RouTournament:");
-		// Implement logic to resume the tournament
-	}
-
 	// Todo: Pedro - this method should be called from the game step when the match is finished
 	/** 
 	* Handles the match result, updates the tournament bracket, and increments the currentMatchIndex.
@@ -532,15 +518,8 @@ export default class Tournament extends Step {
 			console.error("Invalid match result data:", result);
 			return;
 		}
-		console.log("FRom handleMatchResult, Handling match result:", result);
+		console.log("Handling match result:", result);
 		console.log ("el array de partidas es" , this.gameDataArray);
-		//TODO: SE puede incluir lalógica dependiendo del modo para que en el caso de que sea 
-		// una partida distinta a auto se gestione de forma distinta
-		// se podría actualizar la base de datos y crear una llamada para leer los valores de BD
-		// copiarlo en una instancia nueva de torneo y continuar
-
-		// o ir viendo que hace falta recuperar o modificar para usar la insancia anterior 
-
 		this.updateTournamentBracket(result);
 	}
 		
@@ -550,7 +529,6 @@ export default class Tournament extends Step {
 	*   with POST requests; in other words, the backend would handle updating the info and the frontend would only display it.
 	*/
 	public async updateTournamentBracket(result: GameData): Promise<void> {
-		console.log("FRom updateTournamentBracket, Updating tournament bracket with result:", result);
 		try {
 		// Sanitize gameDataArray to ensure all objects are serializable
 		// ... copy the gameDataArray to avoid mutating the original array
@@ -561,8 +539,7 @@ export default class Tournament extends Step {
 			config: game.config ? { ...game.config } : undefined,
 			result: game.result ? { ...game.result } : undefined
 		}));
-		const payload = { result: result, gamesData: gamesData , playerscount: this.tournamentConfig.numberOfPlayers};
-		console.log ("payload:", payload);
+		const payload = { gamesData: gamesData , playerscount: this.tournamentConfig.numberOfPlayers};
 		const response = await fetch("https://localhost:8443/back/updateBracket", {
 			method: "POST",
 			headers: {
@@ -570,15 +547,12 @@ export default class Tournament extends Step {
 			},
 			body: JSON.stringify(payload),
 		});
-
-		console.log("he pasado a fetch(\"https://localhost:8443/back/updateBracket\")");
 		  const data = await response.json();
 		  if(response.ok) {
 			//todo: it is posible to improve the way we receive the array of GamePlayers
 			let winnerPlayer = null;
-			// TODO: revisar si el cambio de id por tournamentUsername funciona y si es así checquear si funciona con las partidas de ai
 			if (result.result && result.result.winner) {
-				winnerPlayer = this.bracket.find(player => player.username === result.result!.winner);
+				winnerPlayer = this.bracket.find(player => player.id.toString() === result.result!.winner);
 				if (winnerPlayer) {
 					this.bracket.push(winnerPlayer);
 				}
@@ -595,12 +569,6 @@ export default class Tournament extends Step {
 				}
 				return;
 			}
-			// //TODO: eliminar return usado para parar el proceso y ver si ha guardado el torneo
-			// if (true) {
-			// 	return;
-			// }
- this.bracket.find
-
 			this.ui.updateRenderBracket(this.bracket);
 			// await new Promise(resolve => setTimeout(resolve, 5000));
 			while (true) {

@@ -208,7 +208,7 @@ export class GameUI
 		}
 		// Per each game returned by backend, we create a new game card and append it to lobbyDiv
 		// TODO: we can add more elements to the card as "Ready, Full, In progress"...
-		console.log("GameDATA from server games", games);
+		// console.log("GameDATA from server games", games);
 		games.forEach((game: GameData) => {
 			const card = document.createElement('div');
 			card.className = 'bg-gray-700 rounded p-4 flex flex-col gap-2';

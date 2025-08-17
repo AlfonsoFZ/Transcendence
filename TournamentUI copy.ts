@@ -20,16 +20,11 @@ export class TournamentUI
 
 	constructor(tournament: Tournament)
 	{
-		console.log("Creating TournamentUI with tournament:", tournament);
 		this.tournament = tournament;
 		// this.boundOnLeavingTournamentLobby = this.onLeavingTournamentLobby.bind(this);
 	}
 
-	public setTournament(tournament: Tournament): void {
-		console.log("Setting tournament in TournamentUI:", tournament);
-		this.tournament = tournament;
-		console.log("Current tournament in TournamentUI:", this.tournament);
-	}
+
 
 	showOnly(divId: string, displayStyle: string = "block") : void
 	{
@@ -49,57 +44,26 @@ export class TournamentUI
 		});
 	}
 
-
-	/**
-	 * Busca la última partida (empezando desde el final) cuyo winner no es ''.
-	 * Devuelve el objeto de esa partida o null si no hay ninguna.
-	 */
-		findLastMatchWithWinner(): any | null {
-			const gameDataArray = this.tournament.getGameDataArray();
-			for (let i = gameDataArray.length - 1; i >= 0; i--) {
-				const match = gameDataArray[i];
-				if (match && match.result && match.result.winner && match.result.winner !== '') {
-					return match;
-				}
-			}
-			return null;
-		}
-
-
-	public resumeTournament(): void {
-		console.log("Resuming tournament from UI:", this.tournament);
-		// Implement logic to resume the tournament
-	}
-
 	async initializeUI(appElement: HTMLElement): Promise<void>
 	{
 		try
 		{
 			const spa = SPA.getInstance();
-			const tournamentInProgress = spa.getTournamentInProgress();
-			if (spa && tournamentInProgress?.getTournamentId() !== -42) {
-				const appContainer = document.getElementById('app-container');
-				if (appContainer) {
-					appContainer.innerHTML = ''; // Clear previous content
-					// Crea un nodo div y añade el contenido HTML proporcionado
-					const bracketNode = document.createElement('div');
-					bracketNode.innerHTML = `
-						<div id="tournament-bracket-container" style="display: block;">
-							<div class="tournament-bracket">
-								<div id="tournamentBracketcontent" class="w-full flex flex-col"></div>
-							</div>
-						</div>
-					`;
-					appContainer.appendChild(bracketNode);
-					this.showOnly('tournament-bracket-container');
-				}
-				return;
+			const state = spa.getNavigationState();
+			console.log('state:', JSON.stringify(state));
+
+			if (state.previousHash == "game-match" && Number(state.tournamentId) != -42) {
+				console.log('Vuelvo de GameMatch. Tournament ID:', this.tournament.getTournamentId());
+				this.showOnly('tournament-container');
+				// this.updateRenderBracketFromDB());
+
+			} else{
+				const response = await fetch("../../html/tournament/tournamentUI.html");
+				if (!response.ok)
+					throw new Error("Failed to load the tournament UI HTML file");
+				const htmlContent = await response.text();
+				appElement.innerHTML = htmlContent;
 			}
-			const response = await fetch("../../html/tournament/tournamentUI.html");
-			if (!response.ok)
-				throw new Error("Failed to load the tournament UI HTML file");
-			const htmlContent = await response.text();
-			appElement.innerHTML = htmlContent;
 		}
 		catch (error)
 		{
@@ -314,11 +278,10 @@ export class TournamentUI
 						const guestData = await this.checkGuestPlayer(i, guestTournamentName.value);
 						if (guestData) {
 							tournamentPlayer.gameplayer = guestData.gameplayer;
-							// let idString = `${tournamentPlayer.Index}+00${tournamentPlayer.Index}`;
-							// tournamentPlayer.gameplayer.id = Number(idString);
+							let idString = `${tournamentPlayer.Index}+00${tournamentPlayer.Index}`;
+							tournamentPlayer.gameplayer.id = Number(idString);
 							// tournamentPlayer.gameplayer.id = `${tournamentPlayer.Index}+_Guest00${tournamentPlayer.Index}`,
-							// set to -1 as it is number and it is used like that in Game codes
-							tournamentPlayer.gameplayer.id = -2;
+							
 							tournamentPlayer.gameplayer.username =`Guest00${i}`,
 							tournamentPlayer.status = 'ready';
 						} else {
@@ -416,7 +379,6 @@ export class TournamentUI
 
 	// todo: Pendiente de ver en actualizacones de torneo
 	renderBracket(data: any): void {
-		  console.log("Rendering tournament bracket with data:", data);
 		  const appElement = document.getElementById('tournament-bracket-container');
 		  if (!appElement) {
 		   console.error("Tournament bracket container not found");
@@ -446,35 +408,13 @@ export class TournamentUI
 		 * @param data Array of TournamentPlayer objects representing the current bracket state.
 		 */
 	async updateRenderBracket(data: GamePlayer[]): Promise<void> {
-		console.log("Updating tournament bracket with data:", data);
-			let appElement = document.getElementById('tournament-bracket-container');
-			const selectTournament = document.getElementById('select-tournament');
-
+			const appElement = document.getElementById('tournament-bracket-container');
+		
 			if (!appElement) {
-				const appContainer = document.getElementById('app-container');
-				if (appContainer) {
-					// Crea un nodo div y añade el contenido HTML proporcionado
-					const bracketNode = document.createElement('div');
-					bracketNode.innerHTML = `
-						<div id="tournament-bracket-container" style="display: block;">
-							<div class="tournament-bracket">
-								<div id="tournamentBracketcontent" class="w-full flex flex-col"></div>
-							</div>
-						</div>
-					`;
-					appContainer.appendChild(bracketNode);
-					this.showOnly('tournament-bracket-container');
-				}
-			}
-
-			appElement = document.getElementById('tournament-bracket-container');
-
-			if (!appElement) {
-				console.error("desde updateRender Tournament bracket container not found");
+				console.error("Tournament bracket container not found");
 				return;
 			}
-			
-			appElement.innerHTML = '';
+			appElement.innerHTML = ''
 			const numberOfPlayers = this.tournament.getTournamentConfig().numberOfPlayers;
 			const html_Bracket_template = `../../html/tournament/bracket-template-${numberOfPlayers}.html`;
 			this.loadTemplate(html_Bracket_template).then(BracketHtml => {
@@ -727,40 +667,6 @@ export class TournamentUI
 	        if (el) el.innerHTML = '';
 	    });
 	}
-
-
-	/**
-	 * Ensures that the main tournament containers exist in the DOM.
-	 * If any are missing, creates them with display: none.
-	 * This is useful for initializing the UI from scratch.
-	 */
-	ensureTournamentContainers(): void {
-		const containerConfigs = [
-			{ id: 'tournament-bracket-container', className: 'tournament-bracket', parentId: 'app-container' },
-			{ id: 'next-match-bracket', className: 'next-match-bracket', parentId: 'app-container' },
-			{ id: 'tournament-results', className: 'tournament-results', parentId: 'app-container' }
-		];
-
-		containerConfigs.forEach(cfg => {
-			let el = document.getElementById(cfg.id);
-			if (!el) {
-				el = document.createElement('div');
-				el.id = cfg.id;
-				el.className = cfg.className;
-				el.style.display = 'none';
-				const parent = document.getElementById(cfg.parentId);
-				if (parent) {
-					parent.appendChild(el);
-				} else {
-					// fallback: append to body if parent not found
-					document.body.appendChild(el);
-				}
-			} else {
-				el.style.display = 'none';
-			}
-		});
-	}
-
 
 	/**
 	 * Resets the tournament state, including the tournament configuration and player containers.

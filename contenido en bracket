@@ -1,0 +1,252 @@
+<div id="app-container">
+<!-- Tournament initial screen - select mode -->
+<div class="select-tournament" id="select-tournament" style="display: none;">
+	<h1 class="text-center text-white mb-4 text-4xl font-bold font-[Tektur]">Select Tournament Mode</h1>
+	<div class="flex flex-col gap-4 items-center">
+		<button id="localTournament" style="width: 200px" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Local Tournament</button>
+		<button id="remoteTournament" style="width: 200px" class="h-12 py-3 bg-blue-500 text-white border-none rounded hover:bg-blue-600 font-bold cursor-pointer text-base flex justify-center items-center">Remote Tournament</button>
+		<button id="searchTournament" style="width: 200px" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Search Tournaments</button>
+		 <!-- botones estilo más retro aun con bordes redondos
+		<button id="localTournament" style="width: 200px" class="h-12 py-3 bg-[rgb(238,198,52)] hover:bg-[rgb(255,210,0)] text-white border-none rounded font-bold cursor-pointer text-base flex justify-center items-center [text-shadow:_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_1px_1px_0_#000]">Local Tournament</button>
+		<button id="remoteTournament" style="width: 200px" class="h-12 py-3 bg-[rgb(239,151,46)] hover:bg-[rgb(255,165,0)] text-white border-none rounded font-bold cursor-pointer text-base flex justify-center items-center [text-shadow:_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_1px_1px_0_#000]">Remote Tournament</button>
+		<button id="searchTournament" style="width: 200px" class="h-12 py-3 bg-[rgb(225,88,50)] hover:bg-[rgb(245,66,20)] text-white border-none rounded font-bold cursor-pointer text-base flex justify-center items-center [text-shadow:_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_1px_1px_0_#000]">Search Tournaments</button> -->
+	</div>
+</div>
+
+<!-- Player 2 login panel (initially hidden) -->
+<div id="local-tournament-form" style="display: none;" class="p-8 bg-gray-800 rounded-lg max-w-md mx-auto my-12 flex flex-col items-center w-full">
+	<h2 id="config-title" class="text-center text-[#00ff99] mb-3 text-xl font-bold">Select tournament configuration</h2>
+	
+	<!-- Number of players configuration -->
+	<div class="mb-4">
+		<label for="players" class="block mb-2">Number of players: <span id="tournament-number-of-players-value">4</span></label>
+		<input type="range" id="tournament-number-of-players" min="4" max="8" step="2" value="4" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer">
+	</div>
+	
+	<!-- Score limit configuration -->
+	<div class="mb-4">
+		<label for="score-limit" class="block mb-2">Score Limit: <span id="tournament-score-value">1</span></label>
+		<input type="range" id="tournament-score-limit" min="1" max="10" value="5" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer">
+	</div>
+	
+	<!-- Difficulty configuration -->
+	<div class="mb-4">
+		<label for="difficulty" class="block mb-2">Difficulty: <span id="tournament-difficulty-value">Easy</span></label>
+		<input type="range" id="tournament-difficulty" min="1" max="3" value="2" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer">
+	</div>
+	
+	<!-- Buttons -->
+	<div class="flex flex-col gap-3">
+		<button id="select-players" style="width: 100%" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">SelectPlayers</button>
+		<button id="tournament-back-button" style="width: 100%" class="h-12 py-3 bg-red-500 text-white border-none rounded hover:bg-gray-500 font-bold cursor-pointer text-base flex justify-center items-center">Go Back</button>
+	</div>
+</div>
+
+<!-- Wrapper visible -->
+<div id="tournament-info-container" style="display: none;">
+	<div class="w-full min-h-screen p-2 bg-black text-white flex flex-col lg:flex-row gap-2">
+		
+			<!-- Left (sin cambios por ahora) -->
+		<div class="w-full lg:w-1/2 bg-gray-800 p-4 rounded-xl">
+			<h3 class="text-xl font-bold text-yellow-400 mb-4">Tournament Config</h3>
+				<ul class="space-y-2 mb-6 text-sm">
+					<li>🕹️ Players: <span id="summary-players">Number of Players: 4</span></li>
+					<li>🏁 Score Limit: <span id="summary-score">Score Limit: 1</span></li>
+					<li>🔥 Difficulty: <span id="summary-difficulty">Difficulty: easy</span></li>
+				</ul>
+				<h4 class="text-base font-bold text-green-400 mb-2">Registered Players</h4>
+				<ul id="registered-players" class="space-y-2 text-sm"><li class="player-item"><img src="https://localhost:8443/back/images/avatar-18.png" alt="Avatar of Player 0" class="player-avatar" style="max-width: 2rem; height: auto;"><span class="player-tournament-name"> alfonso</span></li><li class="player-item"><img src="https://localhost:8443/back/images/avatar-14.png" alt="Avatar of Player 1" class="player-avatar" style="max-width: 2rem; height: auto;"><span class="player-tournament-name"> sdasdsa</span></li><li class="player-item"><img src="https://localhost:8443/back/images/avatar-5.png" alt="Avatar of Player 2" class="player-avatar" style="max-width: 2rem; height: auto;"><span class="player-tournament-name"> aasa</span></li><li class="player-item"><img src="https://localhost:8443/back/images/avatar_ai_3.png" alt="Avatar of Player 3" class="player-avatar" style="max-width: 2rem; height: auto;"><span class="player-tournament-name"> Ai004</span></li></ul>
+		</div>
+			<!-- Right: Player Form estilo retro-->
+		<div id="select-player-container" style="display: block;" class="w-full lg:w-1/2 bg-gray-900 p-3 rounded-md relative text-sm font-mono"></div>
+	</div>
+</div>
+
+
+<!-- Player selection panel (initially hidden) -->
+	<!-- <div id="select-player-container" class="w-full flex flex-col items-center space-y-6" style="display:none;" >
+		<button id="players-guest-btn" class="w-full bg-green-500 text-white px-4 py-4 rounded font-bold hover:bg-green-600 transition text-lg"></button>
+	</div>	-->
+
+
+
+<div id="tournament-container" style="display: none;">
+	<div class="spinner_container flex flex-col items-center justify-center mx-auto">
+		<p id="spinnerTitle" class="text-center font-bold w-full mb-6 text-xl text-yellow-400">Setting tournament</p>
+		<div role="status">
+			<svg aria-hidden="true" class="inline w-20 h-20 text-gray-200 animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"></path>
+				<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="#facc15"></path>
+			</svg>
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+</div>
+
+<div id="tournament-bracket-container" style="display: block;"><div class="tournament-bracket"><div id="tournamentBracketcontent" class="w-full flex flex-col">
+	<!-- todo: incluir placeholder para nuevo juego si se implementa-->
+    <div id="tournamentTitle" class="text-center py-3 text-4xl font-bold font-[Tektur] bg-gray-800">
+      PONG TOURNAMENT
+    </div>
+    <!-- Final-->
+
+		<div class="round bg-gray-900 p-2 mb-1 flex flex-col items-center border-b-2 border-gray-800">
+				<div class="tournamentBracketMatch p-4 flex flex-col md:flex-row w-full max-w-xl justify-around 
+							items-center rounded-sm">
+		      		
+						<div class="p-4 md:hidden flex text-center text-sm text-white">
+							Final 
+						</div>
+					<!-- player 1 -->
+					<div class="bracketPlayer max-w-xs flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
+			        	<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+				        	<img id="winner_match_1_img" class="w-full h-full object-cover" src="https://localhost:8443/back/images/winner.png" alt="Player 3 Avatar">
+				        </div>
+						<div id="winner_match_1_tName" class="bracketPlayerName w-full text-center text-xs md:text-xs text-orange-500">
+							winner Match 1
+						</div>
+					</div>
+
+				    <!-- VS -->
+					 <div class="flex flex-row md:flex-col items-center justify-center"> 
+						<div class="p-4 hidden md:block flex text-center text-sm text-white-400">
+							Final 
+						</div>
+			    		<div class="versus text-center text-md text-white font-bold mx-4">vs</div>
+					</div>
+	      			<!-- player 2 -->
+					<div class="bracketPlayer max-w-xs flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
+			        	<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+				        	<img id="winner_match_2_img" class="w-full h-full object-cover" src="https://localhost:8443/back/images/winner.png" alt="Player 3 Avatar">
+				        </div>
+						<div id="winner_match_2_tName" class="bracketPlayerName w-full text-center text-xs md:text-xs text-yellow-500">
+							winner Match 2
+						</div>
+					</div>
+				</div>
+		</div>
+	  <!-- Semifinales -->
+			<div class="round bg-gray-900 p-2 mb-1 flex flex-col xl:flex-row items-center justify-evenly min-h-[64px]">
+					<div class="tournamentBracketMatch p-4 flex flex-col md:flex-row w-full max-w-xl justify-around
+								items-center text-yellow-800 rounded-sm dark:text-yellow-300">
+						<div class="block md:hidden p-2 flex text-center text-sm text-orange-500 ">
+								Match&nbsp;1
+						</div>
+
+						<!-- player 1 -->
+			      		<div class="bracketPlayer max-w-xs max-h-[64px] flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
+				       		<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+				          		<img class="w-full h-full object-cover" src="https://localhost:8443/back/images/avatar-5.png" alt="Player 3 Avatar">
+				        	</div>
+
+				        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs ">
+								aasa
+							</div>
+						</div>
+
+					    <!-- VS -->
+						 <div class="flex flex-row md:flex-col items-center justify-center"> 
+							<div class="hidden md:block p-4 flex text-center text-sm text-orange-500 ">
+								Match&nbsp;1
+							</div>
+				    		<div class="versus text-center text-md text-orange-500 font-bold mx-4">vs</div>
+						</div>
+
+						<!-- player 2 -->
+			      		<div class="bracketPlayer max-w-xs flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
+				       		<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+				          		<img class="w-full h-full object-cover" src="https://localhost:8443/back/images/avatar_ai_3.png" alt="Player 3 Avatar">
+				        	</div>
+
+				        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs ">
+								Ai004
+							</div>
+						</div>
+					</div>
+					
+					<!-- Línea separadora -->
+					<div class="bg-gray-800 w-[60%] h-px my-2 xl:w-px xl:self-stretch xl:h-auto xl:my-0 xl:mx-4"></div>
+
+					<!-- Match 2 -->
+					<div class="tournamentBracketMatch p-4 flex flex-col md:flex-row w-full max-w-xl place-content-center
+							items-center text-yellow-800 rounded-sm dark:text-yellow-300">
+						<div class="block md:hidden p-2 flex text-center text-sm text-orange-500 ">
+							Match&nbsp;2
+						</div>
+						<!-- player 3 -->
+			      		<div class="bracketPlayer max-w-xs flex flex-col items-center justify-around md:mt-4 lg:mt-0 p-2">
+							<div class="bracketPlayerImage w-1/6 md:max-w-[214px] aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+				          		<img class="w-full h-full object-cover" src="https://localhost:8443/back/images/avatar-18.png" alt="Player 3 Avatar">
+				        	</div>
+
+				        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs truncate ...">
+								alfonso
+							</div>
+						</div>
+
+					    <!-- VS -->
+						 <div class="flex flex-row md:flex-col items-center justify-center"> 
+							<div class="hidden md:block p-4 flex text-center text-sm text-ywllow-500 ">
+								Match&nbsp;2
+							</div>
+				    		<div class="versus text-center text-md text-yellow-500 font-bold mx-4">vs</div>
+						</div>
+						<!-- player 4 -->
+			      		<div class="bracketPlayer max-w-xs flex flex-col items-center justify-around md:mt-4 lg:mt-0 p-2">
+							<div class="bracketPlayerImage w-1/6 md:max-w-[214px] aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+				          		<img class="w-full h-full object-cover" src="https://localhost:8443/back/images/avatar-14.png" alt="Player 3 Avatar">
+				        	</div>
+
+				        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs truncate ...">
+								sdasdsa
+							</div>
+						</div>
+				</div>
+		</div>
+		<div class="nextMatchContainer">
+	<!-- next Match -->
+		</div>
+	</div>
+</div>
+<div class="next-match-bracket">    
+	<div id="nextMatchtTitle" class="text-center py-3 text-2xl font-bold font-[Tektur] bg-gray-800">
+      Next Match
+    </div>
+	<div class="round bg-gray-900 p-2 mb-1 flex flex-col items-center justify-evenly flex-wrap">
+		<div class="tournamentBracketMatch p-4 flex flex-col md:flex-row w-full max-w-xl justify-around
+					items-center text-white-800 rounded-sm dark:text-white-300">
+			<div class="basis-auto block md:hidden p-2 flex text-center text-sm text-green-500 ">
+					Match&nbsp;1
+			</div>
+      		<!-- player 1 -->
+			<div class=" basis-auto bracketPlayer max-w-xs max-h-[64px] flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
+	       		<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+	          		<img class="w-full h-full object-cover" src="https://localhost:8443/back/images/avatar-5.png" alt="Player 1 Avatar">
+	        	</div>
+
+	        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs ">
+					aasa
+				</div>
+			</div>
+
+		    <!-- VS -->
+			 <div class="basis-auto flex flex-row md:flex-col items-center justify-center"> 
+				<div class="hidden md:block p-4 flex text-center text-sm text-green-500 ">
+					Match&nbsp;1
+				</div>
+	    		<div class="versus text-center text-md text-green-400 font-bold mx-4">vs</div>
+			</div>
+			
+  			<!-- player 2 -->
+      		<div class="bracketPlayer basis-auto max-w-xs flex flex-col items-center justify-center md:mt-4 lg:mt-0 p-2">
+	       		<div class="bracketPlayerImage w-1/6 aspect-square h-auto rounded-full overflow-hidden hidden md:block">
+	          		<img class="w-full h-full object-cover" src="https://localhost:8443/back/images/avatar_ai_3.png" alt="Player 2 Avatar">
+	        	</div>
+
+	        	<div class="bracketPlayerName text-white w-full text-center text-xs md:text-xs ">
+					Ai004
+				</div>
+			</div>
+			</div>
+				<button id="launch-match-btn" class="w-[200px] md:w-[300px] lg:w-[400px] py-3 mt-2 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Start Match</button>
+	</div></div></div></div>

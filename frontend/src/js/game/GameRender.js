@@ -12,15 +12,15 @@ export class GameRender {
         this.game = game;
     }
     renderGameState(state) {
-        console.log("Received new game state:", state);
+        // console.log("Received new game state:", state);
         this.lastKnownState = this.game.gameState;
         this.gameState = state;
         this.stateTimestamp = Date.now();
         if (!this.canvas) {
-            console.log("Canvas not found, attempting to initialize");
+            // console.log("Canvas not found, attempting to initialize");
             this.canvas = document.getElementById('game-canvas');
             if (this.canvas) {
-                console.log("Canvas found with dimensions:", this.canvas.width, "x", this.canvas.height);
+                // console.log("Canvas found with dimensions:", this.canvas.width, "x", this.canvas.height);
                 this.ctx = this.canvas.getContext('2d');
                 if (!this.ctx) {
                     console.error("Failed to get canvas context");
@@ -56,7 +56,7 @@ export class GameRender {
             console.error("Cannot draw: missing game state");
             return;
         }
-        console.log("Drawing game with state:", this.gameState);
+        // console.log("Drawing game with state:", this.gameState);
         // Clear the canvas
         this.ctx.fillStyle = "black";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);

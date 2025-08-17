@@ -15,7 +15,8 @@ export class SPA {
         this.currentTournament = null;
         this.currentStep = null;
         this.previousHash = null;
-        this.TournamentInProgress = null;
+        this.currentHash = null;
+        this.isInternalNavigation = false; // Flag para evitar dobles llamadas
         this.routes = {
             'home': { module: '../home/homeRender.js', protected: false },
             'login': { module: '../login/loginRender.js', protected: false },
@@ -28,15 +29,18 @@ export class SPA {
             'stats': { module: '../stats/statsRender.js', protected: true },
             'logout': { module: '../login/logoutRender.js', protected: true },
             'profile': { module: '../profile/userProfileRender.js', protected: true },
-            'test': { module: '../game/tournamentGameTest.js', protected: true }
         };
         this.container = document.getElementById(containerId);
         SPA.instance = this;
+        this.loadNavigationState(); // Cargar estado previo si existe
+        // Inicializar currentHash con el hash actual de la URL
+        this.currentHash = location.hash.replace('#', '') || 'home';
         this.loadHEaderAndFooter();
         this.loadStep();
         // Changes to advise the user when they leave a tournament in progress
         //it will reset the tournament guards and delete TempUsers
         window.onpopstate = () => {
+            // NO llamar storeNavigationState aquí porque loadStep() lo manejará
             var _a, _b;
             if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
                 const tournamentId = this.currentTournament.getTournamentId();
@@ -57,12 +61,10 @@ export class SPA {
                         }
                     }, 1000);
                 }
-                const step = location.hash.replace('#', '') || 'home';
-                this.loadStep();
+                this.loadStep(); // loadStep manejará el storeNavigationState
             }
             else {
-                const step = location.hash.replace('#', '') || 'home';
-                this.loadStep();
+                this.loadStep(); // loadStep manejará el storeNavigationState
             }
         };
         window.addEventListener("pageshow", (event) => {
@@ -110,16 +112,96 @@ export class SPA {
             }
         });
     }
+    /**
+     * Almacena los valores de hash y tournament ID en sessionStorage
+     */
+    storeNavigationState(newHash) {
+        var _a, _b;
+        try {
+            // Guardar el hash anterior (el que estaba antes del cambio)
+            const oldPrevious = this.previousHash;
+            const oldCurrent = this.currentHash;
+            this.previousHash = this.currentHash;
+            // Actualizar el hash actual
+            this.currentHash = newHash || location.hash.replace('#', '') || 'home';
+            // Obtener el ID del torneo actual si existe
+            let tournamentId = null;
+            if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
+                const id = this.currentTournament.getTournamentId();
+                tournamentId = (typeof id !== 'undefined' && id !== null) ? id : null;
+            }
+            // Almacenar en sessionStorage
+            sessionStorage.setItem('spa_previousHash', this.previousHash || '');
+            sessionStorage.setItem('spa_currentHash', this.currentHash);
+            sessionStorage.setItem('spa_tournamentId', (tournamentId === null || tournamentId === void 0 ? void 0 : tournamentId.toString()) || '');
+            console.log('Navigation state stored:', {
+                'OLD previous': oldPrevious,
+                'OLD current': oldCurrent,
+                'NEW previous': this.previousHash,
+                'NEW current': this.currentHash,
+                'tournamentId': tournamentId,
+                'Called from': (_b = (_a = new Error().stack) === null || _a === void 0 ? void 0 : _a.split('\n')[2]) === null || _b === void 0 ? void 0 : _b.trim() // Para ver desde dónde se llama
+            });
+        }
+        catch (error) {
+            console.error('Error storing navigation state:', error);
+        }
+    }
+    /**
+     * Recupera los valores almacenados del sessionStorage
+     */
+    loadNavigationState() {
+        try {
+            this.previousHash = sessionStorage.getItem('spa_previousHash') || null;
+            this.currentHash = sessionStorage.getItem('spa_currentHash') || null;
+            console.log('Navigation state loaded:', {
+                previousHash: this.previousHash,
+                currentHash: this.currentHash,
+                tournamentId: sessionStorage.getItem('spa_tournamentId')
+            });
+        }
+        catch (error) {
+            console.error('Error loading navigation state:', error);
+        }
+    }
+    /**
+     * Obtiene los valores actuales de navegación
+     */
+    getNavigationState() {
+        return {
+            previousHash: this.previousHash,
+            currentHash: this.currentHash,
+            tournamentId: sessionStorage.getItem('spa_tournamentId')
+        };
+    }
     navigate(step) {
-        this.previousHash = location.hash;
-        console.log("Navigating to step:", step, "Previous hash:", this.previousHash);
+        var _a, _b;
+        console.log('🔄 SPA.navigate() called with step:', step, 'isInternal:', this.isInternalNavigation, 'from:', (_b = (_a = new Error().stack) === null || _a === void 0 ? void 0 : _a.split('\n')[2]) === null || _b === void 0 ? void 0 : _b.trim());
+        // Solo almacenar estado si no es una navegación interna (redirect)
+        if (!this.isInternalNavigation) {
+            this.storeNavigationState(step); // Almacenar estado ANTES de cambiar la URL
+        }
+        else {
+            console.log('⚡ Skipping storeNavigationState for internal navigation');
+            this.isInternalNavigation = false; // Reset flag
+        }
         history.pushState({}, '', `#${step}`);
         this.loadStep();
     }
     loadStep() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e;
+            var _a, _b, _c, _d;
             let step = location.hash.replace('#', '') || 'home';
+            console.log('🏁 loadStep() called with step:', step, 'currentHash before:', this.currentHash);
+            // NO llamar storeNavigationState aquí porque ya se llamó en navigate()
+            // Solo actualizar si venimos de una navegación directa (URL cambió externamente)
+            if (this.currentHash !== step) {
+                console.log('📝 Calling storeNavigationState from loadStep because hash changed externally');
+                this.storeNavigationState(step);
+            }
+            else {
+                console.log('⏭️ Skipping storeNavigationState in loadStep - already called from navigate()');
+            }
             // this.navigate(step);
             // // Obtener la URL actual
             // let currentUrl = window.location.href;
@@ -158,44 +240,11 @@ export class SPA {
                     this.currentGame = stepInstance;
                 }
                 else if (step === 'tournament-lobby') {
-                    // stepInstance = new module.default('app-container');
-                    // this.currentTournament = stepInstance;
-                    // console.log('SPA Despues currentTournament: ', this.currentTournament);
-                    // console.log('SPA Despues TournamentInProgress: ', this.TournamentInProgress);
-                    // if (this.TournamentInProgress) {
-                    // 	this.TournamentInProgress.getTournamentUI()?.setTournament(this.TournamentInProgress);
-                    // }
-                    // TODO: ver que dejar - comenatado para probar el guardado del result en D desde Game
-                    // console.log('SPA currentTournament: ', JSON.stringify(this.currentTournament));
-                    console.log('SPA previousHash: ', this.previousHash);
-                    /**
-                     * TODO:
-                     */
-                    if (!this.TournamentInProgress || this.TournamentInProgress.getTournamentId() === -42) {
-                        this.TournamentInProgress = this.currentTournament;
-                    }
-                    //TODO: revisar esta sección y si es mejor crear un torneo y copiarle los calores de TorunamentInprogress
-                    //Esta es la condició buena pero al no crear un nuevo torneo al gameconention no funciona:
-                    //
-                    if (this.previousHash !== '#game-match') {
-                        // esta condicion no se cumple nunca:
-                        // if (this.previousHash !== 'game-match')	{
-                        console.log("Creating new Tournament instance");
+                    if (!this.currentTournament || this.currentTournament.getTournamentId() === -42) {
                         stepInstance = new module.default('app-container');
                         this.currentTournament = stepInstance;
+                        console.log('tournament-lobby currentTournament: ', this.currentTournament);
                     }
-                    else {
-                        stepInstance = new module.default('app-container', this.TournamentInProgress);
-                        console.log("Resuming tournament from previous match");
-                        this.currentTournament = stepInstance;
-                        (_e = this.currentTournament) === null || _e === void 0 ? void 0 : _e.resumeTournament(); // Esta funcion reanudaría el torneo 
-                        // stepInstance = this.TournamentInProgress;
-                    }
-                    // console.log('SPA Despues currentTournament: ', this.currentTournament);
-                    // console.log('SPA Despues TournamentInProgress: ', this.TournamentInProgress);
-                    // if (this.TournamentInProgress) {
-                    // 	this.TournamentInProgress.getTournamentUI()?.setTournament(this.TournamentInProgress);
-                    // }
                 }
                 else
                     stepInstance = new module.default('app-container');
@@ -212,26 +261,23 @@ export class SPA {
                 }
                 if (routeConfig.protected && !user) {
                     console.warn(`Acceso denegado a la ruta protegida: ${step}`);
+                    console.log('🚫 Redirecting to login due to auth failure');
+                    this.isInternalNavigation = true; // Marcar como navegación interna
                     this.navigate('login');
                     return;
                 }
-                console.log("SPA stepInstance.init(): ", stepInstance);
                 yield stepInstance.init();
             }
             else {
                 showMessage('url does not exist', 2000);
-                window.location.hash = '#home';
+                console.log('🏠 Redirecting to home due to invalid URL');
+                this.isInternalNavigation = true; // Marcar como navegación interna
+                this.navigate('home');
             }
         });
     }
     static getInstance() {
         return SPA.instance;
-    }
-    getTournamentInProgress() {
-        return this.TournamentInProgress;
-    }
-    getPreviousHash() {
-        return this.previousHash;
     }
 }
 document.addEventListener('DOMContentLoaded', () => new SPA('content'));

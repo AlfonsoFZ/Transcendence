@@ -160,12 +160,20 @@ export function configureTournamentRoutes(fastify) {
 		fastify.log.info('En /updateBracket: ');
 		console.log('Request body:', request.body);
 		// This block save the Gamelog in
-		const { gamesData , playerscount} = request.body;
+		const { result, gamesData , playerscount} = request.body;
 		console.log('gamesData:', gamesData);
 		if (!gamesData || !Array.isArray(gamesData)) {
 			fastify.log.error('Missing or invalid gamesData in request body');
 			return reply.status(400).send({ error: 'Missing or invalid gamesData in request body' });
 		}
+		// asign the gameToUpdate
+		console.log ('GamesData before:', gamesData);
+		const gameToUpdate = gamesData.find(game => game.id === result.id);
+		if (gameToUpdate) {
+			Object.assign(gameToUpdate, result);
+		}
+		console.log ('GamesData after:', gamesData);
+
 		const tournamentId = gamesData[0].tournamentId;
 		let config;
 		let users;
