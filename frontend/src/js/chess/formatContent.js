@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { userId } from './state.js';
 import { saveNotation } from './loadAndUpdateDom.js';
 import { getLobbyItemHtml, getChessHtml } from './handleFetchers.js';
+import { hideReplayOverlay, showReplayOverlay } from './handleModals.js';
 export function formatLobbyList(data) {
     return __awaiter(this, void 0, void 0, function* () {
         let htmlText = '', htmlContent, option, color, mode;
@@ -65,11 +66,14 @@ export function updateTime(data) {
         opponentTime.textContent = data.opponentTime;
 }
 export function updateOrInsertNotation(move, color, notation) {
+    var _a;
     if (notation) {
         let notationElement = document.querySelector(`[data-move="${move}"]`);
         if (!notationElement) {
+            (_a = document.querySelector('.selected')) === null || _a === void 0 ? void 0 : _a.classList.remove('selected');
             notationElement = document.createElement('div');
-            notationElement.className = "grid grid-cols-[3em_8em_8em] items-center p-2 text-white hover:bg-gray-800 border border-gray-400 cursor-pointer";
+            notationElement.id = `notation-move-${move}`;
+            notationElement.className = "grid grid-cols-[3em_8em_8em] items-center p-2 text-white border border-gray-400 selected";
             notationElement.dataset.move = move.toString();
             notationElement.innerHTML = `
 				<span class="move-number">${move}.</span>
@@ -120,4 +124,19 @@ export function flipSideBar(data) {
 	`;
     sidebar === null || sidebar === void 0 ? void 0 : sidebar.insertAdjacentHTML('afterbegin', newOpponentHTML);
     sidebar === null || sidebar === void 0 ? void 0 : sidebar.insertAdjacentHTML('beforeend', newPlayerHTML);
+}
+export function handleNavigation(data) {
+    var _a;
+    data.moveEnabled ? hideReplayOverlay() : showReplayOverlay();
+    const target = document.getElementById(`notation-move-${data.currentMove}`);
+    (_a = document.querySelector('.selected')) === null || _a === void 0 ? void 0 : _a.classList.remove('selected');
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('selected');
+    }
+    else {
+        const notationContainer = document.getElementById('notation-container');
+        if (notationContainer)
+            notationContainer.scrollTop = 0;
+    }
 }

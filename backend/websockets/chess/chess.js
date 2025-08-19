@@ -416,6 +416,7 @@ function handleNavigation(user, data) {
 	
 	const message = {
 		type: 'navigate',
+		currentMove: Math.round(board.currentBoardMove / 2),
 		moveEnabled: moveEnabled,
 		playerColorView: user.id === board.hostId ? board.hostColorView : board.guestColorView,
 		lastMoveFrom: lastMoveFrom === null ? null : lastMoveFrom.toString().padStart(2, "0"),

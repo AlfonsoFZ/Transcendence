@@ -1,6 +1,8 @@
 import { userId } from './state.js';
 import { saveNotation } from './loadAndUpdateDom.js';
 import { getLobbyItemHtml, getChessHtml } from './handleFetchers.js'
+import { hideReplayOverlay, showReplayOverlay } from './handleModals.js'
+
 
 export async function formatLobbyList(data: any): Promise<string> {
 
@@ -72,8 +74,10 @@ export function updateOrInsertNotation(move: string, color: string, notation: st
 		let notationElement = document.querySelector(`[data-move="${move}"]`) as HTMLElement;
 
 		if (!notationElement) {
+			document.querySelector('.selected')?.classList.remove('selected');
 			notationElement = document.createElement('div');
-			notationElement.className = "grid grid-cols-[3em_8em_8em] items-center p-2 text-white hover:bg-gray-800 border border-gray-400 cursor-pointer";
+			notationElement.id = `notation-move-${move}`;
+			notationElement.className = "grid grid-cols-[3em_8em_8em] items-center p-2 text-white border border-gray-400 selected";
 			notationElement.dataset.move = move.toString();
 
 			notationElement.innerHTML = `
@@ -135,3 +139,21 @@ export function flipSideBar(data: any) {
 	sidebar?.insertAdjacentHTML('afterbegin', newOpponentHTML);
 	sidebar?.insertAdjacentHTML('beforeend', newPlayerHTML);
 } 
+
+export function handleNavigation(data: any) {
+
+	data.moveEnabled ? hideReplayOverlay() : showReplayOverlay();
+
+	const target = document.getElementById(`notation-move-${data.currentMove}`);
+	document.querySelector('.selected')?.classList.remove('selected');
+
+	if (target) {
+		target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		target.classList.add('selected');
+	}
+	else {
+		const notationContainer = document.getElementById('notation-container');
+		if (notationContainer)
+			notationContainer.scrollTop = 0;
+	}
+}

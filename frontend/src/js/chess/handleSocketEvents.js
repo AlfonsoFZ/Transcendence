@@ -12,8 +12,8 @@ import { setupChessboard } from './drawChessboard.js';
 import { launchUI, launchGame } from './launchGame.js';
 import { socket, chessboard, setData } from './state.js';
 import { saveStatusGame, deleteNotation } from './loadAndUpdateDom.js';
-import { updateTime, updateOrInsertNotation, flipSideBar } from './formatContent.js';
-import { showPromotionOptions, showGameOverOptions, showRequestRematchOptions, showResponseRematchDeclined, hideReplayOverlay, showReplayOverlay } from './handleModals.js';
+import { updateTime, updateOrInsertNotation, flipSideBar, handleNavigation } from './formatContent.js';
+import { showPromotionOptions, showGameOverOptions, showRequestRematchOptions, showResponseRematchDeclined } from './handleModals.js';
 function handleSocketOpen() {
     socket.onopen = () => {
         const handshake = {
@@ -87,7 +87,7 @@ function handleSocketMessage() {
                 showResponseRematchDeclined(data);
                 break;
             case 'navigate':
-                data.moveEnabled ? hideReplayOverlay() : showReplayOverlay();
+                handleNavigation(data);
                 chessboard.set(data);
                 setupChessboard(chessboard, null, null);
                 break;
