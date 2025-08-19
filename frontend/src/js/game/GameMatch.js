@@ -130,15 +130,26 @@ export default class GameMatch extends Step {
      * @param gameData Complete game data
      */
     showGameResults(gameData) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         // Update the HTML content with actual game data logs
         const winnerElement = document.getElementById('winner-name');
         const scoreElement = document.getElementById('final-score');
         const durationElement = document.getElementById('game-duration');
         if (winnerElement)
             winnerElement.textContent = ((_a = gameData.result) === null || _a === void 0 ? void 0 : _a.winner) || 'Unknown';
+        // TODO: Eliminar comentarios si dejamos el código
+        /** para mostrar el tournamentUsername */
+        if (this.tournament && this.tournament.getTournamentId() !== -42 && winnerElement) {
+            const winnerUsername = (_b = gameData.result) === null || _b === void 0 ? void 0 : _b.winner;
+            const players = gameData.playerDetails;
+            const winnerPlayer = [players.player1, players.player2].find((p) => (p === null || p === void 0 ? void 0 : p.username) === winnerUsername);
+            if (winnerPlayer && winnerPlayer.tournamentUsername) {
+                winnerElement.textContent = winnerPlayer.tournamentUsername;
+            }
+        }
+        /** fin del cambio */
         if (scoreElement) {
-            const score = ((_b = gameData.result) === null || _b === void 0 ? void 0 : _b.score) || [0, 0];
+            const score = ((_c = gameData.result) === null || _c === void 0 ? void 0 : _c.score) || [0, 0];
             scoreElement.textContent = `${score[0]} - ${score[1]}`;
         }
         if (durationElement) {
@@ -157,14 +168,23 @@ export default class GameMatch extends Step {
             this.ui.showOnly('game-container');
             this.rematchGame(true);
         });
-        (_c = document.getElementById('return-lobby-btn')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => {
+        (_d = document.getElementById('return-lobby-btn')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', () => {
             this.rematchGame(false);
             this.controllers.cleanup();
             this.controllers.destroy();
             this.destroy();
             const spa = SPA.getInstance();
-            spa.currentGame = null;
-            spa.navigate(this.log.tournamentId ? 'tournament-lobby' : 'game-lobby');
+            if (this.tournament && this.tournament.getTournamentId() !== -42) {
+                console.log("FROM showGameResults, Handling match result for tournament:", this.tournament.getTournamentId());
+                console.log("Match result data:", gameData);
+                this.tournament.resumeTournament();
+                this.tournament.handleMatchResult(gameData);
+            }
+            else {
+                spa.currentGame = null;
+                // spa.navigate(this.log.tournamentId ? 'tournament-lobby' : 'game-lobby');
+                spa.navigate('game-lobby');
+            }
         });
     }
     /**
