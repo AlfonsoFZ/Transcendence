@@ -133,7 +133,7 @@ export default class Game extends Step
 
 	public async setGuestInfo(playerKey: 'player1' | 'player2', name: 'ai'| 'guest'): Promise<void>
 	{
-		const	wildcardID : number = name === 'guest' ? -1 : -2;
+		const	wildcardID : number = name === 'guest' ? -2 : -1;
 		const	avatarPath : string = await fetchRandomAvatarPath();
 		
 		const	tempUser : GamePlayer = {

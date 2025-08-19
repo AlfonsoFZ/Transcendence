@@ -20,18 +20,21 @@ export default class GameMatch extends Step {
     constructor(game, tournament) {
         super('game-container');
         this.ai = null;
+        this.aiSide = null;
         this.readyStateInterval = null;
         this.countdownInterval = null;
         this.game = game;
         this.tournament = tournament !== null && tournament !== void 0 ? tournament : null;
         this.renderer = game.getGameRender();
-        this.controllers = new GameControllers(this.game);
         this.config = game.getGameConfig();
         this.log = game.getGameLog();
         this.ui = game.getGameUI();
         this.connection = game.getGameConnection();
-        if (this.log.mode === '1vAI')
-            this.ai = new GameAI(this.game);
+        if (this.log.mode === '1vAI') {
+            this.setAiSide(this.game.getGameLog());
+            this.ai = new GameAI(this.game, this.aiSide);
+        }
+        this.controllers = new GameControllers(this.game, this.aiSide);
     }
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -162,23 +165,21 @@ export default class GameMatch extends Step {
      * @param gameData Complete game data
      */
     showGameResults(gameData) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         // Update the HTML content with actual game data logs
         const winnerElement = document.getElementById('winner-name');
         const scoreElement = document.getElementById('final-score');
         const durationElement = document.getElementById('game-duration');
         if (winnerElement)
             winnerElement.textContent = ((_a = gameData.result) === null || _a === void 0 ? void 0 : _a.winner) || 'Unknown';
-        /** search TournamentName*/
+        // Search for tournamentName if on tournamentMatch
         if (this.tournament && this.tournament.getTournamentId() !== -42 && winnerElement && ((_b = gameData.result) === null || _b === void 0 ? void 0 : _b.winner)) {
             const winnerUsername = (_c = gameData.result) === null || _c === void 0 ? void 0 : _c.winner;
             const players = gameData.playerDetails;
             const tournamentName = this.showTournamentName(players, winnerUsername);
-            if (tournamentName) {
+            if (tournamentName)
                 winnerElement.textContent = tournamentName;
-            }
         }
-        /** end of search */
         if (scoreElement) {
             const score = ((_d = gameData.result) === null || _d === void 0 ? void 0 : _d.score) || [0, 0];
             scoreElement.textContent = `${score[0]} - ${score[1]}`;
@@ -188,10 +189,8 @@ export default class GameMatch extends Step {
             durationElement.textContent = duration.toString();
         }
         const reasonElement = document.getElementById('end-reason');
-        if (reasonElement) {
-            console.warn("front end reason: ", (_c = gameData.result) === null || _c === void 0 ? void 0 : _c.endReason);
-            reasonElement.textContent = ((_d = gameData.result) === null || _d === void 0 ? void 0 : _d.endReason) || 'Game ended';
-        }
+        if (reasonElement)
+            reasonElement.textContent = ((_e = gameData.result) === null || _e === void 0 ? void 0 : _e.endReason) || 'Game ended';
         const playAgainBtn = document.getElementById('play-again-btn');
         if (playAgainBtn && (gameData.tournamentId || gameData.mode === 'remote'))
             playAgainBtn.hidden = true;
@@ -204,7 +203,7 @@ export default class GameMatch extends Step {
             this.ui.showOnly('hide-all');
             this.rematchGame(true);
         });
-        (_e = document.getElementById('return-lobby-btn')) === null || _e === void 0 ? void 0 : _e.addEventListener('click', () => {
+        (_f = document.getElementById('return-lobby-btn')) === null || _f === void 0 ? void 0 : _f.addEventListener('click', () => {
             this.rematchGame(false);
             this.controllers.cleanup();
             this.controllers.destroy();
@@ -218,7 +217,6 @@ export default class GameMatch extends Step {
             }
             else {
                 spa.currentGame = null;
-                // spa.navigate(this.log.tournamentId ? 'tournament-lobby' : 'game-lobby');
                 spa.navigate('game-lobby');
             }
         });
@@ -299,13 +297,34 @@ export default class GameMatch extends Step {
             active: state
         }));
     }
+    setAiSide(gamelog) {
+        var _a;
+        const player1Id = (_a = gamelog.playerDetails.player1) === null || _a === void 0 ? void 0 : _a.id;
+        if (player1Id !== undefined && player1Id <= -1 && player1Id >= -19)
+            this.aiSide = 'player1';
+        else
+            this.aiSide = 'player2';
+    }
+    getAiSide() {
+        return (this.aiSide);
+    }
     destroy() {
+        console.warn("GameMatch Destructor Called(!)");
         this.updatePlayerActivity(false);
         this.controllers.cleanup();
         this.renderer.destroy();
         if (this.ai) {
             this.ai.stop();
             this.ai = null;
+        }
+        // Not sure if needed or if can cause conflict - let's test it for a while...
+        if (this.readyStateInterval) {
+            clearInterval(this.readyStateInterval);
+            this.readyStateInterval = null;
+        }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
         }
     }
 }

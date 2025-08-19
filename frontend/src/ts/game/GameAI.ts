@@ -5,10 +5,12 @@ export class GameAI
 	private		game: Game;
 	private		intervalId: number | null = null;
 	private		errorFactor: number = 0.08;
+	private		aiSide: 'player1' | 'player2' | null;
 
-	constructor(game: Game)
+	constructor(game: Game, aiSide: 'player1' | 'player2' | null)
 	{
 		this.game = game;
+		this.aiSide = aiSide;
 	}
 
 	start()
@@ -28,7 +30,7 @@ export class GameAI
 	private update()
 	{
 		const	gameState = this.game.getGameRender().gameState;
-		if (!gameState || !this.game.getGameConnection().socket)
+		if (!gameState || !this.game.getGameConnection().socket || !this.aiSide)
 			return ;
 		
 		if (this.game.getGameLog().config?.difficulty === 'easy')
@@ -36,7 +38,7 @@ export class GameAI
 		else if (this.game.getGameLog().config?.difficulty === 'hard')
 			this.errorFactor = 0.06;
 		const	ballY = gameState.ball?.y ?? 0.5;
-		const	paddleY = gameState.paddles.player2?.y ?? 0.5;
+		const	paddleY = gameState.paddles[this.aiSide].y ?? 0.5;
 		let		up = false, down = false;
 		
 		if (ballY < paddleY - this.errorFactor)
@@ -47,7 +49,7 @@ export class GameAI
 		this.game.getGameConnection().socket?.send(JSON.stringify({
 			type: 'PLAYER_INPUT',
 			input: {
-				player: 'player2',
+				player: this.aiSide,
 				up,
 				down
 			}

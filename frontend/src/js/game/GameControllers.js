@@ -3,13 +3,15 @@
  * This is an auxiliar component to keep GameUI shorter and better readable
  */
 export class GameControllers {
-    constructor(game) {
+    constructor(game, aiSide) {
         this.keyState = { w: false, s: false, ArrowUp: false, ArrowDown: false };
         this.inputInterval = null;
         this.listenersActive = false;
+        this.aiSide = null;
         this.game = game;
         this.keydownListener = this.handleKeyDown.bind(this);
         this.keyupListener = this.handleKeyUp.bind(this);
+        this.aiSide = aiSide;
     }
     handleKeyDown(e) {
         const key = e.key.toLowerCase();
@@ -52,31 +54,57 @@ export class GameControllers {
             return;
         // Send inputs (60fps)
         this.inputInterval = window.setInterval(() => {
-            var _a, _b;
+            var _a, _b, _c, _d;
             if (!this.game.getGameConnection().socket)
                 return;
-            // Always send player1 input
-            if (this.game.getGameIsHost()) {
-                (_a = this.game.getGameConnection().socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({
-                    type: 'PLAYER_INPUT',
-                    input: {
-                        player: 'player1',
-                        up: this.keyState.w,
-                        down: this.keyState.s
-                    }
-                }));
+            // On 1vAI - Fix controls for human side (not always player1 as before)
+            if (this.aiSide) {
+                const humanSide = this.aiSide === 'player1' ? 'player2' : 'player1';
+                if (humanSide === 'player1') {
+                    (_a = this.game.getGameConnection().socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({
+                        type: 'PLAYER_INPUT',
+                        input: {
+                            player: 'player1',
+                            up: this.keyState.w,
+                            down: this.keyState.s
+                        }
+                    }));
+                }
+                else if (humanSide === 'player2') {
+                    (_b = this.game.getGameConnection().socket) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({
+                        type: 'PLAYER_INPUT',
+                        input: {
+                            player: 'player2',
+                            up: this.keyState.ArrowUp,
+                            down: this.keyState.ArrowDown
+                        }
+                    }));
+                }
             }
-            // Send player2 input if 1v1 mode
-            if (this.game.getGameLog().mode === '1v1'
-                || (this.game.getGameLog().mode === 'remote' && !this.game.getGameIsHost())) {
-                (_b = this.game.getGameConnection().socket) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({
-                    type: 'PLAYER_INPUT',
-                    input: {
-                        player: 'player2',
-                        up: this.keyState.ArrowUp,
-                        down: this.keyState.ArrowDown
-                    }
-                }));
+            else {
+                // Set player1 control ipunt - On regular game or Remote being HOST / GAME CREATOR
+                if (this.game.getGameIsHost()) {
+                    (_c = this.game.getGameConnection().socket) === null || _c === void 0 ? void 0 : _c.send(JSON.stringify({
+                        type: 'PLAYER_INPUT',
+                        input: {
+                            player: 'player1',
+                            up: this.keyState.w,
+                            down: this.keyState.s
+                        }
+                    }));
+                }
+                // Allow player2 input if 1v1 mode or remote game joined (not being HOST / CREATOR)
+                if (this.game.getGameLog().mode === '1v1'
+                    || (this.game.getGameLog().mode === 'remote' && !this.game.getGameIsHost())) {
+                    (_d = this.game.getGameConnection().socket) === null || _d === void 0 ? void 0 : _d.send(JSON.stringify({
+                        type: 'PLAYER_INPUT',
+                        input: {
+                            player: 'player2',
+                            up: this.keyState.ArrowUp,
+                            down: this.keyState.ArrowDown
+                        }
+                    }));
+                }
             }
         }, 16);
     }

@@ -26,6 +26,7 @@ export default class GameMatch extends Step
 	private	ui: GameUI;
 	private	connection: GameConnection;
 	private	ai: GameAI | null = null;
+	private	aiSide: 'player1' | 'player2' | null = null;
 	private readyStateInterval: number | null = null;
 	private countdownInterval: number | null = null;
 
@@ -35,13 +36,16 @@ export default class GameMatch extends Step
 		this.game = game;
 		this.tournament = tournament ?? null;
 		this.renderer = game.getGameRender();
-		this.controllers = new GameControllers(this.game);
 		this.config = game.getGameConfig();
 		this.log = game.getGameLog();
 		this.ui = game.getGameUI();
 		this.connection = game.getGameConnection();
 		if (this.log.mode === '1vAI')
-			this.ai = new GameAI(this.game);
+		{	
+			this.setAiSide(this.game.getGameLog());
+			this.ai = new GameAI(this.game, this.aiSide);
+		}
+		this.controllers = new GameControllers(this.game, this.aiSide);
 	}
 
 	async render(appElement: HTMLElement): Promise<void>
@@ -141,8 +145,6 @@ export default class GameMatch extends Step
 		if (this.log.mode === 'remote' && readyModal)
 			this.startReadyStatePolling();
 	}
-
-
 	
 	public showPauseModal(reason?: string, pauserId?: string): void
 	{
@@ -201,18 +203,15 @@ export default class GameMatch extends Step
 		const durationElement = document.getElementById('game-duration');
 		if (winnerElement)
 			winnerElement.textContent = gameData.result?.winner || 'Unknown';
-		
-		/** search TournamentName*/
-		if (this.tournament && this.tournament.getTournamentId() !== -42 && winnerElement && gameData.result?.winner) {
+		// Search for tournamentName if on tournamentMatch
+		if (this.tournament && this.tournament.getTournamentId() !== -42 && winnerElement && gameData.result?.winner)
+		{
 			const winnerUsername = gameData.result?.winner;
 			const players = gameData.playerDetails;
 			const tournamentName = this.showTournamentName(players, winnerUsername);
-			if (tournamentName) {
+			if (tournamentName)
 				winnerElement.textContent = tournamentName;
-			}
 		}
-		/** end of search */
-
 		if (scoreElement)
 		{
 			const score = gameData.result?.score || [0, 0];
@@ -225,10 +224,8 @@ export default class GameMatch extends Step
 		}
 		const reasonElement = document.getElementById('end-reason');
 		if (reasonElement)
-		{	
-			console.warn("front end reason: ", gameData.result?.endReason);
 			reasonElement.textContent = gameData.result?.endReason || 'Game ended';
-		}
+		
 		const	playAgainBtn = document.getElementById('play-again-btn');
 		if (playAgainBtn && (gameData.tournamentId || gameData.mode === 'remote'))
 			playAgainBtn.hidden = true;
@@ -247,15 +244,17 @@ export default class GameMatch extends Step
 			this.controllers.destroy();
 			this.destroy();
 			const spa = SPA.getInstance();
-			if(this.tournament && this.tournament.getTournamentId() !== -42){
+			if(this.tournament && this.tournament.getTournamentId() !== -42)
+			{
 				console.log("FROM showGameResults, Handling match result for tournament:", this.tournament.getTournamentId());
 				console.log("Match result data:", gameData);
 				this.tournament.resumeTournament();
 				this.tournament.handleMatchResult(gameData);
-			}else{
-			spa.currentGame = null;
-			// spa.navigate(this.log.tournamentId ? 'tournament-lobby' : 'game-lobby');
-			spa.navigate('game-lobby');
+			}
+			else
+			{
+				spa.currentGame = null;
+				spa.navigate('game-lobby');
 			}
 		});
 	}
@@ -353,8 +352,23 @@ export default class GameMatch extends Step
 		}));
 	}
 
+	public	setAiSide(gamelog : GameData) : void
+	{
+		const	player1Id : number | undefined = gamelog.playerDetails.player1?.id;
+		if (player1Id !== undefined && player1Id <= -1 && player1Id >= -19)
+			this.aiSide = 'player1';
+		else
+			this.aiSide = 'player2';
+	}
+
+	public	getAiSide() : 'player1' | 'player2' | null
+	{
+		return (this.aiSide);
+	}
+
 	public destroy() : void
 	{
+		console.warn("GameMatch Destructor Called(!)");
 		this.updatePlayerActivity(false);
 		this.controllers.cleanup();
 		this.renderer.destroy();
@@ -362,6 +376,18 @@ export default class GameMatch extends Step
 		{
 			this.ai.stop();
 			this.ai = null;
+		}
+	
+		// Not sure if needed or if can cause conflict - let's test it for a while...
+		if (this.readyStateInterval)
+		{
+		clearInterval(this.readyStateInterval);
+		this.readyStateInterval = null;
+		}
+		if (this.countdownInterval)
+		{
+			clearInterval(this.countdownInterval);
+			this.countdownInterval = null;
 		}
 	}
 }

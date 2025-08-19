@@ -112,7 +112,7 @@ export default class Game extends Step {
     }
     setGuestInfo(playerKey, name) {
         return __awaiter(this, void 0, void 0, function* () {
-            const wildcardID = name === 'guest' ? -1 : -2;
+            const wildcardID = name === 'guest' ? -2 : -1;
             const avatarPath = yield fetchRandomAvatarPath();
             const tempUser = {
                 id: wildcardID,

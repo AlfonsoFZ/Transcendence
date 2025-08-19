@@ -13,12 +13,14 @@ export class GameControllers
 	private keyupListener: ((e: KeyboardEvent) => void);
 	private inputInterval: number | null = null;
 	private listenersActive = false;
+	private	aiSide: 'player1' | 'player2' | null = null;
 
-	constructor(game: Game)
+	constructor(game: Game, aiSide: 'player1' | 'player2' | null )
 	{
 		this.game = game;
 		this.keydownListener = this.handleKeyDown.bind(this);
 		this.keyupListener = this.handleKeyUp.bind(this);
+		this.aiSide = aiSide;
 	}
 
 	private handleKeyDown(e: KeyboardEvent)
@@ -53,30 +55,61 @@ export class GameControllers
 		this.inputInterval = window.setInterval(() => {
 			if (!this.game.getGameConnection().socket)
 				return ;
-			// Always send player1 input
-			if (this.game.getGameIsHost())
+			
+			// On 1vAI - Fix controls for human side (not always player1 as before)
+			if (this.aiSide)
 			{
-				this.game.getGameConnection().socket?.send(JSON.stringify({
-					type: 'PLAYER_INPUT',
-					input: {
-						player: 'player1',
-						up: this.keyState.w,
-						down: this.keyState.s
-					}
-				}));
+				const humanSide = this.aiSide === 'player1' ? 'player2' : 'player1';
+				if (humanSide === 'player1')
+				{
+					this.game.getGameConnection().socket?.send(JSON.stringify({
+						type: 'PLAYER_INPUT',
+						input: {
+							player: 'player1',
+							up: this.keyState.w,
+							down: this.keyState.s
+						}
+					}));
+				}
+				else if (humanSide === 'player2')
+				{
+					this.game.getGameConnection().socket?.send(JSON.stringify({
+						type: 'PLAYER_INPUT',
+						input: {
+							player: 'player2',
+							up: this.keyState.ArrowUp,
+							down: this.keyState.ArrowDown
+						}
+					}));
+				}
 			}
-			// Send player2 input if 1v1 mode
-			if (this.game.getGameLog().mode === '1v1'
-				|| (this.game.getGameLog().mode === 'remote' && !this.game.getGameIsHost()))
+			else
 			{
-				this.game.getGameConnection().socket?.send(JSON.stringify({
-					type: 'PLAYER_INPUT',
-					input: {
-						player: 'player2',
-						up: this.keyState.ArrowUp,
-						down:this. keyState.ArrowDown
-					}
-				}));
+				// Set player1 control ipunt - On regular game or Remote being HOST / GAME CREATOR
+				if (this.game.getGameIsHost())
+				{
+					this.game.getGameConnection().socket?.send(JSON.stringify({
+						type: 'PLAYER_INPUT',
+						input: {
+							player: 'player1',
+							up: this.keyState.w,
+							down: this.keyState.s
+						}
+					}));
+				}
+				// Allow player2 input if 1v1 mode or remote game joined (not being HOST / CREATOR)
+				if (this.game.getGameLog().mode === '1v1'
+					|| (this.game.getGameLog().mode === 'remote' && !this.game.getGameIsHost()))
+				{
+					this.game.getGameConnection().socket?.send(JSON.stringify({
+						type: 'PLAYER_INPUT',
+						input: {
+							player: 'player2',
+							up: this.keyState.ArrowUp,
+							down:this. keyState.ArrowDown
+						}
+					}));
+				}
 			}
 		}, 16);
 	};
