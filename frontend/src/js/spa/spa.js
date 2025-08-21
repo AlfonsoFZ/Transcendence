@@ -14,6 +14,10 @@ export class SPA {
         this.currentGame = null;
         this.currentTournament = null;
         this.currentStep = null;
+        // TODO: eliminar comentario - Bandera global para controlar cuando existe un modal abierto, evitando conflictos con F5 y otras teclas del sistema
+        this.isModalActive = false; // Flag global para controlar modales activos
+        // TODO: eliminar comentario - Manejador encargado de capturar eventos de teclado cuando hay modal activo, permitiendo únicamente la tecla Enter
+        this.modalKeyHandler = null; // Handler para teclas en modal
         this.routes = {
             'home': { module: '../home/homeRender.js', protected: false },
             'login': { module: '../login/loginRender.js', protected: false },
@@ -31,6 +35,8 @@ export class SPA {
         SPA.instance = this;
         this.loadHEaderAndFooter();
         this.loadStep();
+        // TODO: eliminar comentario - Configuración del manejador global para interceptar F5 y otras teclas problemáticas desde el inicio de la aplicación
+        this.setupGlobalKeyHandler();
         // Changes to advise the user when they leave a tournament in progress
         //it will reset the tournament guards and delete TempUsers
         window.onpopstate = () => {
@@ -70,6 +76,44 @@ export class SPA {
                     appContainer.innerHTML = '';
                 }
                 this.loadStep();
+            }
+        });
+    }
+    // TODO: eliminar comentario - Manejador global para capturar F5 y otras combinaciones de teclas problemáticas desde el inicio de la aplicación
+    setupGlobalKeyHandler() {
+        // TODO: eliminar comentario - Manejador con alta prioridad para interceptar F5 antes que otros event listeners
+        const globalKeyHandler = (event) => {
+            // TODO: eliminar comentario - Verificación de si estamos en pasos protegidos donde no deseamos interrupciones del teclado
+            const isInProtectedStep = this.currentStep === 'tournament-lobby' || this.currentStep === 'game-match';
+            // TODO: eliminar comentario - Solo en zonas protegidas con modal activo bloqueamos todas las teclas excepto Enter
+            if (isInProtectedStep && this.isModalActive) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                if (event.key !== "Enter") {
+                    showMessage("Please close the modal to continue", 2000);
+                    return false;
+                }
+            }
+            // TODO: eliminar comentario - Interceptamos F5 en todos los pasos excepto 'home' para evitar recargas no deseadas
+            if (this.currentStep !== 'home' &&
+                (event.key === "F5" || (event.ctrlKey && event.key === "r"))) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                showMessage("Page refresh is only allowed from home", 2000);
+                return false;
+            }
+        };
+        // TODO: eliminar comentario - Registro del manejador con máxima prioridad para garantizar la interceptación antes que otros listeners
+        document.addEventListener('keydown', globalKeyHandler, true);
+        window.addEventListener('keydown', globalKeyHandler, true);
+        // TODO: eliminar comentario - Este manejador previene el cierre de página cuando hay modal activo o no estamos en home
+        window.addEventListener('beforeunload', (event) => {
+            const isInProtectedStep = this.currentStep === 'tournament-lobby' || this.currentStep === 'game-match';
+            if ((isInProtectedStep && this.isModalActive) || this.currentStep !== 'home') {
+                event.preventDefault();
+                event.returnValue = '';
             }
         });
     }
@@ -188,6 +232,72 @@ export class SPA {
     }
     static getInstance() {
         return SPA.instance;
+    }
+    // TODO: eliminar comentario - Métodos para gestionar la bandera global de modal activo, permitiendo controlar el estado de modales
+    setModalActive(active) {
+        this.isModalActive = active;
+    }
+    isModalCurrentlyActive() {
+        return this.isModalActive;
+    }
+    // TODO: eliminar comentario - Habilita el manejador de teclas para modal que únicamente permite el paso de la tecla Enter
+    enableModalKeyHandler(onEnterCallback) {
+        if (this.modalKeyHandler) {
+            // TODO: eliminar comentario - Si existe un manejador previo, se remueve antes de instalar el nuevo
+            this.disableModalKeyHandler();
+        }
+        this.modalKeyHandler = (event) => {
+            // TODO: eliminar comentario - Prevención del comportamiento por defecto en todos los casos para evitar acciones no deseadas
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            // TODO: eliminar comentario - Bloqueo de todas las teclas excepto Enter, manteniendo únicamente la funcionalidad de confirmación
+            if (event.key !== "Enter") {
+                showMessage("Please close the modal to continue", 2000);
+                return false; // Prevenir propagación adicional
+            }
+            // TODO: eliminar comentario - Si es Enter, se ejecuta el callback proporcionado para realizar la limpieza correspondiente
+            if (event.key === "Enter" && onEnterCallback) {
+                onEnterCallback();
+            }
+            return false; // TODO: eliminar comentario - Prevención de cualquier propagación adicional del evento
+        }; // TODO: eliminar comentario - Registro de múltiples listeners para máxima captura de eventos de teclado
+        document.addEventListener('keydown', this.modalKeyHandler, true); // Capture
+        document.addEventListener('keypress', this.modalKeyHandler, true); // Press
+        document.addEventListener('keyup', this.modalKeyHandler, true); // Up
+        // TODO: eliminar comentario - Registro adicional en window para capturar eventos globales sin excepciones
+        window.addEventListener('keydown', this.modalKeyHandler, true);
+    }
+    // TODO: eliminar comentario - Deshabilita el manejador de teclas para modal, removiendo todos los listeners registrados
+    disableModalKeyHandler() {
+        if (this.modalKeyHandler) {
+            // TODO: eliminar comentario - Remoción de todos los listeners registrados para garantizar limpieza completa
+            document.removeEventListener('keydown', this.modalKeyHandler, true);
+            document.removeEventListener('keypress', this.modalKeyHandler, true);
+            document.removeEventListener('keyup', this.modalKeyHandler, true);
+            window.removeEventListener('keydown', this.modalKeyHandler, true);
+            this.modalKeyHandler = null;
+        }
+    }
+    // TODO: eliminar comentario - Métodos estáticos para acceso simplificado desde cualquier módulo sin necesidad de obtener la instancia
+    static setGlobalModalActive(active) {
+        if (SPA.instance) {
+            SPA.instance.setModalActive(active);
+        }
+    }
+    static isGlobalModalActive() {
+        const result = SPA.instance ? SPA.instance.isModalCurrentlyActive() : false;
+        return result;
+    }
+    static enableGlobalModalKeyHandler(onEnterCallback) {
+        if (SPA.instance) {
+            SPA.instance.enableModalKeyHandler(onEnterCallback);
+        }
+    }
+    static disableGlobalModalKeyHandler() {
+        if (SPA.instance) {
+            SPA.instance.disableModalKeyHandler();
+        }
     }
     handleLeavingMatchStep(nextStep) {
         var _a, _b, _c, _d;

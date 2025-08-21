@@ -74,6 +74,8 @@ export default class GameMatch extends Step
 			this.renderer.drawInitialState();
 		}
 		this.showReadyModal();
+		// TODO: eliminar comentario - Montamos los handlers de teclas pa que no nos jodan con F5 y demás mierdas durante la partida
+		this.setupKeyEventHandlers();
 		const	pauseModal = document.getElementById('pause-modal');
 		const	pauseBtn = document.getElementById('pause-btn');
 		if (pauseModal && pauseBtn)
@@ -372,6 +374,8 @@ export default class GameMatch extends Step
 		this.updatePlayerActivity(false);
 		this.controllers.cleanup();
 		this.renderer.destroy();
+		// TODO: eliminar comentario - Deshabilitamos la guardia de teclas cuando se destruye el GameMatch, que no se nos quede colgao
+		this.disableGameKeyGuard();
 		if (this.ai)
 		{
 			this.ai.stop();
@@ -388,6 +392,150 @@ export default class GameMatch extends Step
 		{
 			clearInterval(this.countdownInterval);
 			this.countdownInterval = null;
+		}
+	}
+
+	// TODO: eliminar comentario - Manejo de eventos de teclado similar al TournamentUI pero pa las partidas, que no nos jodan con F5 mientras jugamos
+	private boundKeyHandler: ((event: KeyboardEvent) => void) | null = null;
+
+	private setupKeyEventHandlers(): void {
+		console.log("GameMatch: Setting up key event handlers");
+		// TODO: eliminar comentario - Habilitamos la guardia de teclas pa proteger la partida
+		this.enableGameKeyGuard();
+	}
+
+	private evaluateKeyEvent(event: KeyboardEvent): void {
+		console.log(`GameMatch: Key event detected: "${event.key}", ctrlKey: ${event.ctrlKey}`);
+		
+		// TODO: eliminar comentario - Verificamos la bandera global de SPA pa bloquear eventos si hay un modal abierto
+		console.log("GameMatch: Checking if modal is active...");
+		if (SPA.isGlobalModalActive()) {
+			console.log("GameMatch: Event blocked - Modal is currently active");
+			return;
+		}
+		console.log("GameMatch: No modal active, processing key event");
+		
+		// TODO: eliminar comentario - Prevenimos Alt+F4 y Ctrl+F5 pa evitar salidas accidentales/recargas durante la partida
+		if (event.ctrlKey && (event.key === "F5" || event.key === "r")) {
+			console.log(`GameMatch: Ctrl+${event.key} detected - showing disabled message`);
+			event.preventDefault();
+			
+			console.log("GameMatch: Setting modal active to true");
+			// TODO: eliminar comentario - Activamos la bandera global pa que nadie más pueda tocar teclas
+			SPA.setGlobalModalActive(true);
+			
+			console.log("GameMatch: Enabling modal key handler with Enter callback");
+			// TODO: eliminar comentario - Habilitamos el handler que solo deja pasar Enter, con callback pa limpiar cuando termine
+			SPA.enableGlobalModalKeyHandler(() => {
+				console.log("GameMatch: Enter callback executed for Ctrl+F5/R alert");
+				SPA.setGlobalModalActive(false);
+				SPA.disableGlobalModalKeyHandler();
+			});
+			
+			setTimeout(() => {
+				console.log("GameMatch: Showing alert for disabled key combination during game");
+				alert("This key combination is disabled during the game.");
+				console.log("GameMatch: Alert closed, cleaning up modal state");
+				// TODO: eliminar comentario - Limpiamos to el estado del modal cuando se cierre el alert
+				SPA.setGlobalModalActive(false);
+				SPA.disableGlobalModalKeyHandler();
+			}, 0);
+			return;
+		}
+
+		if (event.key === "F5") {
+			console.log("GameMatch: F5 detected - showing game exit confirmation");
+			event.preventDefault();
+			
+			console.log("GameMatch: Setting modal active to true for F5 confirm");
+			// TODO: eliminar comentario - Activamos la bandera pa F5 confirm en la partida
+			SPA.setGlobalModalActive(true);
+			
+			console.log("GameMatch: Enabling modal key handler for F5 confirm");
+			// TODO: eliminar comentario - Montamos el handler pa F5 confirm con su callback de limpieza
+			SPA.enableGlobalModalKeyHandler(() => {
+				console.log("GameMatch: Enter callback executed for F5 confirm");
+				SPA.setGlobalModalActive(false);
+				SPA.disableGlobalModalKeyHandler();
+			});
+			
+			setTimeout(() => {
+				console.log("GameMatch: Showing F5 confirmation dialog for game");
+				const confirmExit = confirm("Are you sure you want to reload and exit the current game?");
+				console.log(`GameMatch: F5 confirmation result: ${confirmExit}`);
+				
+				if (confirmExit) {
+					console.log("GameMatch: User confirmed F5 - exiting game and reloading");
+					// TODO: eliminar comentario - Si el malagueño confirma, destruimos la partida y recargamos la página
+					this.destroy();
+					location.reload();
+				} else {
+					console.log("GameMatch: User cancelled F5 - staying in game");
+				}
+				
+				console.log("GameMatch: F5 confirm dialog closed, cleaning up modal state");
+				// TODO: eliminar comentario - Limpiamos el estado del modal se confirme o no
+				SPA.setGlobalModalActive(false);
+				SPA.disableGlobalModalKeyHandler();
+			}, 0);
+		}
+		
+		if (event.key === "Escape") {
+			console.log("GameMatch: Escape detected - showing game exit confirmation");
+			event.preventDefault();
+			
+			console.log("GameMatch: Setting modal active to true for Escape confirm");
+			// TODO: eliminar comentario - Activamos la bandera pa Escape confirm en la partida
+			SPA.setGlobalModalActive(true);
+			
+			console.log("GameMatch: Enabling modal key handler for Escape confirm");
+			// TODO: eliminar comentario - Montamos el handler pa Escape confirm con su callback de limpieza
+			SPA.enableGlobalModalKeyHandler(() => {
+				console.log("GameMatch: Enter callback executed for Escape confirm");
+				SPA.setGlobalModalActive(false);
+				SPA.disableGlobalModalKeyHandler();
+			});
+			
+			setTimeout(() => {
+				console.log("GameMatch: Showing Escape confirmation dialog for game");
+				const confirmExit = confirm("This will exit the current game and go to Game Lobby. Are you sure?");
+				console.log(`GameMatch: Escape confirmation result: ${confirmExit}`);
+				
+				if (confirmExit) {
+					console.log("GameMatch: User confirmed Escape - exiting to game lobby");
+					// TODO: eliminar comentario - Si confirma, destruimos la partida y nos vamos al lobby de juegos
+					this.destroy();
+					window.location.href = "#game-lobby";
+				} else {
+					console.log("GameMatch: User cancelled Escape - staying in game");
+				}
+				
+				console.log("GameMatch: Escape confirm dialog closed, cleaning up modal state");
+				// TODO: eliminar comentario - Limpiamos el estado del modal se confirme o no
+				SPA.setGlobalModalActive(false);
+				SPA.disableGlobalModalKeyHandler();
+			}, 0);
+		}
+	}
+
+	private enableGameKeyGuard(): void {
+		console.log("GameMatch: Enabling game key guard");
+		if (!this.boundKeyHandler) {
+			// TODO: eliminar comentario - Vinculamos el handler de evaluación de teclas al contexto de esta clase
+			this.boundKeyHandler = this.evaluateKeyEvent.bind(this);
+			// TODO: eliminar comentario - Añadimos el listener con capture pa que vaya por delante de otros handlers
+			document.addEventListener('keydown', this.boundKeyHandler, true);
+			console.log("GameMatch: Game key handler enabled");
+		}
+	}
+
+	private disableGameKeyGuard(): void {
+		console.log("GameMatch: Disabling game key guard");
+		if (this.boundKeyHandler) {
+			// TODO: eliminar comentario - Removemos el listener y limpiamos la referencia
+			document.removeEventListener('keydown', this.boundKeyHandler, true);
+			this.boundKeyHandler = null;
+			console.log("GameMatch: Game key handler disabled");
 		}
 	}
 }

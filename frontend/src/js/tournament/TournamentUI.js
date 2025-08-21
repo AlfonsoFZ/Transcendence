@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { SPA } from '../spa/spa.js';
 import { PlayerCard } from './playerCard.js';
 import { showMessage } from '../modal/showMessage.js';
 const DEFAULT_CONTAINER_ID = "tournament-container";
@@ -697,29 +698,101 @@ export class TournamentUI {
         }
         else if (isKey) {
             const keyboardEvent = event;
-            // Prevent Alt+F4 and Ctrl+F5 to avoid accidental exit/reload
-            if (keyboardEvent.ctrlKey && keyboardEvent.key === "F5") {
-                alert("This key combination is disabled during the tournament.");
+            console.log(`TournamentUI: Key event detected: "${keyboardEvent.key}", ctrlKey: ${keyboardEvent.ctrlKey}`);
+            // TODO: eliminar comentario - Verificamos la bandera global de SPA pa bloquear eventos si hay un modal abierto, que no nos la líe nadie
+            console.log("TournamentUI: Checking if modal is active...");
+            if (SPA.isGlobalModalActive()) {
+                console.log("TournamentUI: Event blocked - Modal is currently active");
+                return;
+            }
+            console.log("TournamentUI: No modal active, processing key event");
+            // TODO: eliminar comentario - Prevenimos Alt+F4 y Ctrl+F5 pa evitar salidas accidentales/recargas durante el torneo
+            if (keyboardEvent.ctrlKey && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) {
+                console.log(`TournamentUI: Ctrl+${keyboardEvent.key} detected - showing disabled message`);
                 keyboardEvent.preventDefault();
+                console.log("TournamentUI: Setting modal active to true");
+                // TODO: eliminar comentario - Activamos la bandera global pa que nadie más pueda tocar teclas
+                SPA.setGlobalModalActive(true);
+                console.log("TournamentUI: Enabling modal key handler with Enter callback");
+                // TODO: eliminar comentario - Habilitamos el handler que solo deja pasar Enter, con callback pa limpiar cuando termine
+                SPA.enableGlobalModalKeyHandler(() => {
+                    console.log("TournamentUI: Enter callback executed for Ctrl+F5/R alert");
+                    SPA.setGlobalModalActive(false);
+                    SPA.disableGlobalModalKeyHandler();
+                });
+                setTimeout(() => {
+                    console.log("TournamentUI: Showing alert for disabled key combination");
+                    alert("This key combination is disabled during the tournament.");
+                    console.log("TournamentUI: Alert closed, cleaning up modal state");
+                    // TODO: eliminar comentario - Limpiamos to el estado del modal cuando se cierre el alert
+                    SPA.setGlobalModalActive(false);
+                    SPA.disableGlobalModalKeyHandler();
+                }, 0);
                 return;
             }
             if (keyboardEvent.key === "F5") {
+                console.log("TournamentUI: F5 detected - showing reload confirmation");
                 keyboardEvent.preventDefault();
-                const confirmExit = confirm("Are you sure you want to reload and reset the tournament?");
-                if (confirmExit && keyboardEvent.key === "F5") {
-                    this.resetTournament(); // Reset the tournament state
-                    location.reload();
-                }
+                console.log("TournamentUI: Setting modal active to true for F5 confirm");
+                // TODO: eliminar comentario - Activamos la bandera pa F5 confirm
+                SPA.setGlobalModalActive(true);
+                console.log("TournamentUI: Enabling modal key handler for F5 confirm");
+                // TODO: eliminar comentario - Montamos el handler pa F5 confirm con su callback de limpieza
+                SPA.enableGlobalModalKeyHandler(() => {
+                    console.log("TournamentUI: Enter callback executed for F5 confirm");
+                    SPA.setGlobalModalActive(false);
+                    SPA.disableGlobalModalKeyHandler();
+                });
+                setTimeout(() => {
+                    console.log("TournamentUI: Showing F5 confirmation dialog");
+                    const confirmExit = confirm("Are you sure you want to reload and reset the tournament?");
+                    console.log(`TournamentUI: F5 confirmation result: ${confirmExit}`);
+                    if (confirmExit) {
+                        console.log("TournamentUI: User confirmed F5 - resetting tournament and reloading");
+                        // TODO: eliminar comentario - Si el malagueño confirma, reseteamos el torneo y recargamos la página
+                        this.resetTournament();
+                        location.reload();
+                    }
+                    else {
+                        console.log("TournamentUI: User cancelled F5 - staying in tournament");
+                    }
+                    console.log("TournamentUI: F5 confirm dialog closed, cleaning up modal state");
+                    // TODO: eliminar comentario - Limpiamos el estado del modal se confirme o no
+                    SPA.setGlobalModalActive(false);
+                    SPA.disableGlobalModalKeyHandler();
+                }, 0);
             }
             if (keyboardEvent.key === "Escape") {
+                console.log("TournamentUI: Escape detected - showing exit confirmation");
                 keyboardEvent.preventDefault();
-                const confirmExit = confirm("this will lead yo to Home. Are you sure you want to exit the tournament?");
-                if (confirmExit && keyboardEvent.key === "Escape") {
-                    // lógica personalizada, si deseas redirigir
-                    console.log("Escape pressed, user confirmed exit.");
-                    this.resetTournament(); // Reset the tournament state
-                    window.location.href = "#home";
-                }
+                console.log("TournamentUI: Setting modal active to true for Escape confirm");
+                // TODO: eliminar comentario - Activamos la bandera pa Escape confirm
+                SPA.setGlobalModalActive(true);
+                console.log("TournamentUI: Enabling modal key handler for Escape confirm");
+                // TODO: eliminar comentario - Montamos el handler pa Escape confirm con su callback de limpieza
+                SPA.enableGlobalModalKeyHandler(() => {
+                    console.log("TournamentUI: Enter callback executed for Escape confirm");
+                    SPA.setGlobalModalActive(false);
+                    SPA.disableGlobalModalKeyHandler();
+                });
+                setTimeout(() => {
+                    console.log("TournamentUI: Showing Escape confirmation dialog");
+                    const confirmExit = confirm("this will lead yo to Home. Are you sure you want to exit the tournament?");
+                    console.log(`TournamentUI: Escape confirmation result: ${confirmExit}`);
+                    if (confirmExit) {
+                        console.log("TournamentUI: User confirmed Escape - exiting to home");
+                        // TODO: eliminar comentario - Si confirma, reseteamos el torneo y nos vamos pa casa (home)
+                        this.resetTournament();
+                        window.location.href = "#home";
+                    }
+                    else {
+                        console.log("TournamentUI: User cancelled Escape - staying in tournament");
+                    }
+                    console.log("TournamentUI: Escape confirm dialog closed, cleaning up modal state");
+                    // TODO: eliminar comentario - Limpiamos el estado del modal se confirme o no
+                    SPA.setGlobalModalActive(false);
+                    SPA.disableGlobalModalKeyHandler();
+                }, 0);
             }
         }
     }
