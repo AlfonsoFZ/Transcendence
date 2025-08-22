@@ -37,11 +37,11 @@ export class SPA {
 			if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
 				const tournamentId = this.currentTournament.getTournamentId();
 				const warningFlag = this.currentTournament.LeaveWithoutWarningFLAG;
-				// If the tournament is in progress, show a warning message is it is not already shown
+
+				// if the tournament is in progress, show a warning message is it is not already shown when navigation arrow is clicked
 				if (typeof tournamentId !== 'undefined' && tournamentId !== null && tournamentId > -42
 					&& warningFlag!== true) {
 					showMessage("Tournament in progress aborted", 5000);
-					console.log("Tournament in progress aborted");
 					const tournamentUI = this.currentTournament.getTournamentUI?.();
 					if (tournamentUI && typeof tournamentUI.resetTournament === 'function') {
 						tournamentUI.resetTournament();
@@ -109,6 +109,8 @@ export class SPA {
 
     navigate(step: string) {
         history.pushState({}, '', `#${step}`);
+		console.log("current hash: ", window.location.hash);
+		console.log("Navigating to step: ", step);
         this.loadStep();
     }
 
@@ -142,7 +144,8 @@ export class SPA {
         } catch (e) {
             console.debug('SPA.leave-check error', e);
         }
-		
+		console.log("this.currentStep: " , this.currentStep);
+		console.log("step: " , step);
 		// Handle leaving game-match step on active game
 		if (this.currentStep === 'game-match')
 			this.handleLeavingMatchStep(step);
@@ -199,6 +202,7 @@ export class SPA {
 
 	public	handleLeavingMatchStep(nextStep?: string)
 	{
+		console.log("Leaving game-match step en handleLeavingMatchStep");
 		//nexStep as param in case later need to handle different scenarios
 		if (!this.currentGame)
 			return ;

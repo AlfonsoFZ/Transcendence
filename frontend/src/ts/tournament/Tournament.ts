@@ -78,6 +78,9 @@ export default class Tournament extends Step {
 			const appContainer = document.getElementById('app-container');
 			console.log("limpiamos appContainer");
 			history.pushState(null, "", "#tournament-lobby");
+			// TODO: Pedro esta llamada relanzaría la protección al volver de game-match
+			this.ui.enableTournamentHashGuard();
+			////////////////////////////////////////////////////////////////////////////
 			if (appContainer) {
 				appContainer.innerHTML = '';
 				// Crea el contenedor del bracket si no existe
@@ -541,6 +544,10 @@ export default class Tournament extends Step {
 				this.handleMatchResult(matchData);
 			}
 			else{
+				// TODO: Pedro esta llamada anularía la protección en hame-match //
+				this.ui.disableTournamentHashGuard();
+				///////////////////////////////////////////////////////////////////
+
 				this.game.setGameLog(matchData);
 				if (matchData.config)
 					this.game.setGameConfig(matchData.config);

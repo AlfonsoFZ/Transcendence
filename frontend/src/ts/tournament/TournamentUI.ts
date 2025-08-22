@@ -139,6 +139,7 @@ export class TournamentUI
 					}
 					console.log("InAddEevnlisteners - Preparing players for tournament with number of players: ", numberOfPlayers);
 						this.preparePlayers(numberOfPlayers);
+					console.log("setupEventListeners: enabling hash Guard")
 					this.enableTournamentHashGuard();
 					});
 
@@ -731,11 +732,16 @@ export class TournamentUI
 			// 	return;
 			// }
 
+			
+
 			// Para que afecte solo al hash tournament-lobby
 			// if (((keyboardEvent.ctrlKey && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) || keyboardEvent.key === "F5")
 			// 		&& window.location.hash.includes('#tournament-lobby') ){
 			
-			if ((keyboardEvent.ctrlKey && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) || keyboardEvent.key === "F5"){	
+			
+			// Código modificado para que solo afecte en el step tournament-lobby
+			if (((keyboardEvent.ctrlKey && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) || keyboardEvent.key === "F5")
+				&& window.location.hash.includes('#tournament-lobby')){	
 				keyboardEvent.preventDefault();
 				keyboardEvent.stopPropagation();
 				keyboardEvent.stopImmediatePropagation();
@@ -752,11 +758,39 @@ export class TournamentUI
 					// if (confirmExit && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) {
 					// 	//TODO: Pedro Aquí se podría incluir lo que quisieras pero los usuarios temporales y el torneo 
 					// ya se han reseteado..
-					// 	location.reload();
+					// location.reload();
 					// }
 				}
-
 			}
+
+
+
+
+			///// 		Inicio de código comentado para probar nnuevas formulas para el refreco de game-match
+			//
+			// if ((keyboardEvent.ctrlKey && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) || keyboardEvent.key === "F5"){	
+			// 	keyboardEvent.preventDefault();
+			// 	keyboardEvent.stopPropagation();
+			// 	keyboardEvent.stopImmediatePropagation();
+			
+			// 	if (window.location.hash.includes('#tournament-lobby') ){
+			// 		const confirmExit = confirm("Are you sure you want to reload and reset the tournament?");
+			// 		if (confirmExit && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) {
+			// 			this.resetTournament();
+			// 			location.reload();
+			// 		}
+			// 	}
+			// 	if (window.location.hash.includes('#game-match') ){
+			// 		// const confirmExit = confirm("Are you sure you want to reload and reset the game?");
+			// 		// if (confirmExit && (keyboardEvent.key === "F5" || keyboardEvent.key === "r")) {
+			// 		// 	//TODO: Pedro Aquí se podría incluir lo que quisieras pero los usuarios temporales y el torneo 
+			// 		// ya se han reseteado..
+			// 		// location.reload();
+			// 		// }
+			// 	}
+			// }
+
+			////       Fin de codigo comentado para probar nuevas formulas para controlar el refrescar la página en Game-match
 
 			if (keyboardEvent.key === "Escape") {
 				keyboardEvent.preventDefault();
@@ -769,24 +803,36 @@ export class TournamentUI
 			}
 		}
 	}
-
 	private boundClickHandler: ((event: MouseEvent) => void) | null = null;
 	private boundKeyHandler: ((event: KeyboardEvent) => void) | null = null;
+	private boundPageHideHandler: (() => void) | null = null;
 
+	/**
+	 * pagehide event is triggered as beforeonload event but is more reliable than beforeunload
+	 * when a fetch call is included.
+	 * This event does not show a message.
+	 */
 	enableTournamentHashGuard() {
-		window.addEventListener("pagehide", () => {
-			const tournamentId = this.tournament.getTournamentId();
-			if (tournamentId !== null && tournamentId !== undefined) {
-				fetch('https://localhost:8443/back/delete_user_by_tournament_id', {
-					method: 'DELETE',
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ TournamentId: tournamentId.toString() }),
-					keepalive: true
-				});
-			}
-		});
+		console.log("enableTournamentHashGuard: enabled.");
+		if (!this.boundPageHideHandler) {
+			this.boundPageHideHandler = () => {
+				console.log("Page is being hidden or unloaded.");
+				const tournamentId = this.tournament.getTournamentId();
+				if (tournamentId !== null && tournamentId !== undefined) {
+					console.log("enableTournamentHashGuard: Deleting temp users for tournamentId on pagehide:", tournamentId);
+					fetch('https://localhost:8443/back/delete_user_by_tournament_id', {
+						method: 'DELETE',
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ TournamentId: tournamentId.toString() }),
+						keepalive: true
+					});
+				}
+			};
+			console.log("addEventListener(\"pagehide\")");
+			window.addEventListener("pagehide", this.boundPageHideHandler);
+		}
 
 		if (!this.boundClickHandler) {
 			this.boundClickHandler = this.evaluarMovimiento.bind(this);
@@ -797,10 +843,10 @@ export class TournamentUI
 			this.boundKeyHandler = this.evaluarMovimiento.bind(this);
 			document.addEventListener('keydown', this.boundKeyHandler, true);
 		}
-
 	}
 
 	disableTournamentHashGuard() {
+		console.log("Tournament Hash Guard enabled.");
 		if (this.boundClickHandler) {
 			document.removeEventListener('click', this.boundClickHandler, true);
 			this.boundClickHandler = null;
@@ -808,6 +854,11 @@ export class TournamentUI
 		if (this.boundKeyHandler) {
 			document.removeEventListener('keydown', this.boundKeyHandler, true);
 			this.boundKeyHandler = null;
+		}
+		if (this.boundPageHideHandler) {
+			console.log("removeEventListener(\"pagehide\")");
+			window.removeEventListener("pagehide", this.boundPageHideHandler);
+			this.boundPageHideHandler = null;
 		}
 	}
 }

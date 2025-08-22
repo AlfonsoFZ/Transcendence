@@ -39,11 +39,10 @@ export class SPA {
             if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
                 const tournamentId = this.currentTournament.getTournamentId();
                 const warningFlag = this.currentTournament.LeaveWithoutWarningFLAG;
-                // If the tournament is in progress, show a warning message is it is not already shown
+                // if the tournament is in progress, show a warning message is it is not already shown when navigation arrow is clicked
                 if (typeof tournamentId !== 'undefined' && tournamentId !== null && tournamentId > -42
                     && warningFlag !== true) {
                     showMessage("Tournament in progress aborted", 5000);
-                    console.log("Tournament in progress aborted");
                     const tournamentUI = (_b = (_a = this.currentTournament).getTournamentUI) === null || _b === void 0 ? void 0 : _b.call(_a);
                     if (tournamentUI && typeof tournamentUI.resetTournament === 'function') {
                         tournamentUI.resetTournament();
@@ -111,6 +110,8 @@ export class SPA {
     }
     navigate(step) {
         history.pushState({}, '', `#${step}`);
+        console.log("current hash: ", window.location.hash);
+        console.log("Navigating to step: ", step);
         this.loadStep();
     }
     loadStep() {
@@ -141,6 +142,8 @@ export class SPA {
             catch (e) {
                 console.debug('SPA.leave-check error', e);
             }
+            console.log("this.currentStep: ", this.currentStep);
+            console.log("step: ", step);
             // Handle leaving game-match step on active game
             if (this.currentStep === 'game-match')
                 this.handleLeavingMatchStep(step);
@@ -194,6 +197,7 @@ export class SPA {
     }
     handleLeavingMatchStep(nextStep) {
         var _a, _b, _c, _d;
+        console.log("Leaving game-match step en handleLeavingMatchStep");
         //nexStep as param in case later need to handle different scenarios
         if (!this.currentGame)
             return;
