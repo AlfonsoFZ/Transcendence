@@ -846,7 +846,7 @@ export class TournamentUI
 	}
 
 	disableTournamentHashGuard() {
-		console.log("Tournament Hash Guard enabled.");
+		console.log("Tournament Hash Guard disabled.");
 		if (this.boundClickHandler) {
 			document.removeEventListener('click', this.boundClickHandler, true);
 			this.boundClickHandler = null;
