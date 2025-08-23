@@ -108,9 +108,21 @@ export function flipBoard() {
     };
     socket.send(JSON.stringify(message));
 }
+export function cancelGame() {
+    const message = {
+        type: 'cancel',
+    };
+    socket.send(JSON.stringify(message));
+}
 export function requestDraw() {
     const message = {
         type: 'requestDraw',
+    };
+    socket.send(JSON.stringify(message));
+}
+export function acceptDraw() {
+    const message = {
+        type: 'acceptDraw',
     };
     socket.send(JSON.stringify(message));
 }

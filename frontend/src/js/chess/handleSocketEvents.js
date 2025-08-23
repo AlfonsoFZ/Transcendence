@@ -13,7 +13,7 @@ import { launchUI, launchGame } from './launchGame.js';
 import { socket, chessboard, setData } from './state.js';
 import { saveStatusGame, deleteNotation } from './loadAndUpdateDom.js';
 import { updateTime, updateOrInsertNotation, flipSideBar, handleNavigation } from './formatContent.js';
-import { showPromotionOptions, showGameOverOptions, showRequestRematchOptions, showResponseRematchDeclined } from './handleModals.js';
+import { showPromotionOptions, showGameOverOptions, showRequestRematchOptions, showResponseRematchDeclined, showRequestDrawOptions } from './handleModals.js';
 function handleSocketOpen() {
     socket.onopen = () => {
         const handshake = {
@@ -80,6 +80,14 @@ function handleSocketMessage() {
                 showGameOverOptions(data);
                 saveStatusGame('hasEnded');
                 break;
+            case 'agreement':
+                showGameOverOptions(data);
+                saveStatusGame('hasEnded');
+                break;
+            case 'resignation':
+                showGameOverOptions(data);
+                saveStatusGame('hasEnded');
+                break;
             case 'requestRematch':
                 showRequestRematchOptions(data);
                 break;
@@ -95,6 +103,9 @@ function handleSocketMessage() {
                 chessboard.set(data);
                 flipSideBar(data);
                 setupChessboard(chessboard, null, null);
+                break;
+            case 'requestDraw':
+                showRequestDrawOptions(data);
                 break;
         }
     });

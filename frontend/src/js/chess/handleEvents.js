@@ -2,8 +2,8 @@ import { launchUI } from './launchGame.js';
 import { chessboard, canvas, data } from './state.js';
 import { deleteNotation } from './loadAndUpdateDom.js';
 import { setupChessboard, drawMovingPiece, highlightSquare } from './drawChessboard.js';
-import { sendPieceMove, promoteToPiece, deleteGame, requestRematch, acceptRematch, rejectRematch, navigateReplay, flipBoard } from './handleSenders.js';
-import { hidePromotionOptions, hideGameOverOptions, hideSidebarOverlay, hideRequestRematchOptions, showRequestRematchWaiting, hideResponseRematchDeclined } from './handleModals.js';
+import { sendPieceMove, promoteToPiece, deleteGame, requestRematch, acceptRematch, rejectRematch, navigateReplay, flipBoard, cancelGame, requestDraw, acceptDraw, resign } from './handleSenders.js';
+import { hidePromotionOptions, hideGameOverOptions, hideSidebarOverlay, hideRequestRematchOptions, showRequestRematchWaiting, hideResponseRematchDeclined, hideConfirmationDraw, showConfirmationDraw, hideConfirmationResign, showConfirmationResign, hideRequestDrawOptions } from './handleModals.js';
 let selectedSquares = new Set();
 let arrows = new Map();
 function getSquare(playerColorView, event) {
@@ -83,7 +83,7 @@ function handleRightClick(fromSquare) {
     window.addEventListener("mouseup", mouseUpHandler);
 }
 export function handleEvents() {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     // To prevent right click context menu
     canvas.addEventListener("contextmenu", (event) => {
         event.preventDefault();
@@ -189,14 +189,60 @@ export function handleEvents() {
     // Event listener to handle game options
     (_f = document.getElementById("game-options")) === null || _f === void 0 ? void 0 : _f.addEventListener("click", (event) => {
         const target = event.target;
-        if (target.id === 'draw') {
-        }
-        if (target.id === 'resign') {
-        }
+        if (target.id === 'draw')
+            showConfirmationDraw();
+        if (target.id === 'resign')
+            showConfirmationResign();
         if (target.id === 'return') {
             deleteNotation();
             deleteGame();
             launchUI();
+            cancelGame();
+        }
+    });
+    //Event listener to handle draw confirmation
+    (_g = document.getElementById("modal-confirmDraw")) === null || _g === void 0 ? void 0 : _g.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.id === 'yes') {
+            hideRequestDrawOptions();
+            hideConfirmationResign();
+            hideConfirmationDraw();
+            requestDraw();
+        }
+        if (target.id === 'no') {
+            hideRequestDrawOptions();
+            hideConfirmationResign();
+            hideConfirmationDraw();
+        }
+    });
+    //Event listener to handle resign confirmation
+    (_h = document.getElementById("modal-confirmResign")) === null || _h === void 0 ? void 0 : _h.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.id === 'yes') {
+            hideRequestDrawOptions();
+            hideConfirmationDraw();
+            hideConfirmationResign();
+            resign();
+        }
+        if (target.id === 'no') {
+            hideRequestDrawOptions();
+            hideConfirmationDraw();
+            hideConfirmationResign();
+        }
+    });
+    //Event listener to handle draw request
+    (_j = document.getElementById("modal-requestDraw")) === null || _j === void 0 ? void 0 : _j.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.id === 'yes') {
+            hideRequestDrawOptions();
+            hideConfirmationDraw();
+            hideConfirmationResign();
+            acceptDraw();
+        }
+        if (target.id === 'no') {
+            hideRequestDrawOptions();
+            hideConfirmationDraw();
+            hideConfirmationResign();
         }
     });
     // Event listener for resize window

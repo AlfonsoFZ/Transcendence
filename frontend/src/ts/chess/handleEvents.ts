@@ -3,8 +3,8 @@ import { Chessboard } from './chessboardClass.js'
 import { chessboard, canvas, data } from './state.js'
 import { deleteNotation } from './loadAndUpdateDom.js'
 import { setupChessboard, drawMovingPiece, highlightSquare } from './drawChessboard.js'
-import { sendPieceMove, promoteToPiece, deleteGame, requestRematch, acceptRematch, rejectRematch, navigateReplay, flipBoard } from './handleSenders.js'
-import { hidePromotionOptions, hideGameOverOptions, hideSidebarOverlay, hideRequestRematchOptions, showRequestRematchWaiting, hideResponseRematchDeclined } from './handleModals.js'
+import { sendPieceMove, promoteToPiece, deleteGame, requestRematch, acceptRematch, rejectRematch, navigateReplay, flipBoard, cancelGame, requestDraw, acceptDraw, resign } from './handleSenders.js'
+import { hidePromotionOptions, hideGameOverOptions, hideSidebarOverlay, hideRequestRematchOptions, showRequestRematchWaiting, hideResponseRematchDeclined, hideConfirmationDraw, showConfirmationDraw, hideConfirmationResign, showConfirmationResign, hideRequestDrawOptions, showRequestDrawOptions } from './handleModals.js'
 
 let selectedSquares = new Set<string>();
 let arrows = new Map<string, [string, string]>();
@@ -214,16 +214,66 @@ export function handleEvents() {
 	document.getElementById("game-options")?.addEventListener("click", (event) => {
 	
 		const target = event.target as HTMLElement;
-		if (target.id === 'draw') {
-
-		}
-		if (target.id === 'resign') {
-
-		}
+		if (target.id === 'draw')
+			showConfirmationDraw();
+		if (target.id === 'resign')
+			showConfirmationResign();
 		if (target.id === 'return') {
 			deleteNotation();
 			deleteGame();
 			launchUI();
+			cancelGame();
+		}
+	});
+
+	//Event listener to handle draw confirmation
+	document.getElementById("modal-confirmDraw")?.addEventListener("click", (event) => {
+	
+		const target = event.target as HTMLElement;
+		if (target.id === 'yes') {
+			hideRequestDrawOptions();
+			hideConfirmationResign();
+			hideConfirmationDraw();
+			requestDraw();
+		}
+		if (target.id === 'no') {
+			hideRequestDrawOptions();
+			hideConfirmationResign();
+			hideConfirmationDraw();
+		}
+	});
+
+	//Event listener to handle resign confirmation
+	document.getElementById("modal-confirmResign")?.addEventListener("click", (event) => {
+	
+		const target = event.target as HTMLElement;
+		if (target.id === 'yes') {
+			hideRequestDrawOptions();
+			hideConfirmationDraw();
+			hideConfirmationResign();
+			resign();
+		}
+		if (target.id === 'no') {
+			hideRequestDrawOptions();
+			hideConfirmationDraw();
+			hideConfirmationResign();
+		}
+	});
+
+	//Event listener to handle draw request
+	document.getElementById("modal-requestDraw")?.addEventListener("click", (event) => {
+	
+		const target = event.target as HTMLElement;
+		if (target.id === 'yes') {
+			hideRequestDrawOptions();
+			hideConfirmationDraw();
+			hideConfirmationResign();
+			acceptDraw();
+		}
+		if (target.id === 'no') {
+			hideRequestDrawOptions();
+			hideConfirmationDraw();
+			hideConfirmationResign();
 		}
 	});
 

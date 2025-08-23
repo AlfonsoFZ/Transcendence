@@ -42,6 +42,9 @@ export function showGameOverOptions(data: any) {
 
 	showBoardOverlay();
 	showSidebarOverlay();
+	hideConfirmationDraw();
+	hideConfirmationResign();
+	hideRequestDrawOptions();
 	document.getElementById("modal-game-over")?.classList.remove("hidden");
 	document.getElementById("draw")?.classList.add("hidden");
 	document.getElementById("resign")?.classList.add("hidden");
@@ -122,10 +125,45 @@ export function showResponseRematchDeclined(data: any) {
 	document.getElementById("declined-reason")!.textContent = data.opponentName + ' ' + data.reason;
 }
 
+export function hideConfirmationDraw() {
+
+document.getElementById("modal-confirmDraw")?.classList.add("hidden");
+}
+
+export function showConfirmationDraw() {
+
+	document.getElementById("modal-confirmResign")?.classList.add("hidden");
+	document.getElementById("modal-confirmDraw")?.classList.remove("hidden");
+}
+
+export function hideConfirmationResign() {
+
+	document.getElementById("modal-confirmResign")?.classList.add("hidden");
+}
+
+export function showConfirmationResign() {
+
+	document.getElementById("modal-confirmDraw")?.classList.add("hidden");
+	document.getElementById("modal-confirmResign")?.classList.remove("hidden");
+}
+
+export function hideRequestDrawOptions() {
+
+	document.getElementById("modal-requestDraw")!.classList.add("hidden");
+}
+
+export function showRequestDrawOptions(data: any) {
+
+	document.getElementById("modal-requestDraw")!.classList.remove("hidden");
+	const message = document.getElementById("requestDraw-options-message");
+	message!.textContent = data.username + ' ' + 'offered a draw';
+}
+
 export function hideReplayOverlay() {
 
 	document.getElementById("replay-overlay")?.classList.add("hidden");
 }
+
 
 export function showReplayOverlay() {
 
