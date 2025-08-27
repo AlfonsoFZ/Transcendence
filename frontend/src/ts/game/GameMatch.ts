@@ -377,7 +377,6 @@ export default class GameMatch extends Step
 			this.ai.stop();
 			this.ai = null;
 		}
-	
 		// Not sure if needed or if can cause conflict - let's test it for a while...
 		if (this.readyStateInterval)
 		{

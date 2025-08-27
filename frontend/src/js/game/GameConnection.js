@@ -23,6 +23,7 @@ export class GameConnection {
     constructor(game) {
         this.socket = null; // WebSocket instance
         this.connectionStat = false; // Connection status
+        this.activeGamesDetails = null;
         /**
          * A callback function that is invoked to resolve pending user information requests.
          *
@@ -246,6 +247,29 @@ export class GameConnection {
         });
     }
     ;
+    checkActiveGameSessions() {
+        return new Promise((resolve, reject) => {
+            var _a, _b;
+            if (!this.socket || this.socket.readyState !== WebSocket.OPEN)
+                return (reject('Socket not connected'));
+            const handler = (event) => {
+                var _a;
+                const data = JSON.parse(event.data);
+                if (data.type === 'GAMES_DETAILS') {
+                    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.removeEventListener('message', handler);
+                    this.activeGamesDetails = data.games;
+                    resolve({ sessions: this.activeGamesDetails, userId: data.userId });
+                }
+            };
+            (_a = this.socket) === null || _a === void 0 ? void 0 : _a.addEventListener('message', handler);
+            (_b = this.socket) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({ type: 'INSPECT_GAMES' }));
+            setTimeout(() => {
+                var _a;
+                (_a = this.socket) === null || _a === void 0 ? void 0 : _a.removeEventListener('message', handler);
+                reject('Timeout waiting for GAMES_DETAILS');
+            }, 3000);
+        });
+    }
     killGameSession(gameId) {
         var _a;
         (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify({

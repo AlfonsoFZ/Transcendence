@@ -1,5 +1,5 @@
 import { Step } from "./stepRender.js";
-import { showMessage } from "../modal/showMessage.js";
+import { showMessage, showConfirmDialog } from "../modal/showMessage.js";
 import Game from "../game/Game.js"
 import { initOnlineSocket, onlineSocket } from "../friends/onlineUsersSocket.js";
 import Tournament from "../tournament/Tournament.js";
@@ -10,6 +10,8 @@ export class SPA {
 	public currentGame: Game | null = null;
 	public currentTournament: Tournament | null = null;
 	private currentStep: string | null = null;
+	// Guard flag to avoid double prompts (popstate + hashchange firing together)
+	private navigationGuardActive: boolean = false;
 
     private routes: { [key: string]: { module: string; protected: boolean } } = {
         'home': { module: '../home/homeRender.js', protected: false },
@@ -32,7 +34,21 @@ export class SPA {
 		this.loadStep();
 		// Changes to advise the user when they leave a tournament in progress
 		//it will reset the tournament guards and delete TempUsers
-		window.onpopstate = () => {
+		window.onpopstate = async () => {
+			const nextStep = location.hash.replace('#', '') || 'home';
+			// Intercept leaving game-match BEFORE existing tournament logic
+			if (!this.navigationGuardActive && this.currentStep === 'game-match' && nextStep !== 'game-match')
+			{
+				this.navigationGuardActive = true;
+				const confirmed = await showConfirmDialog("You are about to leave the game. This will end your current session. Continue?");
+				this.navigationGuardActive = false;
+				if (!confirmed)
+				{
+					// Revert hash to current step (pushState so it does not create another history entry)
+					history.pushState({}, '', `#${this.currentStep}`);
+					return ; // abort original onpopstate logic
+				}
+			}
 			if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
 				const tournamentId = this.currentTournament.getTournamentId();
 				const warningFlag = this.currentTournament.LeaveWithoutWarningFLAG;
@@ -60,6 +76,33 @@ export class SPA {
 				this.loadStep();
 				}
 			}
+
+			// Handle manual hash edits (not via navigate()/pushState). Avoid double firing if popstate already handled.
+			window.addEventListener('hashchange', async () => {
+				const nextStep = location.hash.replace('#', '') || 'home';
+				if (this.navigationGuardActive) return; // popstate already processed
+				if (this.currentStep === 'game-match' && nextStep !== 'game-match') {
+					this.navigationGuardActive = true;
+					const confirmed = await showConfirmDialog("You are about to leave the game. This will end your current session. Continue?");
+					this.navigationGuardActive = false;
+					if (!confirmed) {
+						// Restore original hash
+						window.location.hash = `#${this.currentStep}`;
+						return;
+					}
+				}
+				// If confirmed or not a guarded leave, proceed
+				this.loadStep();
+			});
+
+			// Native browser reload / close guard
+			window.onbeforeunload = (e) => {
+				if (this.currentStep === 'game-match' && this.currentGame?.isGameActive?.()) {
+					e.preventDefault();
+					e.returnValue = '';
+					return '';
+				}
+			};
 		
 		window.addEventListener("pageshow", (event) => {
 			if (event.persisted && location.hash === '#login') {
@@ -105,8 +148,13 @@ export class SPA {
         }
     }
 
-    navigate(step: string) {
-        history.pushState({}, '', `#${step}`);
+    async navigate(step: string) {
+		// Intercept programmatic navigation
+		if (this.currentStep === 'game-match' && step !== 'game-match') {
+			const confirmed = await this.confirmLeaveGameMatch(step);
+			if (!confirmed) return; // abort navigation
+		}
+		history.pushState({}, '', `#${step}`);
         this.loadStep();
     }
 
@@ -204,7 +252,7 @@ export class SPA {
 		{		
 			const	log = this.currentGame.getGameLog();
 			const	match = this.currentGame.getGameMatch();
-		
+			// Remote mode - pause and keep the game alive for a set time
 			if (log.mode === 'remote' && this.currentGame.getGameConnection() &&
 				this.currentGame.getGameConnection().socket && this.currentGame.isGameActive())
 			{
@@ -218,11 +266,13 @@ export class SPA {
 					})
 				);
 			}
+			// Any other game-mode, kill game on the backend and do not save log on database
 			else if (log.mode != 'remote' && this.currentGame.getGameConnection() &&
 				this.currentGame.getGameConnection().socket && this.currentGame.isGameActive())
 			{
 				this.currentGame.getGameConnection().killGameSession(this.currentGame.getGameLog().id);
 			}
+			// If instance of match on browser, clean-remove (to prevent duplicated listeners on resume)
 			if (match)
 			{
 				match.updatePlayerActivity(false);
@@ -255,6 +305,19 @@ export class SPA {
 				this.navigate('home');
 			}
 		}
+	}
+
+	// Centralized confirmation logic for leaving game-match
+	private async confirmLeaveGameMatch(nextStep: string): Promise<boolean>
+	{
+		// If there's no active game object or game not active, allow silently
+		if (!this.currentGame || !this.currentGame.isGameActive?.())
+			return true;
+		this.currentGame.getGameConnection()?.socket?.send(JSON.stringify({
+			type: 'PAUSE_GAME',
+			reason: 'leave confirmation'
+		}));
+		return await showConfirmDialog("You are about to leave the game. This will end your current session. Continue?");
 	}
 }
 

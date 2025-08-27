@@ -73,3 +73,51 @@ export function showWinnerMessage(message, time) {
         }, time);
     }
 }
+/**
+ * Shows a confirmation dialog before leaving the game-match step.
+ * Returns a Promise<boolean>: true if user confirms, false otherwise.
+ */
+export function showConfirmDialog(message) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById("confirm-dialog-overlay");
+        const content = document.getElementById("confirm-dialog-content");
+        const yesBtn = document.getElementById("confirm-dialog-yes");
+        const noBtn = document.getElementById("confirm-dialog-no");
+        if (!overlay || !content || !yesBtn || !noBtn) {
+            console.error("Confirm dialog elements missing in DOM.");
+            resolve(false);
+            return;
+        }
+        content.innerHTML = message;
+        overlay.classList.remove("hidden");
+        overlay.style.display = "flex";
+        yesBtn.focus();
+        const cleanup = () => {
+            overlay.classList.add("hidden");
+            overlay.style.display = "none";
+            yesBtn.removeEventListener("click", onYes);
+            noBtn.removeEventListener("click", onNo);
+            overlay.removeEventListener("keydown", onKeyDown);
+        };
+        const onYes = (e) => {
+            e.preventDefault();
+            cleanup();
+            resolve(true);
+        };
+        const onNo = (e) => {
+            e.preventDefault();
+            cleanup();
+            resolve(false);
+        };
+        const onKeyDown = (e) => {
+            if (e.key === "Enter")
+                onYes(e);
+            if (e.key === "Escape")
+                onNo(e);
+        };
+        yesBtn.addEventListener("click", onYes);
+        noBtn.addEventListener("click", onNo);
+        overlay.addEventListener("keydown", onKeyDown);
+        // Keep focus on the primary (Yes) button for better accessibility instead of moving it to the overlay.
+    });
+}

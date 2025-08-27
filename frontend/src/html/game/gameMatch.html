@@ -98,3 +98,27 @@ style="display: none;">
 		</button>
 	</div>
 </div>
+
+<!-- Confirmation dialog before navigating away -->
+<div
+	id="confirm-dialog-overlay"
+	class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden"
+	tabindex="-1"
+	style="display: none;"
+>
+	<div class="confirm-dialog bg-gray-800 rounded-lg shadow-xl px-8 py-6 flex flex-col items-center border-4 border-[#00ff99]">
+		<div id="confirm-dialog-content" class="confirm-dialog-content text-white text-lg mb-6 text-center"></div>
+		<div class="confirm-dialog-buttons flex gap-4">
+			<button id="confirm-dialog-yes"
+				class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-600"
+			>
+				Yes
+			</button>
+			<button id="confirm-dialog-no"
+				class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+			>
+				No
+			</button>
+		</div>
+	</div>
+</div>
