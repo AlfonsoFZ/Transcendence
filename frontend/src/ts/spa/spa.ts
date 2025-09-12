@@ -249,11 +249,12 @@ export class SPA {
 		return SPA.instance;
 	}
 
-	public async	gameMatchNavigation(currentStep?: string, nextStep?: string)
+	public async	gameMatchNavigation(currentStep: string, nextStep: string)
 	{
 		if (!this.currentGame)
 			return ;
 	
+		const routeConfig = this.routes[nextStep];
 		// Navigating OUT OF game-match
 		if (currentStep === 'game-match' && nextStep != 'game-match')
 		{		
@@ -307,6 +308,13 @@ export class SPA {
 					return ;
 				}
 				// else: resume game as needed
+				else
+				{
+					const module = await import(`./${routeConfig.module}`);
+					const stepInstance = new module.default(this.currentGame, this.currentTournament);
+					if (this.currentGame && stepInstance)
+						this.currentGame.setGameMatch(stepInstance);
+				}
 			} catch (e){
 				showMessage('Error checking game session. Redirecting to home...', 2000);
 				this.navigate('home');

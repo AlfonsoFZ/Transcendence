@@ -249,6 +249,7 @@ export class SPA {
             var _a, _b, _c, _d, _e;
             if (!this.currentGame)
                 return;
+            const routeConfig = this.routes[nextStep];
             // Navigating OUT OF game-match
             if (currentStep === 'game-match' && nextStep != 'game-match') {
                 const log = this.currentGame.getGameLog();
@@ -292,6 +293,12 @@ export class SPA {
                         return;
                     }
                     // else: resume game as needed
+                    else {
+                        const module = yield import(`./${routeConfig.module}`);
+                        const stepInstance = new module.default(this.currentGame, this.currentTournament);
+                        if (this.currentGame && stepInstance)
+                            this.currentGame.setGameMatch(stepInstance);
+                    }
                 }
                 catch (e) {
                     showMessage('Error checking game session. Redirecting to home...', 2000);
