@@ -28,7 +28,8 @@ export default class GameSession
 
 		// Timer values and variables
 		this.pauseTimer = null;
-		this.maxPauseDuration = 30000; // 60000 == 1 minute
+		this.maxPauseDuration = 60000 * 0.5; // 60000 == 1 minute
+		this.onWaitDuration = 60000 * 5;
 		this.pauseStartTime = null;
 
 		// For game log and database storage

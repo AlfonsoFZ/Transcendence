@@ -44,6 +44,7 @@ export default class Game extends Step {
             readyState: false
         };
         this.isHost = true;
+        this.pauseDuration = 60000 * 0.5;
         console.log("Game instance created with container ID:", containerId);
         console.log("Game log initialized:", this.log);
     }

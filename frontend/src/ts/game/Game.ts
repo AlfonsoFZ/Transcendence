@@ -28,6 +28,8 @@ export default class Game extends Step
 	protected	isHost: boolean;
 	protected	gameId: string;
 	protected	onlineId: string | null = null;
+	public		pauseDuration: number;
+
 	/***************************************/
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID, id?: string)
@@ -52,6 +54,7 @@ export default class Game extends Step
 			readyState: false
 		};
 		this.isHost = true;
+		this.pauseDuration = 60000 * 0.5;
 		console.log("Game instance created with container ID:", containerId);
 		console.log("Game log initialized:", this.log);
 	}

@@ -15,7 +15,6 @@ export class GameUI {
         this.game = game;
     }
     showOnly(divId, displayStyle = "block") {
-        console.warn("showOnly div = ", divId);
         const divIndex = [
             'initial-screen',
             'config-panel',

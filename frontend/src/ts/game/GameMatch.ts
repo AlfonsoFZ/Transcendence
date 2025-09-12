@@ -29,6 +29,7 @@ export default class GameMatch extends Step
 	private	aiSide: 'player1' | 'player2' | null = null;
 	private readyStateInterval: number | null = null;
 	private countdownInterval: number | null = null;
+	public	pauseInterval: number | null = null;
 
 	constructor(game: Game, tournament?: Tournament | null)
 	{
@@ -148,7 +149,9 @@ export default class GameMatch extends Step
 	
 	public showPauseModal(reason?: string, pauserId?: string): void
 	{
-		console.warn("pauserID", pauserId);
+		const	confirmModal = document.getElementById('confirm-dialog-overlay');
+		if(confirmModal && confirmModal.style.display != "none")
+			return ;
 		const pauseModal = document.getElementById('pause-modal');
 		const pauseReason = document.getElementById('pause-reason');
 		const resumeBtn = document.getElementById('resume-btn') as HTMLButtonElement | null;
@@ -158,10 +161,43 @@ export default class GameMatch extends Step
 			pauseReason.textContent = reason || '';
 		if (this.log.mode === 'remote' && resumeBtn && pauserId)
 		{
-			console.warn("onlineid = ", this.game.getOnlineId());
-			console.warn("pauserId = ", pauserId);
 			resumeBtn.style.display = (this.game.getOnlineId() === pauserId) ? 'inline-block' : 'none';
 		}
+
+		const timerEl = document.getElementById('pause-timer');
+		const barEl = document.getElementById('pause-timer-bar') as HTMLDivElement | null;
+		const duration = this.game.pauseDuration;
+		if (!timerEl || !barEl || !duration)
+			return ;
+
+		if (this.pauseInterval)
+		{
+			clearInterval(this.pauseInterval);
+			this.pauseInterval = null;
+		}
+		let	remaining = duration;
+		const render = () => {
+			if (remaining <= 0) {
+				timerEl.textContent = '00:00';
+				if (barEl) barEl.style.width = '0%';
+				clearInterval(this.pauseInterval!);
+				this.pauseInterval = null;
+				return;
+			}
+			const secs = Math.ceil(remaining / 1000);
+			const mm = String(Math.floor(secs / 60)).padStart(2, '0');
+			const ss = String(secs % 60).padStart(2, '0');
+			timerEl.textContent = `${mm}:${ss}`;
+			if (barEl) {
+				const pct = (remaining / duration) * 100;
+				barEl.style.width = pct.toFixed(2) + '%';
+			}
+		};
+		render();
+		this.pauseInterval = window.setInterval(() => {
+			remaining -= 500;
+			render();
+		}, 500);
 	}
 
 	public hidePauseModal(): void

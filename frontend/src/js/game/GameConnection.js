@@ -138,6 +138,8 @@ export class GameConnection {
                                     (_h = this.game.getGameMatch()) === null || _h === void 0 ? void 0 : _h.showCountdown(data.seconds || 3, data.reason);
                                     break;
                                 case 'GAME_PAUSED':
+                                    if (data.maxPauseDuration)
+                                        this.game.pauseDuration = data.maxPauseDuration;
                                     (_j = this.game.getGameMatch()) === null || _j === void 0 ? void 0 : _j.showPauseModal(data.reason, data.userId);
                                     break;
                                 case 'GAME_RESUMED':

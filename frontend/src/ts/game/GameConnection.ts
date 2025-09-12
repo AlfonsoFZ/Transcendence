@@ -142,6 +142,8 @@ export class GameConnection
 								this.game.getGameMatch()?.showCountdown(data.seconds || 3, data.reason);
 								break ;
 							case 'GAME_PAUSED':
+								if (data.maxPauseDuration)	
+									this.game.pauseDuration = data.maxPauseDuration;
 								this.game.getGameMatch()?.showPauseModal(data.reason, data.userId);
 								break ;
 							case 'GAME_RESUMED':

@@ -118,7 +118,7 @@ export function	messageManager(client, connection)
 					if (gameSession) 
 						gameSession.endGame(gamesList, false);
 					else
-						console.error(`END_GAME: No game session found for id ${gameId}`);
+						console.error(`END_GAME: No game session found for id ${data.gameId}`);
 					break;
 				case 'INSPECT_GAMES':
 					fetchGameSessionsInfo(client);

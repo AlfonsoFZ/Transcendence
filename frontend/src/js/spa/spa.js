@@ -36,7 +36,7 @@ export class SPA {
         // Changes to advise the user when they leave a tournament in progress
         //it will reset the tournament guards and delete TempUsers
         window.onpopstate = () => __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c, _d;
             const nextStep = location.hash.replace('#', '') || 'home';
             // Intercept leaving game-match BEFORE existing tournament logic
             if (!this.navigationGuardActive && this.currentStep === 'game-match' && nextStep !== 'game-match') {
@@ -45,8 +45,9 @@ export class SPA {
                 this.navigationGuardActive = false;
                 if (!confirmed) {
                     // Revert hash to current step (pushState so it does not create another history entry)
+                    (_b = (_a = this.currentGame) === null || _a === void 0 ? void 0 : _a.getGameConnection().socket) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({ type: 'RESUME_GAME' }));
                     history.pushState({}, '', `#${this.currentStep}`);
-                    return; // abort original onpopstate logic
+                    return;
                 }
             }
             if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
@@ -56,7 +57,7 @@ export class SPA {
                 if (typeof tournamentId !== 'undefined' && tournamentId !== null && tournamentId > -42
                     && warningFlag !== true) {
                     showMessage("Tournament in progress aborted?", 5000);
-                    const tournamentUI = (_b = (_a = this.currentTournament).getTournamentUI) === null || _b === void 0 ? void 0 : _b.call(_a);
+                    const tournamentUI = (_d = (_c = this.currentTournament).getTournamentUI) === null || _d === void 0 ? void 0 : _d.call(_c);
                     if (tournamentUI && typeof tournamentUI.resetTournament === 'function') {
                         tournamentUI.resetTournament();
                     }
@@ -78,6 +79,7 @@ export class SPA {
         });
         // Handle manual hash edits (not via navigate()/pushState). Avoid double firing if popstate already handled.
         window.addEventListener('hashchange', () => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             const nextStep = location.hash.replace('#', '') || 'home';
             if (this.navigationGuardActive)
                 return; // popstate already processed
@@ -87,6 +89,7 @@ export class SPA {
                 this.navigationGuardActive = false;
                 if (!confirmed) {
                     // Restore original hash
+                    (_b = (_a = this.currentGame) === null || _a === void 0 ? void 0 : _a.getGameConnection().socket) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({ type: 'RESUME_GAME' }));
                     window.location.hash = `#${this.currentStep}`;
                     return;
                 }
@@ -150,11 +153,14 @@ export class SPA {
     }
     navigate(step) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             // Intercept programmatic navigation
             if (this.currentStep === 'game-match' && step !== 'game-match') {
                 const confirmed = yield this.confirmLeaveGameMatch(step);
-                if (!confirmed)
-                    return; // abort navigation
+                if (!confirmed) {
+                    (_b = (_a = this.currentGame) === null || _a === void 0 ? void 0 : _a.getGameConnection().socket) === null || _b === void 0 ? void 0 : _b.send(JSON.stringify({ type: 'RESUME_GAME' }));
+                    return;
+                }
             }
             history.pushState({}, '', `#${step}`);
             this.loadStep();
@@ -297,7 +303,7 @@ export class SPA {
     // Centralized confirmation logic for leaving game-match
     confirmLeaveGameMatch(nextStep) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e;
             // If there's no active game object or game not active, allow silently
             if (!this.currentGame || !((_b = (_a = this.currentGame).isGameActive) === null || _b === void 0 ? void 0 : _b.call(_a)))
                 return true;
@@ -305,7 +311,10 @@ export class SPA {
                 type: 'PAUSE_GAME',
                 reason: 'User navigating away'
             }));
-            return yield showConfirmDialog("You are about to leave the game. This will end your current session. Continue?");
+            const left = yield showConfirmDialog("You are about to leave the game. This will end your current session. Continue?", this.currentGame.pauseDuration);
+            if (left && this.currentGame.getGameLog().mode != 'remote')
+                (_e = this.currentGame.getGameConnection()) === null || _e === void 0 ? void 0 : _e.killGameSession(this.currentGame.getGameLog().id);
+            return left;
         });
     }
 }

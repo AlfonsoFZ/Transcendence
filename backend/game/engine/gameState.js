@@ -137,4 +137,5 @@ export async function endGame(gamesList, needSaving)
 	// Notify players
 	this.broadcastResponse('GAME_END');
 	this.shouldCleanup = true;
+	console.log("[!]-_GAME SESSION STOPPED AND DELETED FROM BACKEND_-[!]");
 }

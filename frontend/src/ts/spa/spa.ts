@@ -45,8 +45,9 @@ export class SPA {
 				if (!confirmed)
 				{
 					// Revert hash to current step (pushState so it does not create another history entry)
+					this.currentGame?.getGameConnection().socket?.send(JSON.stringify({ type: 'RESUME_GAME' }));
 					history.pushState({}, '', `#${this.currentStep}`);
-					return ; // abort original onpopstate logic
+					return ;
 				}
 			}
 			if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
@@ -85,8 +86,10 @@ export class SPA {
 					this.navigationGuardActive = true;
 					const confirmed = await this.confirmLeaveGameMatch(nextStep);
 					this.navigationGuardActive = false;
-					if (!confirmed) {
+					if (!confirmed)
+					{
 						// Restore original hash
+						this.currentGame?.getGameConnection().socket?.send(JSON.stringify({ type: 'RESUME_GAME' }));
 						window.location.hash = `#${this.currentStep}`;
 						return;
 					}
@@ -153,7 +156,10 @@ export class SPA {
 		if (this.currentStep === 'game-match' && step !== 'game-match') {
 			const confirmed = await this.confirmLeaveGameMatch(step);
 			if (!confirmed)
-				return; // abort navigation
+			{	
+				this.currentGame?.getGameConnection().socket?.send(JSON.stringify({ type: 'RESUME_GAME' }));
+				return ;
+			}
 		}
 		history.pushState({}, '', `#${step}`);
         this.loadStep();
@@ -318,7 +324,10 @@ export class SPA {
 			type: 'PAUSE_GAME',
 			reason: 'User navigating away'
 		}));
-		return await showConfirmDialog("You are about to leave the game. This will end your current session. Continue?");
+		const	left = await showConfirmDialog("You are about to leave the game. This will end your current session. Continue?", this.currentGame.pauseDuration);
+		if (left && this.currentGame.getGameLog().mode != 'remote')
+			this.currentGame.getGameConnection()?.killGameSession(this.currentGame.getGameLog().id);
+		return left;
 	}
 }
 
