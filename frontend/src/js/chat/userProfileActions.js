@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { showMessage } from "../modal/showMessage.js";
 export function checkFriendStatus(userId, friendsEntries) {
     return __awaiter(this, void 0, void 0, function* () {
         const blockedFriends = friendsEntries.filter((entry) => entry.status === "blocked");
@@ -39,7 +40,7 @@ export function rejectFriendRequest(userId) {
                 body: JSON.stringify({ friendId: userId }),
             });
             if (response.ok) {
-                alert("Solicitud de amistad cancelada.");
+                showMessage("Solicitud de amistad cancelada.", null);
             }
             else {
                 const errorMessage = yield response.json();
@@ -63,7 +64,7 @@ export function deleteFriend(userId) {
                 body: JSON.stringify({ friendId: userId }),
             });
             if (response.ok) {
-                alert("Friend deleted");
+                showMessage("Friend deleted", null);
             }
             else {
                 const errorMessage = yield response.json();
@@ -87,7 +88,7 @@ export function blockUser(userId) {
                 body: JSON.stringify({ friendId: userId }),
             });
             if (response.ok) {
-                alert("Friend deleted");
+                showMessage("User blocked", null);
             }
             else {
                 const errorMessage = yield response.json();
@@ -111,7 +112,7 @@ export function unblockUser(userId) {
                 body: JSON.stringify({ friendId: userId }),
             });
             if (response.ok) {
-                alert("User unblocked");
+                showMessage("User unblocked", null);
             }
             else {
                 const errorMessage = yield response.json();
