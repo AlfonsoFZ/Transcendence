@@ -99,6 +99,7 @@ export class Step {
 							Play Game
 						</a>
 					</li>
+	                <li><a href="#play-chess" class="text-white hover:text-gray-400">Chess</a></li>
 					<li class="transition-colors">
 						<a href="#tournament-lobby" class="block px-3 py-2 text-white hover:bg-amber-200 hover:text-black w-full h-full">
 							Tournaments
