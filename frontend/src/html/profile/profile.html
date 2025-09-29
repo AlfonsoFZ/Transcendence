@@ -4,7 +4,7 @@
 	  <!-- Avatar -->
 	  <div id= "avatar-container" class="mb-6">
 		<img id="avatar-preview" src="{{ avatarPath }}" alt="Avatar" 
-		class="w-32 h-32 rounded-full border-2 border-gray-600 hover:ring-4 hover:ring-blue-500 hover:brightness-110" 
+		class="w-32 h-32 rounded-full border-2 border-pong-tertiary hover:ring-4 hover:ring-candlelight-400 hover:brightness-110" 
 		title="Double click to edit">
 		<input type="file" id="avatar-input" accept="image/*" style="display: none">
 	  </div>
@@ -13,20 +13,37 @@
 	  <form id="user-form" method="post" class="w-full max-w-md space-y-4">
 		<div>
 		  <label for="usernameInput" class="block mb-2 text-sm font-medium">Username</label>
-		  <input type="text" id="usernameInput" name="username" value="{{ username }}" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" readonly>
+		  <input type="text" id="usernameInput" name="username" value="{{ username }}" class="
+		  				border  text-pong-primary text-lg rounded-lg
+			   			focus:outline-none focus:ring-1  
+                      focus:ring-candlelight-400 focus:border-candlelight-400 block w-full ps-10 p-2.5
+                      bg-pong-bg-tertiary placeholder-candlelight-400"
+			" readonly>
 		</div>
 		<div>
 		  <label for="emailInput" class="block mb-2 text-sm font-medium">Email</label>
-		  <input type="email" id="emailInput" name="email" value="{{ email }}" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" readonly>
+		  <input type="email" id="emailInput" name="email" value="{{ email }}" class="
+						border  text-pong-primary text-lg rounded-lg
+			   			focus:outline-none focus:ring-1  
+                      focus:ring-chilean-fire-500 focus:border-chilean-fire-500 block w-full ps-10 p-2.5
+                      bg-pong-bg-tertiary placeholder-chilean-fire-500"
+		  w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white
+		  
+		  	" readonly>
 		</div>
 		<div>
 			<label for="tournamentusernameInput" class="block mb-2 text-sm font-medium">Tournament Username</label>
-			<input type="text" id="tournamentusernameInput" name="tournamentUsername" value="{{ tournamentusername }}" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" readonly>
+			<input type="text" id="tournamentusernameInput" name="tournamentUsername" value="{{ tournamentusername }}" class="
+						border  text-pong-primary text-lg rounded-lg
+			   			focus:outline-none focus:ring-1  
+					  focus:ring-international-orange-700 focus:border-international-orange-700 block w-full ps-10 p-2.5
+					  bg-pong-bg-tertiary placeholder-international-orange-700"
+			" readonly>
 		  </div>
 		<div class="flex justify-between">
-			<button type="button" id="edit-button" class="bg-blue-500 hover:bg-blue-600 text-white pr-1 pl-2 py-2 rounded-lg w-47">Edit info</button>
+			<button type="button" id="edit-button" class="btn-pong-primary pr-1 pl-2 py-2 rounded-lg w-47">Edit info</button>
 		  <!-- <button type="file"   id="avatar" name="avatar" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Cambiar Avatar</button> -->
-		  <button type="button" id="change-password-button" class="bg-orange-500 hover:bg-orange-600 text-white pr-2 pl-1 py-2 rounded-lg w-47">Change Password</button>
+		  <button type="button" id="change-password-button" class="btn-pong-secondary pr-2 pl-1 py-2 rounded-lg w-47">Change Password</button>
 		</div>
 	  </form>
 	</div>
@@ -42,24 +59,46 @@
   
   <!-- Modal para cambiar contraseña -->
   <div id="change-password-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-	<div class="bg-pong-secondary  p-6 rounded-lg w-96">
+	<div class="bg-pong-secondary  p-6 rounded-lg w-96 border-2 border-candlelight-400">
 	  <h3 class="text-xl font-bold mb-4">Change Password</h3>
 	  <form id="change-password-form" action="post" class="space-y-4">
 		<div>
 		  <label for="current-password" class="block mb-2 text-sm font-medium">Current Password</label>
-		  <input type="password" id="current-password" name="current-password" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white">
+		  <input type="password" id="current-password" name="current-password" class="
+		  				p-2.5 border border-gray-600 rounded-lg text-white
+					  	text-pong-primary text-md
+			   			focus:outline-none focus:ring-1  
+                      focus:ring-candlelight-400 focus:border-candlelight-400 block w-full
+                      bg-pong-bg-tertiary placeholder-candlelight-400"
+
+					  placeholder="Current password" required
+			>
 		</div>
 		<div>
 		  <label for="new-password" class="block mb-2 text-sm font-medium">New Password</label>
-		  <input type="password" id="new-password" name="new-password" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" required>
+		  <input type="password" id="new-password" name="new-password" class="
+		  				p-2.5 border border-gray-600 rounded-lg text-white
+					  	text-pong-primary text-md
+			   			focus:outline-none focus:ring-1  
+                      focus:ring-chilean-fire-500 focus:border-chilean-fire-500 block w-full
+                      bg-pong-bg-tertiary placeholder-chilean-fire-500"
+					  placeholder="New password" required
+			>
 		</div>
 		<div>
 		  <label for="confirm-password" class="block mb-2 text-sm font-medium">Confirm New Password</label>
-		  <input type="password" id="confirm-password" name="confirm-password" class="w-full p-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white" required>
+		  <input type="password" id="confirm-password" name="confirm-password" class="
+		  				p-2.5 border border-gray-600 rounded-lg text-white
+					  	text-pong-primary text-md
+			   			focus:outline-none focus:ring-1  
+					  focus:ring-international-orange-700 focus:border-international-orange-700 block w-full 
+					  bg-pong-bg-tertiary placeholder-international-orange-700"
+					  placeholder="Confirm password" required
+			>
 		</div>
 		<div class="flex justify-end">
-		  <button type="button" id="cancel-modal-password" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg mr-2">Cancel</button>
-		  <button type="button" id="save-modal-password" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Save</button>
+		  <button type="button" id="cancel-modal-password" class="btn-pong-tertiary px-4 py-2 rounded-lg mr-2">Cancel</button>
+		  <button type="button" id="save-modal-password" class="btn-pong-primary px-4 py-2 rounded-lg">Save</button>
 		</div>
 	  </form>
 	</div>

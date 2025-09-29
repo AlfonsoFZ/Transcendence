@@ -1095,9 +1095,6 @@
   .border-indigo-700 {
     border-color: var(--color-indigo-700);
   }
-  .border-international-orange-200 {
-    border-color: var(--color-international-orange-200);
-  }
   .border-international-orange-300 {
     border-color: var(--color-international-orange-300);
   }
@@ -1109,6 +1106,9 @@
   }
   .border-pong-bg-primary {
     border-color: var(--color-pong-bg-primary);
+  }
+  .border-pong-bg-tertiary {
+    border-color: var(--color-pong-bg-tertiary);
   }
   .border-pong-line {
     border-color: var(--color-pong-line);
@@ -1125,14 +1125,8 @@
   .border-slate-300 {
     border-color: var(--color-slate-300);
   }
-  .border-slate-600 {
-    border-color: var(--color-slate-600);
-  }
   .border-supernova-400 {
     border-color: var(--color-supernova-400);
-  }
-  .border-transparent {
-    border-color: transparent;
   }
   .border-white {
     border-color: var(--color-white);
@@ -1148,12 +1142,6 @@
   }
   .border-t-chilean-fire-500 {
     border-top-color: var(--color-chilean-fire-500);
-  }
-  .border-t-pong-bg-tertiary {
-    border-top-color: var(--color-pong-bg-tertiary);
-  }
-  .border-b-pong-bg-primary {
-    border-bottom-color: var(--color-pong-bg-primary);
   }
   .border-b-pong-bg-tertiary {
     border-bottom-color: var(--color-pong-bg-tertiary);
@@ -1196,9 +1184,6 @@
   }
   .bg-gray-200 {
     background-color: var(--color-gray-200);
-  }
-  .bg-gray-500 {
-    background-color: var(--color-gray-500);
   }
   .bg-gray-600 {
     background-color: var(--color-gray-600);
@@ -1277,22 +1262,6 @@
   }
   .bg-yellow-700 {
     background-color: var(--color-yellow-700);
-  }
-  .bg-gradient-to-b {
-    --tw-gradient-position: to bottom in oklab;
-    background-image: linear-gradient(var(--tw-gradient-stops));
-  }
-  .from-candlelight-400 {
-    --tw-gradient-from: var(--color-candlelight-400);
-    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
-  }
-  .via-chilean-fire-500 {
-    --tw-gradient-via: var(--color-chilean-fire-500);
-    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
-    --tw-gradient-stops: var(--tw-gradient-via-stops);
-  }
-  .\[background-clip\:padding-box\,border-box\] {
-    background-clip: padding-box,border-box;
   }
   .fill-gray-500 {
     fill: var(--color-gray-500);
@@ -1582,14 +1551,14 @@
   .text-international-orange-600 {
     color: var(--color-international-orange-600);
   }
+  .text-international-orange-700 {
+    color: var(--color-international-orange-700);
+  }
   .text-orange-500 {
     color: var(--color-orange-500);
   }
   .text-pong-text-muted {
     color: var(--color-pong-text-muted);
-  }
-  .text-pong-text-primary {
-    color: var(--color-pong-text-primary);
   }
   .text-pong-text-secondary {
     color: var(--color-pong-text-secondary);
@@ -1647,6 +1616,16 @@
       color: var(--color-candlelight-200);
     }
   }
+  .placeholder-candlelight-400 {
+    &::placeholder {
+      color: var(--color-candlelight-400);
+    }
+  }
+  .placeholder-chilean-fire-500 {
+    &::placeholder {
+      color: var(--color-chilean-fire-500);
+    }
+  }
   .placeholder-gray-400 {
     &::placeholder {
       color: var(--color-gray-400);
@@ -1667,13 +1646,15 @@
       color: var(--color-international-orange-400);
     }
   }
+  .placeholder-international-orange-700 {
+    &::placeholder {
+      color: var(--color-international-orange-700);
+    }
+  }
   .placeholder-pong-text-muted {
     &::placeholder {
       color: var(--color-pong-text-muted);
     }
-  }
-  .caret-candlelight-400 {
-    caret-color: var(--color-candlelight-400);
   }
   .opacity-0 {
     opacity: 0%;
@@ -1843,13 +1824,6 @@
       }
     }
   }
-  .hover\:bg-chilean-fire-800 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-chilean-fire-800);
-      }
-    }
-  }
   .hover\:bg-gray-200 {
     &:hover {
       @media (hover: hover) {
@@ -1910,13 +1884,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-indigo-800);
-      }
-    }
-  }
-  .hover\:bg-international-orange-400 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-international-orange-400);
       }
     }
   }
@@ -1987,16 +1954,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-red-800);
-      }
-    }
-  }
-  .hover\:bg-sky-700\/80 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(50% 0.134 242.749) 80%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          background-color: color-mix(in oklab, var(--color-sky-700) 80%, transparent);
-        }
       }
     }
   }
@@ -2107,6 +2064,13 @@
       }
     }
   }
+  .hover\:ring-candlelight-400 {
+    &:hover {
+      @media (hover: hover) {
+        --tw-ring-color: var(--color-candlelight-400);
+      }
+    }
+  }
   .hover\:brightness-110 {
     &:hover {
       @media (hover: hover) {
@@ -2120,9 +2084,19 @@
       border-color: var(--color-candlelight-400);
     }
   }
+  .focus\:border-chilean-fire-500 {
+    &:focus {
+      border-color: var(--color-chilean-fire-500);
+    }
+  }
   .focus\:border-international-orange-300 {
     &:focus {
       border-color: var(--color-international-orange-300);
+    }
+  }
+  .focus\:border-international-orange-700 {
+    &:focus {
+      border-color: var(--color-international-orange-700);
     }
   }
   .focus\:shadow-\[0_0_0_3px_rgba\(255\,215\,0\,0\.3\)\,0_0_15px_rgba\(255\,215\,0\,0\.4\)\] {
@@ -2171,6 +2145,11 @@
       --tw-ring-color: var(--color-candlelight-400);
     }
   }
+  .focus\:ring-chilean-fire-500 {
+    &:focus {
+      --tw-ring-color: var(--color-chilean-fire-500);
+    }
+  }
   .focus\:ring-green-300 {
     &:focus {
       --tw-ring-color: var(--color-green-300);
@@ -2194,6 +2173,11 @@
   .focus\:ring-international-orange-400 {
     &:focus {
       --tw-ring-color: var(--color-international-orange-400);
+    }
+  }
+  .focus\:ring-international-orange-700 {
+    &:focus {
+      --tw-ring-color: var(--color-international-orange-700);
     }
   }
   .focus\:ring-lime-300 {
@@ -2235,11 +2219,6 @@
     &:focus {
       outline-style: var(--tw-outline-style);
       outline-width: 2px;
-    }
-  }
-  .focus\:outline-gray-400 {
-    &:focus {
-      outline-color: var(--color-gray-400);
     }
   }
   .focus\:outline-international-orange-400 {
@@ -2977,48 +2956,6 @@
   inherits: false;
   initial-value: solid;
 }
-@property --tw-gradient-position {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-gradient-from {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: #0000;
-}
-@property --tw-gradient-via {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: #0000;
-}
-@property --tw-gradient-to {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: #0000;
-}
-@property --tw-gradient-stops {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-gradient-via-stops {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-gradient-from-position {
-  syntax: "<length-percentage>";
-  inherits: false;
-  initial-value: 0%;
-}
-@property --tw-gradient-via-position {
-  syntax: "<length-percentage>";
-  inherits: false;
-  initial-value: 50%;
-}
-@property --tw-gradient-to-position {
-  syntax: "<length-percentage>";
-  inherits: false;
-  initial-value: 100%;
-}
 @property --tw-leading {
   syntax: "*";
   inherits: false;
@@ -3213,15 +3150,6 @@
       --tw-space-y-reverse: 0;
       --tw-space-x-reverse: 0;
       --tw-border-style: solid;
-      --tw-gradient-position: initial;
-      --tw-gradient-from: #0000;
-      --tw-gradient-via: #0000;
-      --tw-gradient-to: #0000;
-      --tw-gradient-stops: initial;
-      --tw-gradient-via-stops: initial;
-      --tw-gradient-from-position: 0%;
-      --tw-gradient-via-position: 50%;
-      --tw-gradient-to-position: 100%;
       --tw-leading: initial;
       --tw-font-weight: initial;
       --tw-tracking: initial;

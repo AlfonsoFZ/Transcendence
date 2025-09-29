@@ -32,8 +32,13 @@ function changePassword() {
             newPassword: formData.get('new-password'),
             confirmPassword: formData.get('confirm-password')
         };
+        if (data.newPassword === null || data.newPassword.toString().trim() === "" ||
+            data.confirmPassword === null || data.confirmPassword.toString().trim() === "") {
+            showMessage("One or more fields are empty", null);
+            return;
+        }
         if (data.newPassword !== data.confirmPassword) {
-            showMessage("New password and confirmation do not match", null);
+            showMessage("New password and confirmation password do not match", null);
             return;
         }
         console.log("Form data:", data);
@@ -54,9 +59,20 @@ function changePassword() {
                     changePasswordModal.classList.add("hidden");
                 }
             }
+            else {
+                const errorResponse = yield response.json();
+                showMessage(`Error: ${errorResponse.message}`, null);
+            }
         }
         catch (error) {
-            console.error("Error changing password:", error);
+            if (error instanceof Error) {
+                showMessage(error.message, null);
+                console.error("Error changing password:", error);
+            }
+            else {
+                showMessage('An unexpected error occurred', null);
+                console.error("Error changing password:", error);
+            }
         }
     }));
     cancelModalButton === null || cancelModalButton === void 0 ? void 0 : cancelModalButton.addEventListener("click", () => {
@@ -87,11 +103,11 @@ function cancel() {
     const editButton = document.getElementById("edit-button");
     const changePasswordButton = document.getElementById("change-password-button");
     editButton.innerHTML = 'Edit info';
-    editButton.classList.replace("bg-green-500", "bg-blue-500");
-    editButton.classList.replace("hover:bg-green-600", "hover:bg-blue-600");
+    editButton.classList.replace("btn-pong-secondary", "btn-pong-primary");
+    // editButton!.classList.replace("hover:bg-green-600", "hover:bg-blue-600");
     changePasswordButton.innerHTML = 'Change password';
-    changePasswordButton.classList.replace("bg-red-500", "bg-orange-500");
-    changePasswordButton.classList.replace("hover:bg-red-600", "hover:bg-orange-600");
+    changePasswordButton.classList.replace("btn-pong-tertiary", "btn-pong-secondary");
+    // changePasswordButton!.classList.replace("hover:bg-red-600" , "hover:bg-orange-600");
     changePasswordButton === null || changePasswordButton === void 0 ? void 0 : changePasswordButton.removeEventListener("click", cancel);
     changePasswordButton === null || changePasswordButton === void 0 ? void 0 : changePasswordButton.addEventListener("click", changePassword);
 }
@@ -110,8 +126,8 @@ function editInfo() {
         originalTournamentusername = Tournamentusername.value;
         inputs.forEach(input => input.removeAttribute("readonly"));
         inputs.forEach(input => {
-            input.style.backgroundColor = "#fff"; // Cambia el fondo a un color claro para indicar que es editable
-            input.style.color = "oklch(37.3% 0.034 259.733)"; // Example of using OKLCH color in CSS
+            input.style.backgroundColor = "#222121";
+            input.style.color = " #e0e0e0";
         });
         const cancelButton = document.getElementById("change-password-button");
         cancelButton === null || cancelButton === void 0 ? void 0 : cancelButton.removeEventListener('click', changePassword);
@@ -214,20 +230,20 @@ export function handleProfile() {
             if (editButton.innerHTML === 'Edit info') {
                 editInfo(); // Habilitas los campos o haces lo que necesites
                 editButton.innerHTML = 'Save';
-                editButton.classList.replace("bg-blue-500", "bg-green-500");
-                editButton.classList.replace("hover:bg-blue-600", "hover:bg-green-600");
+                editButton.classList.replace("btn-pong-secondary", "btn-pong-primary");
+                // editButton.classList.replace("hover:bg-blue-600","hover:bg-green-600");
                 changePasswordButton.innerHTML = 'Cancel';
-                changePasswordButton.classList.replace("bg-orange-500", "bg-red-500");
-                changePasswordButton.classList.replace("hover:bg-orange-600", "hover:bg-red-600");
+                changePasswordButton.classList.replace("btn-pong-secondary", "btn-pong-tertiary");
+                // changePasswordButton!.classList.replace("hover:bg-orange-600", "hover:bg-red-600");
             }
             else {
                 saveInfo(); // Guardas los datos
                 editButton.innerHTML = 'Edit info';
-                editButton.classList.replace("bg-green-500", "bg-blue-500");
-                editButton.classList.replace("hover:bg-green-600", "hover:bg-blue-600");
+                editButton.classList.replace("btn-pong-secondary", "btn-pong-primary");
+                //   editButton.classList.replace("hover:bg-green-600", "hover:bg-blue-600");
                 changePasswordButton.innerHTML = 'Change password';
-                changePasswordButton.classList.replace("bg-red-500", "bg-orange-500");
-                changePasswordButton.classList.replace("hover:bg-red-600", "hover:bg-orange-600");
+                changePasswordButton.classList.replace("btn-pong-tertiary", "btn-pong-secondary");
+                //   changePasswordButton!.classList.replace("hover:bg-red-600" , "hover:bg-orange-600");
             }
         });
         if ((editButton === null || editButton === void 0 ? void 0 : editButton.innerHTML) === 'Edit info') {
