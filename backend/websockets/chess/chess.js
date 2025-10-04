@@ -51,12 +51,16 @@ function formatTime(time) {
 
 async function updateChessRatings(user, message) {
 
-	console.log(user.id);
 	const board = chessboard.get(user.id);
 	let diff = 0;
 
 	if (board && board.gameMode === 'online') {
 		if (message.winner && user.id === message.winnerId) {
+			diff = await crud.user.calculateElo(message.winnerId, message.loserId, 1);
+			board.hostId === message.winnerId ? board.hostElo += diff : board.guestElo += diff;
+			board.hostId === message.loserId ?  board.hostElo -= diff : board.guestElo -= diff;
+		}
+		else if (message.type === 'resignation') {
 			diff = await crud.user.calculateElo(message.winnerId, message.loserId, 1);
 			board.hostId === message.winnerId ? board.hostElo += diff : board.guestElo += diff;
 			board.hostId === message.loserId ?  board.hostElo -= diff : board.guestElo -= diff;
@@ -120,7 +124,42 @@ function sendLobbyToAllClients() {
 	sendMsgToAll(message);
 }
 
-function createLobby(user, data) {
+
+async function sendLobbyToTargetClients() {
+
+	for (const [id, client] of clients) {
+
+		const targetUser = await crud.user.getUserById(id);
+
+		const filteredLobbies = [];
+		for (const lobbyData of lobby.values()) {
+
+			const lobbyOwner = await crud.user.getUserById(lobbyData.userId);
+			
+			const minRating = parseInt(lobbyData.minRating);
+			const maxRating = parseInt(lobbyData.maxRating);
+
+			const realMin = lobbyOwner.chessRating + minRating;
+			const realMax = lobbyOwner.chessRating + maxRating;
+
+			if (targetUser.chessRating >= realMin && targetUser.chessRating <= realMax)
+				filteredLobbies.push(lobbyData);
+		}
+
+		if (filteredLobbies.length > 0) {
+			console.log("Hello")
+			const message = {
+				type: 'lobby',
+				object: filteredLobbies
+			};
+			client.send(JSON.stringify(message));
+		}
+	}
+}
+
+
+
+async function createLobby(user, data) {
 
 	const newLobby = {
 		userId: user.id,
@@ -133,7 +172,7 @@ function createLobby(user, data) {
 		rating: user.chessRating,
 	}
 	lobby.set(user.id, newLobby);
-	sendLobbyToAllClients();
+	await sendLobbyToTargetClients();
 }
 
 function deleteLobby(id) {
@@ -266,7 +305,7 @@ function updateTimePlayers(user, board) {
 
 	board.intervalId = setInterval(async () => {
 
-		if (board.mateType) {
+		if (!board.timeOut && (board.mateType || !board.gameState)) {
 			clearInterval(board.intervalId);
 			return;
 		}
@@ -288,7 +327,6 @@ function updateTimePlayers(user, board) {
 			await updateChessRatings(user, message, 1);
 			return;
 		}
-
 		sendMsgToClient(board.hostId, {
 			type: 'time',
 			playerTime: board.hostColorView === board.hostColor ? formatTime(board.hostTime) : formatTime(board.guestTime),
@@ -546,7 +584,7 @@ export function handleIncomingSocketMessage(user, socket) {
 					sendInfoToClient(user);
 					break;
 				case 'lobby':
-					sendLobbyToAllClients();
+					sendLobbyToTargetClients();
 					break;
 				case 'config':
 					if (data.gameMode === 'online')
