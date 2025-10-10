@@ -69,8 +69,10 @@ function sortUsersAlphabetically(htmlContent) {
     return sortedHtml;
 }
 function handleSocketMessage(socket, chatMessages, items, name) {
+    console.warn("handleSocketMessage: ", socket, chatMessages, items, name);
     socket.onmessage = (event) => __awaiter(this, void 0, void 0, function* () {
         const data = JSON.parse(event.data);
+        console.log("Received data:", data);
         if (data.type === 'message') {
             const HtmlContent = yield formatMsgTemplate(data, name);
             let stored = sessionStorage.getItem("chatHTML") || "";

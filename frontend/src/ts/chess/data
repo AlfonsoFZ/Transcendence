@@ -1,0 +1,510 @@
+Draw online: 
+{
+  "type": "agreement",
+  "hostId": 1,
+  "guestId": 2,
+  "moveFrom": null,
+  "moveTo": null,
+  "lastMoveFrom": null,
+  "lastMoveTo": null,
+  "move": 0,
+  "color": "black",
+  "notation": null,
+  "board": [
+    [
+      "br",
+      "bn",
+      "bb",
+      "bq",
+      "bk",
+      "bb",
+      "bn",
+      "br"
+    ],
+    [
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp"
+    ],
+    [
+      "wr",
+      "wn",
+      "wb",
+      "wq",
+      "wk",
+      "wb",
+      "wn",
+      "wr"
+    ]
+  ]
+}
+
+{
+  "type": "agreement",
+  "hostId": 6,
+  "guestId": 6,
+  "moveFrom": null,
+  "moveTo": null,
+  "lastMoveFrom": null,
+  "lastMoveTo": null,
+  "move": 0,
+  "color": "black",
+  "notation": null,
+  "board": [
+    [
+      "br",
+      "bn",
+      "bb",
+      "bq",
+      "bk",
+      "bb",
+      "bn",
+      "br"
+    ],
+    [
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp"
+    ],
+    [
+      "wr",
+      "wn",
+      "wb",
+      "wq",
+      "wk",
+      "wb",
+      "wn",
+      "wr"
+    ]
+  ]
+}
+
+
+resignation online:{
+{
+  "type": "resignation",
+  "hostId": 2,
+  "guestId": 1,
+  "moveFrom": null,
+  "moveTo": null,
+  "lastMoveFrom": null,
+  "lastMoveTo": null,
+  "move": 0,
+  "color": "black",
+  "notation": null,
+  "board": [
+    [
+      "br",
+      "bn",
+      "bb",
+      "bq",
+      "bk",
+      "bb",
+      "bn",
+      "br"
+    ],
+    [
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp"
+    ],
+    [
+      "wr",
+      "wn",
+      "wb",
+      "wq",
+      "wk",
+      "wb",
+      "wn",
+      "wr"
+    ]
+  ],
+  "winner": "alfonso",
+  "winnerId": 2,
+  "loser": "ismael",
+  "loserId": 1
+}
+
+Resignation offline:
+{
+  "type": "resignation",
+  "hostId": 2,
+  "guestId": 2,
+  "moveFrom": null,
+  "moveTo": null,
+  "lastMoveFrom": null,
+  "lastMoveTo": null,
+  "move": 0,
+  "color": "black",
+  "notation": null,
+  "board": [
+    [
+      "br",
+      "bn",
+      "bb",
+      "bq",
+      "bk",
+      "bb",
+      "bn",
+      "br"
+    ],
+    [
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp",
+      "bp"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "wp"
+    ],
+    [
+      "wr",
+      "wn",
+      "wb",
+      "wq",
+      "wk",
+      "wb",
+      "wn",
+      "wr"
+    ]
+  ],
+  "winner": "alfonso",
+  "winnerId": 2,
+  "loser": "Guest",
+  "loserId": 2
+}
+
+jaqueMate Online:
+	{
+  "type": "checkmate",
+  "hostId": 6,
+  "guestId": 2,
+  "moveFrom": "47",
+  "moveTo": "65",
+  "lastMoveFrom": "47",
+  "lastMoveTo": "65",
+  "move": 6,
+  "color": "black",
+  "notation": "♛xf2++",
+  "board": [
+    [
+      "br",
+      "bn",
+      "bb",
+      null,
+      "bk",
+      null,
+      "bn",
+      "br"
+    ],
+    [
+      "wn",
+      "bp",
+      null,
+      "bp",
+      null,
+      "bp",
+      "bp",
+      "bp"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      "bb",
+      null,
+      "bp",
+      null,
+      null,
+      null
+    ],
+    [
+      "wp",
+      null,
+      "bp",
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      "wr",
+      "wp",
+      "wp",
+      "wp",
+      "wp",
+      "bq",
+      "wp",
+      "wp"
+    ],
+    [
+      null,
+      null,
+      "wb",
+      "wq",
+      "wk",
+      "wb",
+      "wn",
+      "wr"
+    ]
+  ],
+  "winner": "alfonso",
+  "winnerId": 2,
+  "loser": "Sofia",
+  "loserId": 6,
+  "playerColorView": "black"
+}
+
+Timeout online:
+{
+  "type": "timeout",
+  "winner": "alfonso",
+  "winnerId": 2,
+  "loser": "Sofia",
+  "loserId": 6
+}
+
+TimeoutLocal:
+{
+  "type": "timeout",
+  "winner": "Guest",
+  "winnerId": 6,
+  "loser": "Sofia",
+  "loserId": 6
+}

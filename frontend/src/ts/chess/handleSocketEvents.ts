@@ -44,12 +44,14 @@ function handleSocketMessage() {
 			case 'move':
 				chessboard!.set(data);
 				setupChessboard(chessboard!, null, null);
-				if (data.notation.includes('O'))
-					notificationSound('castle');
-				else if (data.notation.includes('x'))
-					notificationSound('capture');
-				else
-					notificationSound('move');
+				if (data && data.notation) {
+					if (data.notation.includes('O'))
+						notificationSound('castle');
+					else if (data.notation.includes('x'))
+						notificationSound('capture');
+					else
+						notificationSound('move');
+				}
 				updateOrInsertNotation(data.move, data.color, data.notation);
 				break;
 			case 'time':

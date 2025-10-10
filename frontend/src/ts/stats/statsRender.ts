@@ -1,53 +1,73 @@
 import { Step } from '../spa/stepRender.js';
 import { handleStats } from './handleStats.js'; 
+import { StatsUI } from './StatsUI.js';
+
+const DEFAULT_CONTAINER_ID = "stats-container";
 
 export default class Stats extends Step {
-	async render(appElement: HTMLElement): Promise<void>  {
-		sessionStorage.setItem("current-view", "Stats");
-		// Removed unused variable menuContainer
-		if (!this.username) {
-			this.username = await this.checkAuth();
-		}
-		console.log("Valor de user en Stats render:", this.username);
-		// const usernameencode = this.username ? encodeURIComponent(this.username) : '';
-			// const user = this.username;
-			try{
-			const url = `https://localhost:8443/back/get_user_gamelogs`;
-			const getUserResponse = await fetch(`${url}`, {
-				method: "GET",
-				credentials: "include"
-			});
 
-			if (!getUserResponse.ok) {
-				throw new Error("Error retrieving stats");
-			}
-			const userStats = await getUserResponse.json();
-			console.log("userStats:", userStats);
-			if (userStats) {
-				try{
-				const response = await fetch("../../html/stats/stats.html");
-				if (!response.ok) throw new Error("Failed to load the HTML file");
-
-				let htmlContent = await response.text();
-				htmlContent = htmlContent
-					.replace("{{ totalGames }}", userStats.totalGames.toString())
-					.replace("{{ wins }}", userStats.wins.toString())
-					.replace("{{ losses }}", userStats.losses.toString())
-					.replace("{{ timePlayed }}", userStats.timePlayed.toString())
-					.replace("{{ tournamentsPlayed }}", userStats.tournamentsPlayed.toString())
-					.replace("{{ tournamentsWon }}", userStats.tournamentsWon.toString());
-				appElement.innerHTML =  htmlContent;
-				handleStats(userStats);
-				}catch (error) {
-					console.error("Error loading HTML file:", error);
-					appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
-				}
-			}
-		} catch (error) {
-			console.error("Error rendering Stats element:", error);
-			appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+		protected	ui: StatsUI;
+		constructor(containerId: string = DEFAULT_CONTAINER_ID, id?: string)
+		{
+			super(containerId);
+			this.ui = new StatsUI(this);
 		}
+
+	async render(appElement: HTMLElement): Promise<void>
+	{
+		await this.ui.initializeUI(appElement);
 	}
+
+	// async render(appElement: HTMLElement): Promise<void>  {
+	// 	sessionStorage.setItem("current-view", "Stats");
+	// 	// Removed unused variable menuContainer
+	// 	if (!this.username) {
+	// 		this.username = await this.checkAuth();
+	// 	}
+	// 	console.log("Valor de user en Stats render:", this.username);
+	// 	// const usernameencode = this.username ? encodeURIComponent(this.username) : '';
+	// 		// const user = this.username;
+	// 		try{
+	// 		const url = `https://localhost:8443/back/get_user_gamelogs`;
+	// 		const getUserResponse = await fetch(`${url}`, {
+	// 			method: "GET",
+	// 			credentials: "include"
+	// 		});
+
+	// 		if (!getUserResponse.ok) {
+	// 			throw new Error("Error retrieving stats");
+	// 		}
+	// 		const userStats = await getUserResponse.json();
+	// 		console.log("userStats:", userStats);
+	// 		if (userStats) {
+	// 			try{
+	// 			const response = await fetch("../../html/stats/stats.html");
+	// 			if (!response.ok) throw new Error("Failed to load the HTML file");
+
+	// 			let htmlContent = await response.text();
+	// 			htmlContent = htmlContent
+	// 				.replace("{{ totalGames }}", userStats.totalGames.toString())
+	// 				.replace("{{ wins }}", userStats.wins.toString())
+	// 				.replace("{{ losses }}", userStats.losses.toString())
+	// 				.replace("{{ timePlayed }}", userStats.timePlayed.toString())
+	// 				.replace("{{ tournamentsPlayed }}", userStats.tournamentsPlayed.toString())
+	// 				.replace("{{ winsInTournaments }}", userStats.winsInTournaments.toString());
+	// 			appElement.innerHTML =  htmlContent;
+	// 			handleStats(userStats);
+				
+	// 			
+	// 			}catch (error) {
+	// 				console.error("Error loading HTML file:", error);
+	// 				appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+	// 			}
+	// 		}
+	// 	} catch (error) {
+	// 		console.error("Error rendering Stats element:", error);
+	// 		appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+	// 	}
+	// }
+
+
 }
 
 

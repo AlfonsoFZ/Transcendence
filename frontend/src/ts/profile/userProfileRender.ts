@@ -66,7 +66,7 @@ export default class Profile extends Step {
 							.replace("{{ losses }}", userStats.losses.toString())
 							.replace("{{ timePlayed }}", userStats.timePlayed.toString())
 							.replace("{{ tournamentsPlayed }}", userStats.tournamentsPlayed.toString())
-							.replace("{{ tournamentsWon }}", userStats.tournamentsWon.toString());
+							.replace("{{ winsInTournaments }}", userStats.winsInTournaments.toString());
 							statContainer.innerHTML =  htmlContent;
 						}catch (error) {
 							console.error("Error loading HTML file:", error);

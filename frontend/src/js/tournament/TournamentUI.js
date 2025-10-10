@@ -487,7 +487,7 @@ export class TournamentUI {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("en getFirstPlayrer tournament:Gameplayers: " + JSON.stringify(this.tournament.getTournamentPlayers()));
             try {
-                const response = yield fetch("https://localhost:8443/back//verify_first_player", {
+                const response = yield fetch("https://localhost:8443/back/verify_first_player", {
                     method: "POST",
                     credentials: 'include',
                 });

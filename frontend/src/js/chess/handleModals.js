@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 export function hidePromotionOptions() {
     var _a, _b;
     (_a = document.getElementById("board-overlay")) === null || _a === void 0 ? void 0 : _a.classList.add("hidden");
@@ -28,6 +37,61 @@ export function hideGameOverOptions() {
     var _a;
     (_a = document.getElementById("modal-game-over")) === null || _a === void 0 ? void 0 : _a.classList.add("hidden");
 }
+export function saveChessGame(data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("saveChessGame: ", data);
+        let Chessgamelog = {
+            user1: data.hostId,
+            user2: data.hostId && data.hostId !== data.guestId ? data.guestId : -2, // -2 for guest player
+            draw: false,
+            winner: (data.winner === "Guest") ? -2 : data.winnerId,
+            loser: (data.loser === "Guest") ? -2 : data.loserId,
+            winnerStr: data.winner,
+            loserStr: data.loser,
+            color: data.color,
+            endtype: data.type,
+        };
+        if (Chessgamelog.user2 === null || Chessgamelog.user2 === undefined
+            || Chessgamelog.user1 === null || Chessgamelog.user1 === undefined) {
+            if (data.winner === "Guest" || data.loser === "Guest") {
+                Chessgamelog.user2 = -2; // -2 for guest player
+            }
+            else {
+                Chessgamelog.user1 = data.winnerId;
+                Chessgamelog.user2 = data.loserId;
+            }
+        }
+        // If draw, set winner and loser to null
+        if (data.type === "agreement") {
+            Chessgamelog.draw = true;
+            Chessgamelog.winner = null;
+            Chessgamelog.loser = null;
+            Chessgamelog.winnerStr = null;
+            Chessgamelog.loserStr = null;
+        }
+        console.log("Chessgamelog to be sent: ", Chessgamelog);
+        try {
+            const response = yield fetch("https://localhost:8443/back/post_chessgamelog", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Chessgamelog)
+            });
+            const result = yield response.json();
+            if (!response.ok) {
+                console.log(`Error: ${result.message}`);
+            }
+            else {
+                console.log("Game log saved successfully:", result);
+            }
+        }
+        catch (error) {
+            console.error("Error while verifying:", error);
+        }
+    });
+}
 export function showGameOverOptions(data) {
     var _a, _b, _c, _d;
     showBoardOverlay();
@@ -35,6 +99,7 @@ export function showGameOverOptions(data) {
     hideConfirmationDraw();
     hideConfirmationResign();
     hideRequestDrawOptions();
+    saveChessGame(data);
     (_a = document.getElementById("modal-game-over")) === null || _a === void 0 ? void 0 : _a.classList.remove("hidden");
     (_b = document.getElementById("draw")) === null || _b === void 0 ? void 0 : _b.classList.add("hidden");
     (_c = document.getElementById("resign")) === null || _c === void 0 ? void 0 : _c.classList.add("hidden");

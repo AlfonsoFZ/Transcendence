@@ -1,48 +1,169 @@
-<div id="stats-container" class="text-white items-center justify-center w-full">
-	<div id="stats-title-container" class="flex w-full basis-full items-center justify-center">
-		<h2 id="stats-tittle" class="text-xl font-bold text-white mb-4">Statistics</h2>
+<div id="stats-wrapper" class="text-white items-center self-start w-full">
+	<div class="bg-pong-secondary rounded-lg w-full max-w-[80vw] mx-auto mb-2 pb-4 lg:mb-0 lg:pb-0 transition-all duration-200 ease-in-out">
+	<div id="stats-title-container" class="bg-pong-secondary rounded-lg flex flex-col lg:flex-row w-[90%] max-w-lg mx-auto items-center justify-center gap-4 mb-2 transition-all duration-200 ease-in-out">
+		<!-- <h2 id="stats-tittle" class="text-xl font-bold text-white mb-4">Statistics</h2> -->
+		<div id="stats-game_selector" style="display:flex;" 
+			class="bg-pong-secondary rounded-lg mx-auto my-0 pt-6 lg:pt-0 lg:my-2 flex flex-col items-center lg:items-end w-full max-w-[80vw] lg:w-[42vw] transition-all duration-200 ease-in-out">
+			<h2 id="stat-game_selector_title" class="text-center lg:flex text-sm text-pong-bg-tertiary font-bold lg:text-left ">Choose a game stat:</h2>
+		</div>
+		<div class="bg-pong-secondary rounded-lg w-full max-w-[80vw] my-0 lg:my-2 flex flex-col items-center lg:items-start lg:text-left lg:w-[48vw] transition-all duration-200 ease-in-out">
+			<form class="max-w-sm ">
+			  <!-- <label for="stats_select" class="sr-only">Underline select</label> -->
+			  <select id="stats_select" class="block py-0 lg:py-2.5 px-0 w-full text-center lg:text-left text-sm text-candlelight-400 bg-transparent border-0 appearance-none  
+			  		cursor-pointer focus:outline-none focus:ring-0 focus:border-candlelight-400">
+			      <option selected value="NONE"  >Click to choose a game</option>
+			      <option value="CP" >Clasic Pong</option>
+				  <option value="PT" >Pong Tournament</option>
+			      <option value="CH" >Chess</option>	
+			  </select>
+			</form>
+		</div>
+			<!--hiiden by default if a refresh function is implemented, choose an event to add and play with flex and hidden to toggle visibility or just leave it as flex-->
+		<div class="text-candlelight-400 mr-0 lg:mr-4 mb-4 lg:mb-0 px-2 w-8 h-8 bg-international-orange-700 items-center justify-center rounded-full hidden">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+			</svg>
+		</div>
+	</div>	
 	</div>
-	<div id="stats-content" class="flex flex-col items-center gap-8 px-4">
+	<!-- Pong -->
+			<div id="pong-stats-content" class=" flex-col items-center gap-8 px-4 flex"  style="display:none;">
+				<!-- Estadísticas -->
+				<div id="stats-component-list" class="bg-pong-secondary  shadow-lg rounded-lg p-6 w-full max-w-[80vw] mx-auto mb-2 transition-all duration-200 ease-in-out">
+				  <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-evenly gap-4 xl:gap-8">
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Total Games:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-chilean-fire-500 "> {{ totalGames }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Wins:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-candlelight-400"> {{ wins }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Losses:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-international-orange-700"> {{ losses }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Time Played:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-international-orange-600"> {{ timePlayed }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400 hidden lg:block">Total<br>Tourn. Games:</p>
+					  <p class="text-sm text-gray-400 lg:hidden">Total Tournaments Games:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-chilean-fire-500"> {{ tournamentsGames }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400 hidden lg:block">Tourn.<br>Games Wins:</p>
+					  <p class="text-sm text-gray-400 lg:hidden">Tournament Games Wins:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-candlelight-400"> {{ winsInTournaments }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400 hidden lg:block">Tourn.<br>Games lossses:</p>
+					  <p class="text-sm text-gray-400 lg:hidden">Tournament Games lossses:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-international-orange-700"> {{ lossesInTournaments }}</p>
+					</div>
+					</div>
+				</div>
+				<!-- Gráficos -->
+				<div class="flex flex-col lg:flex-row justify-center items-center gap-8 w-full max-w-[80vw] mx-auto bg-pong-secondary pb-6 pt-6 rounded-lg transition-all duration-200 ease-in-out">
+					<div id="stats-component-games-chart" class="mx-auto flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px] transition-all duration-200 ease-in-out">
+						<h3>Games</h3>
+					  	<canvas id="statsChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]"></canvas>
+					</div>
+					<div id="stats-component-tournament-chart" class="mx-auto flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px] transition-all duration-200 ease-in-out">
+						<h3>Games In Tournaments</h3>
+						<canvas id="statsTournamentChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]	"></canvas>
+					</div>
+				  </div>
+			</div>
+	<!-- Tournament -->
+			<div id="pong-tournament-stats-content" class=" flex-col items-center gap-8 px-4 flex"  style="display:none;" > 
+					<div id="stats-component-list" class="bg-pong-secondary  shadow-lg rounded-lg p-6 w-full max-w-[80vw] mx-auto mb-2 transition-all duration-200 ease-in-out">
+				  <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-evenly gap-4 xl:gap-8">
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Total Games:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-blue-400"> {{ totalGames }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Wins:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-green-400"> {{ wins }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Losses:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-red-400"> {{ losses }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Time Played:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-yellow-400"> {{ timePlayed }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Tournaments Played:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-purple-400"> {{ tournamentsPlayed }}</p>
+					</div>
+					<div class="flex justify-between items-center w-full lg:w-auto">
+					  <p class="text-sm text-gray-400">Tournaments Games Won:</p>
+					  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-indigo-400"> {{ winsInTournaments }}</p>
+					</div>
+				  </div>
+				</div>
+				<!-- Gráficos -->
+				<div class="flex flex-col lg:flex-row justify-center items-center gap-8 w-full max-w-[80vw] mx-auto bg-pong-secondary pb-6 pt-6 rounded-lg transition-all duration-200 ease-in-out">
+					<div id="stats-component-games-chart" class="mx-auto flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px] transition-all duration-200 ease-in-out">
+						<h3>Games</h3>
+					  	<canvas id="statsChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]"></canvas>
+					</div>
+					<div id="stats-component-tournament-chart" class="mx-auto flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px] transition-all duration-200 ease-in-out">
+						<h3>Games In Tournaments</h3>
+						<canvas id="statsTournamentChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]	"></canvas>
+					</div>
+				  </div>
+			</div>
+	<!-- Chess -->
+	<div id="chess-stats-content" class=" flex-col items-center gap-8 px-4 flex"  style="display:none;" >
 		<!-- Estadísticas -->
-		<div id="stats-component-list" class="bg-pong-secondary  shadow-lg rounded-lg p-6 w-full max-w-[80vw]">
-		  <div class="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between gap-8">
-			<div class="flex justify-between items-center w-full lg:w-auto">
-			  <p class="text-sm text-gray-400">Total Games:</p>
-			  <p class="text-lg lg:text-4xl font-bold ml-1 text-blue-400"> {{ totalGames }}</p>
+		<div id="chess-stats-component-list" class="bg-pong-secondary rounded-lg p-6 w-full max-w-[80vw] mx-auto mb-2 transition-all duration-200 ease-in-out">
+		  	<div class="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-evenly gap-4 xl:gap-8">
+				<div class="flex justify-between items-center w-full lg:w-auto">
+				  <p class="text-sm text-gray-400">Total Games:</p>
+				  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-chilean-fire-500 "> {{ totalGames }}</p>
+				</div>
+				<div class="flex justify-between items-center w-full lg:w-auto">
+				  <p class="text-sm text-gray-400">Wins:</p>
+				  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-candlelight-400"> {{ wins }}</p>
+				</div>
+				<div class="flex justify-between items-center w-full lg:w-auto">
+				  <p class="text-sm text-gray-400">Draws:</p>
+				  <!-- <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-chilean-fire-500"> {{ tournamentsGames }}</p> -->
+				  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-chilean-fire-500"> {{ draws }}</p>
+				</div>
+				<div class="flex justify-between items-center w-full lg:w-auto">
+				  <p class="text-sm text-gray-400">Losses:</p>
+				  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-international-orange-700"> {{ losses }}</p>
+				</div>
+				<div class="flex justify-between items-center w-full lg:w-auto">
+				  <p class="text-sm text-gray-400 hidden lg:block">Wins By<br>CheckMate:</p>
+				  <p class="text-sm text-gray-400 lg:hidden">Wins By CheckMate::</p>
+				  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-candlelight-400"> {{ WinsByCheckMate }}</p>
+				  <!-- <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-candlelight-400"> {{ winsInTournaments }}</p> -->
+				</div>
+				<div class="flex justify-between items-center w-full lg:w-auto">
+				  <p class="text-sm text-gray-400 hidden lg:block">Losses By<br>CheckMate:</p>
+				  <p class="text-sm text-gray-400 lg:hidden">Losses By CheckMate::</p>
+				  <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-international-orange-700"> {{ lostByCheckMate }}</p>
+				  <!-- <p class="text-lg xl:text-3xl px-1 font-bold ml-1 text-international-orange-700"> {{ lossesInTournaments }}</p> -->
+				</div>
 			</div>
-			<div class="flex justify-between items-center w-full lg:w-auto">
-			  <p class="text-sm text-gray-400">Wins:</p>
-			  <p class="text-lg lg:text-4xl font-bold ml-1 text-green-400"> {{ wins }}</p>
-			</div>
-			<div class="flex justify-between items-center w-full lg:w-auto">
-			  <p class="text-sm text-gray-400">Losses:</p>
-			  <p class="text-lg lg:text-4xl font-bold ml-1 text-red-400"> {{ losses }}</p>
-			</div>
-			<div class="flex justify-between items-center w-full lg:w-auto">
-			  <p class="text-sm text-gray-400">Time Played (min):</p>
-			  <p class="text-lg lg:text-4xl font-bold ml-1 text-yellow-400"> {{ timePlayed }}</p>
-			</div>
-			<div class="flex justify-between items-center w-full lg:w-auto">
-			  <p class="text-sm text-gray-400">Tournaments Played:</p>
-			  <p class="text-lg lg:text-4xl font-bold ml-1 text-purple-400"> {{ tournamentsPlayed }}</p>
-			</div>
-			<div class="flex justify-between items-center w-full lg:w-auto">
-			  <p class="text-sm text-gray-400">Tournaments Won:</p>
-			  <p class="text-lg lg:text-4xl font-bold ml-1 text-indigo-400"> {{ tournamentsWon }}</p>
-			</div>
-		  </div>
 		</div>
 		<!-- Gráficos -->
-		<div class="flex flex-col lg:flex-row justify-center items-center gap-8 w-full max-w-[80vw]">
-			<div id="stats-component-games-chart" class="flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px]">
+		<div class="flex flex-col lg:flex-row justify-center items-center gap-8 w-full max-w-[80vw] mx-auto bg-pong-secondary pb-6 pt-6 rounded-lg transition-all duration-200 ease-in-out">
+			<div id="chess-stats-component-games-chart" class="mx-auto flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px] transition-all duration-200 ease-in-out">
 				<h3>Games</h3>
-			  	<canvas id="statsChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]"></canvas>
+			  	<canvas id="chess-statsChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]"></canvas>
 			</div>
-			<div id="stats-component-tournament-chart" class="flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px]">
-				<h3>Tournaments</h3>
-				<canvas id="statsTournamentChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]	"></canvas>
+			<div id="chess-stats-component-tournament-chart" class="mx-auto flex flex-col justify-center items-center w-full lg:h-[30vw] max-h-[420px] transition-all duration-200 ease-in-out">
+				<h3>Games In Tournaments</h3>
+				<canvas id="chess-statsTournamentChart" class="aspect-square w-[90%] lg:w-30 max-w-[400px]	"></canvas>
 			</div>
-		  </div>
+		</div>
 	</div>
 </div>
-
