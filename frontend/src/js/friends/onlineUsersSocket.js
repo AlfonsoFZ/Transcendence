@@ -16,20 +16,14 @@ export function initOnlineSocket() {
                 sessionStorage.setItem("userConnected", JSON.stringify(data.users));
                 window.dispatchEvent(new Event("onlineUsersUpdated"));
             }
-            else if (data.type === "refreshRelations") {
+            if (data.type === "refreshRelations") {
                 console.log("Refresh relations event received");
                 window.dispatchEvent(new Event("onlineUsersUpdated"));
             }
             if (data.type === "incomingChallenge") {
-                alert;
+                console.log("incomingChallenge recibido:", data); // Log específico
                 const fromName = ((_a = data.from) === null || _a === void 0 ? void 0 : _a.username) || ((_b = data.from) === null || _b === void 0 ? void 0 : _b.id) || "Opponent";
-                const accept = confirm(`${fromName} te desafía a jugar. ¿Aceptar?`);
-                if (accept) {
-                    onlineSocket === null || onlineSocket === void 0 ? void 0 : onlineSocket.send(JSON.stringify({ type: "acceptChallenge", requestId: data.requestId }));
-                }
-                else {
-                    onlineSocket === null || onlineSocket === void 0 ? void 0 : onlineSocket.send(JSON.stringify({ type: "rejectChallenge", requestId: data.requestId }));
-                }
+                showChallengeModal(fromName, data.requestId); // Usa el modal en lugar de alert/confirm
                 return;
             }
             if (data.type === "gameStarted") {
@@ -88,4 +82,101 @@ export function closeOnlineSocket() {
         onlineSocket.close();
         onlineSocket = null;
     }
+}
+function showChallengeModal(fromName, requestId) {
+    // Crea el modal si no existe
+    let modal = document.getElementById('challenge-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'challenge-modal';
+        modal.className = 'challenge-modal'; // Usa clase para estilos
+        modal.innerHTML = `
+            <div class="modal-content">
+                <p id="challenge-text"></p>
+                <div class="modal-buttons">
+                    <button id="accept-btn" class="btn-accept">Aceptar</button>
+                    <button id="reject-btn" class="btn-reject">Rechazar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        // Añade estilos CSS dinámicamente (o mejor, agrégalo a tu CSS global)
+        const style = document.createElement('style');
+        style.textContent = `
+            .challenge-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000; /* Alto z-index */
+            }
+            .modal-content {
+                background: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                text-align: center;
+                max-width: 300px;
+                width: 90%;
+            }
+            #challenge-text {
+                margin-bottom: 20px;
+                font-size: 16px;
+                color: #333;
+            }
+            .modal-buttons {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            }
+            .btn-accept, .btn-reject {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            .btn-accept {
+                background: #4CAF50;
+                color: white;
+            }
+            .btn-accept:hover {
+                background: #45a049;
+            }
+            .btn-reject {
+                background: #f44336;
+                color: white;
+            }
+            .btn-reject:hover {
+                background: #da190b;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    // Actualiza el texto
+    const text = document.getElementById('challenge-text');
+    if (text) {
+        text.textContent = `${fromName} te desafía a jugar. ¿Aceptar?`;
+        console.log("Texto actualizado en modal:", text.textContent); // Log para verificar
+    }
+    // Maneja los botones
+    const acceptBtn = document.getElementById('accept-btn');
+    const rejectBtn = document.getElementById('reject-btn');
+    if (acceptBtn && rejectBtn) {
+        acceptBtn.onclick = () => {
+            onlineSocket === null || onlineSocket === void 0 ? void 0 : onlineSocket.send(JSON.stringify({ type: "acceptChallenge", requestId }));
+            modal.style.display = 'none';
+        };
+        rejectBtn.onclick = () => {
+            onlineSocket === null || onlineSocket === void 0 ? void 0 : onlineSocket.send(JSON.stringify({ type: "rejectChallenge", requestId }));
+            modal.style.display = 'none';
+        };
+    }
+    // Muestra el modal
+    modal.style.display = 'flex';
 }
