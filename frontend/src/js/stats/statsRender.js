@@ -8,82 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Step } from '../spa/stepRender.js';
-import { handleStats } from './handleStats.js';
+import { StatsUI } from './StatsUI.js';
+const DEFAULT_CONTAINER_ID = "stats-container";
 export default class Stats extends Step {
+    constructor(containerId = DEFAULT_CONTAINER_ID, id) {
+        super(containerId);
+        this.ui = new StatsUI(this);
+    }
     render(appElement) {
         return __awaiter(this, void 0, void 0, function* () {
-            sessionStorage.setItem("current-view", "Stats");
-            // Removed unused variable menuContainer
-            if (!this.username) {
-                this.username = yield this.checkAuth();
-            }
-            console.log("Valor de user en Stats render:", this.username);
-            // const usernameencode = this.username ? encodeURIComponent(this.username) : '';
-            // const user = this.username;
-            try {
-                const url = `https://localhost:8443/back/get_user_gamelogs`;
-                const getUserResponse = yield fetch(`${url}`, {
-                    method: "GET",
-                    credentials: "include"
-                });
-                if (!getUserResponse.ok) {
-                    throw new Error("Error retrieving stats");
-                }
-                const userStats = yield getUserResponse.json();
-                console.log("userStats:", userStats);
-                if (userStats) {
-                    try {
-                        const response = yield fetch("../../html/stats/stats.html");
-                        if (!response.ok)
-                            throw new Error("Failed to load the HTML file");
-                        let htmlContent = yield response.text();
-                        htmlContent = htmlContent
-                            .replace("{{ totalGames }}", userStats.totalGames.toString())
-                            .replace("{{ wins }}", userStats.wins.toString())
-                            .replace("{{ losses }}", userStats.losses.toString())
-                            .replace("{{ timePlayed }}", userStats.timePlayed.toString())
-                            .replace("{{ tournamentsPlayed }}", userStats.tournamentsPlayed.toString())
-                            .replace("{{ tournamentsWon }}", userStats.tournamentsWon.toString());
-                        appElement.innerHTML = htmlContent;
-                        handleStats(userStats);
-                    }
-                    catch (error) {
-                        console.error("Error loading HTML file:", error);
-                        appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
-                    }
-                }
-            }
-            catch (error) {
-                console.error("Error rendering Stats element:", error);
-                appElement.innerHTML = `<div id="pong-container">An error occurred while generating the content</div>`;
-            }
+            yield this.ui.initializeUI(appElement);
         });
     }
 }
-// try {
-// 	console.log("En Stats Step render");
-// 	const user = await this.checkAuth();
-// 	if (user) {
-// 		// Retornar el contenido para usuarios autenticados
-// 		appElement.innerHTML = `
-// 				<div class="flex-grow flex flex-col items-center justify-center ">
-//    					<h1 class="text-4xl font-bold text-gray-800">Stats Step</h1>
-// 				</div>
-// 		`;
-// 		} else {	
-// 			// Retornar el contenido para usuarios no autenticados
-// 			appElement.innerHTML =  `
-// 				<div id="pong-container">
-// 					<div class="paddle left-paddle"></div>
-// 					<div class="ball"><img src="../img/bola.png" alt="Ball"></div>
-// 					<div class="paddle right-paddle"></div>
-// 				</div>
-// 			`;
-// 	}
-// } 
-// 		catch (error) {
-// 			console.error("Error en render:", error);
-// 			appElement.innerHTML =  `<div id="pong-container">Ocurrió un error al generar el contenido</div>`;
-// 		}
-// 	}
-// }

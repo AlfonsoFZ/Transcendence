@@ -146,6 +146,11 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsZ
 
 GET https://localhost:8443/back/get_gamelogs HTTP/1.1
 
+GET https://localhost:8443/back/get_chessgamelogs HTTP/1.1
+
+GET https://localhost:8443/back/get_user_chessgamelogs/2 HTTP/1.1
+GET https://localhost:8443/back/get_user_gamelogs/1 HTTP/1.1
+
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0NTkxOTExNCwiZXhwIjoxNzQ1OTIyNzE0fQ.-H8R_Up98hoHh6XEkjAZHD5v1ilf3CJc1M006dGCwtE
 
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0NTkxOTE0NSwiZXhwIjoxNzQ1OTIyNzQ1fQ.00XlKPvaU7YBJZOZPeZdouZI9h2Cbl0IvNCrI7Rcnso

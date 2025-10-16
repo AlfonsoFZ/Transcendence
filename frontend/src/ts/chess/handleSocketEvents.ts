@@ -3,7 +3,7 @@ import { setupChessboard } from './drawChessboard.js';
 import { launchUI, launchGame } from './launchGame.js';
 import { socket, chessboard, setData } from './state.js';
 import { saveStatusGame, deleteNotation } from './loadAndUpdateDom.js';
-import { updateTime, updateOrInsertNotation, flipSideBar, handleNavigation } from './formatContent.js';
+import { updateTime, updateOrInsertNotation, flipSideBar, handleNavigation, notificationSound } from './formatContent.js';
 import { showPromotionOptions, showGameOverOptions, showRequestRematchOptions, showResponseRematchDeclined, showRequestDrawOptions } from './handleModals.js'
 
 function handleSocketOpen() {
@@ -33,6 +33,7 @@ function handleSocketMessage() {
 					if (data.isNewGame) {
 						saveStatusGame('inGame');
 						deleteNotation();
+						notificationSound('start');
 					}
 					launchGame(data);
 				}
@@ -43,6 +44,14 @@ function handleSocketMessage() {
 			case 'move':
 				chessboard!.set(data);
 				setupChessboard(chessboard!, null, null);
+				if (data && data.notation) {
+					if (data.notation.includes('O'))
+						notificationSound('castle');
+					else if (data.notation.includes('x'))
+						notificationSound('capture');
+					else
+						notificationSound('move');
+				}
 				updateOrInsertNotation(data.move, data.color, data.notation);
 				break;
 			case 'time':
@@ -56,11 +65,13 @@ function handleSocketMessage() {
 				chessboard!.set(data);
 				setupChessboard(chessboard!, null, null);
 				updateOrInsertNotation(data.move, data.color, data.notation);
+				notificationSound('check');
 				break;
 			case 'checkmate':
 				chessboard!.set(data);
 				setupChessboard(chessboard!, null, null);
 				updateOrInsertNotation(data.move, data.color, data.notation);
+				notificationSound('checkmate');
 				showGameOverOptions(data);
 				saveStatusGame('hasEnded');
 				break;
@@ -68,18 +79,22 @@ function handleSocketMessage() {
 				chessboard!.set(data);
 				setupChessboard(chessboard!, null, null);
 				updateOrInsertNotation(data.move, data.color, data.notation);
+				notificationSound('stalemate');
 				showGameOverOptions(data);
 				saveStatusGame('hasEnded');
 				break;
 			case 'timeout':
+				notificationSound('over');
 				showGameOverOptions(data);
 				saveStatusGame('hasEnded');
 				break;
 			case 'agreement':
+				notificationSound('over');
 				showGameOverOptions(data);
 				saveStatusGame('hasEnded');
 				break;
 			case 'resignation':
+				notificationSound('over');
 				showGameOverOptions(data);
 				saveStatusGame('hasEnded');
 				break;

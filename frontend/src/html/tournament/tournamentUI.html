@@ -1,11 +1,11 @@
 
 <!-- Tournament initial screen - select mode -->
 <div class="select-tournament" id="select-tournament" style="display: block;">
-	<h1 class="text-center text-white mb-4 text-4xl font-bold font-[Tektur]">Select Tournament Mode</h1>
+	<h1 class="text-center text-white mb-4 text-3xl  lg:text-4xl font-bold font-[Tektur]">Select Tournament Mode</h1>
 	<div class="flex flex-col gap-4 items-center">
-		<button id="localTournament" style="width: 200px" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Local Tournament</button>
-		<button id="remoteTournament" style="width: 200px" class="h-12 py-3 bg-blue-500 text-white border-none rounded hover:bg-blue-600 font-bold cursor-pointer text-base flex justify-center items-center">Remote Tournament</button>
-		<button id="searchTournament" style="width: 200px" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">Search Tournaments</button>
+		<button id="localTournament" class="w-1/2 h-12 py-3 btn-pong-primary rounded font-bold cursor-pointer text-base flex justify-center items-center">Local Tournament</button>
+		<button id="remoteTournament" class="w-1/2 h-12 py-3 btn-pong-secondary rounded font-bold cursor-pointer text-base flex justify-center items-center">Remote Tournament</button>
+		<button id="searchTournament" class="w-1/2 h-12 py-3 btn-pong-tertiary rounded font-bold cursor-pointer text-base flex justify-center items-center">Search Tournaments</button>
 		 <!-- botones estilo más retro aun con bordes redondos
 		<button id="localTournament" style="width: 200px" class="h-12 py-3 bg-[rgb(238,198,52)] hover:bg-[rgb(255,210,0)] text-white border-none rounded font-bold cursor-pointer text-base flex justify-center items-center [text-shadow:_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_1px_1px_0_#000]">Local Tournament</button>
 		<button id="remoteTournament" style="width: 200px" class="h-12 py-3 bg-[rgb(239,151,46)] hover:bg-[rgb(255,165,0)] text-white border-none rounded font-bold cursor-pointer text-base flex justify-center items-center [text-shadow:_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_1px_1px_0_#000]">Remote Tournament</button>
@@ -14,31 +14,31 @@
 </div>
 
 <!-- Player 2 login panel (initially hidden) -->
-<div id="local-tournament-form" style="display:none;" class="p-8 bg-pong-secondary  rounded-lg max-w-md mx-auto my-12 flex flex-col items-center w-[90%]">
-	<h2 id="config-title" class="text-center text-[#00ff99] mb-3 text-xl font-bold">Select tournament configuration</h2>
+<div id="local-tournament-form" style="display:none;" class="p-6 border-2 border-candlelight-400 bg-pong-secondary rounded-lg max-w-md mx-auto my-12 flex flex-col items-center w-[90%]">
+	<h2 id="config-title" class="text-center border-candlelight-400 text-candlelight-400 mb-3 text-xl font-bold">Select tournament configuration</h2>
 	
 	<!-- Number of players configuration -->
 	<div class="mb-4">
-		<label for="players" class="block mb-2">Number of players: <span id="tournament-number-of-players-value">4</span></label>
-		<input type="range" id="tournament-number-of-players" min="4" max="8" step="2" value="4" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer">
+		<label for="players" class="text-pong-text-secondary block mb-2">Number of players: <span class="text-xl text-bold text-supernova-400" id="tournament-number-of-players-value">4</span></label>
+		<input type="range" id="tournament-number-of-players" min="4" max="8" step="2" value="4" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer range-pong">
 	</div>
 	
 	<!-- Score limit configuration -->
 	<div class="mb-4">
-		<label for="score-limit" class="block mb-2">Score Limit: <span id="tournament-score-value">5</span></label>
-		<input type="range" id="tournament-score-limit" min="1" max="10" value="5" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer">
+		<label for="score-limit" class="text-pong-text-secondary block mb-2">Score Limit: <span class="text-xl text-bold text-international-orange-400" id="tournament-score-value">5</span></label>
+		<input type="range" id="tournament-score-limit" min="1" max="10" value="5" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer range-pong">
 	</div>
-	
+	 
 	<!-- Difficulty configuration -->
 	<div class="mb-4">
-		<label for="difficulty" class="block mb-2">Difficulty: <span id="tournament-difficulty-value">Medium</span></label>
-		<input type="range" id="tournament-difficulty" min="1" max="3" value="2" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer">
+		<label for="difficulty" class="text-pong-text-secondary block mb-2">Difficulty: <span class="text-bold text-xl text-international-orange-400" id="tournament-difficulty-value">Medium</span></label>
+		<input type="range" id="tournament-difficulty" min="1" max="3" value="2" class="w-full bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer range-pong">
 	</div>
 	
 	<!-- Buttons -->
 	<div class="flex flex-col gap-3">
-		<button id="select-players" style="width: 100%" class="h-12 py-3 bg-green-500 text-white border-none rounded hover:bg-green-600 font-bold cursor-pointer text-base flex justify-center items-center">SelectPlayers</button>
-		<button id="tournament-back-button" style="width: 100%" class="h-12 py-3 bg-red-500 text-white border-none rounded hover:bg-gray-500 font-bold cursor-pointer text-base flex justify-center items-center">Go Back</button>
+		<button id="select-players" style="width: 100%" class="h-12 py-3 border-none rounded btn-pong-primary font-bold cursor-pointer text-base flex justify-center items-center">SelectPlayers</button>
+		<button id="tournament-back-button" style="width: 100%" class="h-12 py-3 border-none rounded btn-pong-tertiary font-bold cursor-pointer text-base flex justify-center items-center">Go Back</button>
 	</div>
 </div>
 
@@ -47,20 +47,20 @@
 	<div class="w-full lg:h-[70vh] p-2 bg-pong-primary text-white flex flex-col lg:flex-row gap-2">
 		
 			<!-- Left (sin cambios por ahora) -->
-		<div class="w-full lg:w-1/2 bg-pong-secondary  p-4 rounded-xl">
-			<h3 class="text-xl font-bold text-yellow-400 mb-4">Tournament Config</h3>
-				<ul class="space-y-2 mb-6 text-sm">
-					<li>🕹️ Players: <span id="summary-players">4</span></li>
-					<li>🏁 Score Limit: <span id="summary-score">5</span></li>
-					<li>🔥 Difficulty: <span id="summary-difficulty">Medium</span></li>
+		<div class="w-full lg:w-1/2 bg-pong-secondary  py-4 px-8 rounded-xl">
+			<h3 class="font-bold text-3xl text-center lg:text-left text-candlelight-400 mb-4 font-[Tektur] border-b border-pong-tertiary">Tournament Config</h3>
+				<ul class="space-y-2 mb-6 text-sm text-center lg:text-left">
+					<li class="text-lg lg:text-xl">🕹️ Players:	 <span id="summary-players">4</span></li>
+					<li class="text-lg lg:text-xl">🏁 Score Limits:	<span id="summary-score">5</span></li>
+					<li class="text-lg lg:text-xl">🔥 Difficulty:	<span id="summary-difficulty">Medium</span></li>
 				</ul>
-				<h4 class="text-base font-bold text-green-400 mb-2">Registered Players</h4>
-				<ul id="registered-players" class="flex flex-wrap gap-4 max-w-full justify-center lg:justify-start"></ul>
+				<h4 class="font-bold text-2xl text-international-orange-400 mb-4 font-[Tektur] text-center lg:text-left border-b border-pong-tertiary">Registered Players</h4>
+				<ul id="registered-players" class="flex flex-wrap gap-4 py-4 max-w-full justify-center lg:justify-start"></ul>
 					<!-- Avatares y nombres -->
 				</ul>
 		</div>
 			<!-- Right: Player Form estilo retro-->
-		<div id="select-player-container" style="display:none;"class="w-full lg:w-1/2 bg-pong-primary p-3 rounded-md relative text-sm font-mono">
+		<div id="select-player-container" style="display:none;"class="w-full lg:w-1/2 bg-pong-secondary py-4 px-8 rounded-md relative text-sm font-mono">
 		</div>
 	</div>
 </div>
@@ -86,4 +86,4 @@
 	</div>
 </div>
 
-<div id="tournament-bracket-container" style="display:none;"></div>
+<div id="tournament-bracket-container" class="w-[90%] lg:w-full"  style="display:none;"></div>

@@ -79,7 +79,8 @@ body {
 }
 
 .selected {
-	background-color: #1f2937; /* = bg-gray-800 */
+	background-color: var(--color-pong-bg-secondary); /*#1f2937; /* = bg-gray-800 */
+	color: var(--color-pong-text-accent); /* #fbbf24; /* = text-yellow-400 */
 }
 
 .bg-opacity-90 {
@@ -139,6 +140,20 @@ body {
 
 		50% {
 			box-shadow: 0 0 12px 6px rgba(245, 158, 11, 1);
+		}
+	}
+
+
+	@keyframes glow-tricolor {
+
+		0%, 100% {
+			box-shadow: 0 0 6px 3px rgba(245, 158, 11, 0.7); /* Amarillo */
+		}
+		33% {
+			box-shadow: 0 0 12px 6px rgba(255, 140, 0, 1); /* Naranja */
+		}
+		66% {
+			box-shadow: 0 0 12px 6px rgba(255, 87, 34, 1); /* Naranja oscuro */
 		}
 	}
 

@@ -65,8 +65,10 @@ function sortUsersAlphabetically(htmlContent: string): string {
 }
 
 function handleSocketMessage(socket: WebSocket, chatMessages: HTMLDivElement, items: HTMLDivElement, name: string): void {
+	console.warn("handleSocketMessage: ", socket, chatMessages, items, name );
 	socket.onmessage = async (event: MessageEvent) => {
 		const data = JSON.parse(event.data);
+		console.log("Received data:", data);
 		if (data.type === 'message') {
 			const HtmlContent = await formatMsgTemplate(data, name);
 			let stored = sessionStorage.getItem("chatHTML") || "";

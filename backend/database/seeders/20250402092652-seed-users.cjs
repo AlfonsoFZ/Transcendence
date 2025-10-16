@@ -6,12 +6,12 @@ const { hashPassword } = require('../users/PassUtils.cjs');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
-		const users = [
-			{
-				username: 'ismael',
-				password: await hashPassword('1234'),
-				email: 'ismael@gmail.com',
-				lastLogin: new Date(),
+	  const users = [
+		{
+		  username: 'ismael',
+		  password: await hashPassword('1234'),
+		  email: 'ismael@gmail.com',
+		  lastLogin: new Date(),
 		  chessRating: 2100
 			},
 			{
@@ -41,35 +41,12 @@ module.exports = {
 				email: 'user@gmail.com',
 				lastLogin: new Date(),
 		  chessRating: 1700
-			},
-		];
-
-		// Añadir usuarios AI001-AI007
-		for (let i = 1; i <= 7; i++) {
-			const num = i.toString().padStart(3, '0');
-			users.push({
-				username: `Ai${num}`,
-				password: await hashPassword('1234'),
-				email: `ai${num}@transcendence.com`,
-				last_login: new Date(),
-			});
-		}
-
-		// Añadir usuarios Guest001-Guest008
-		for (let i = 1; i <= 7; i++) {
-			const num = i.toString().padStart(3, '0');
-			users.push({
-				username: `Guest${num}`,
-				password: await hashPassword('1234'),
-				email: `guest${num}@transcendence.com`,
-				last_login: new Date(),
-			});
-		}
-
-		// Crear todos los usuarios en la base de datos
-		for (const user of users) {
-			await User.create(user);
-		}
+		},
+	  ];
+  
+	  for (const user of users) {
+		await User.create(user);
+	  }
 	},
 
 	async down(queryInterface, Sequelize) {

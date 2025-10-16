@@ -75,6 +75,24 @@ export class TournamentUI
 				numberValue.textContent = numberSlider.value;
 				numberSlider.addEventListener("input", () => {
 					numberValue.textContent = numberSlider.value;
+					const nvalue = numberSlider.value;
+					if (Number(nvalue) == 4)
+						{
+							numberValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
+							numberValue.classList.add('text-supernova-400');
+						}	
+						else if (Number(nvalue) == 6)
+						{
+							numberValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
+							numberValue.classList.add('text-international-orange-400');
+						}
+						else
+						{	
+							numberValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
+							numberValue.classList.add('text-international-orange-600');
+						}
+						numberValue.textContent = numberSlider.value;
+
 				});
 			}
 
@@ -82,10 +100,28 @@ export class TournamentUI
 			const scoreSlider = document.getElementById("tournament-score-limit") as HTMLInputElement | null;
 			const scoreValue = document.getElementById("tournament-score-value") as HTMLElement | null;
 			if (scoreSlider && scoreValue) {
+
 				scoreValue.textContent = scoreSlider.value;
 				scoreSlider.addEventListener("input", () => {
-					scoreValue.textContent = scoreSlider.value;
-				});
+					//scoreValue.textContent = scoreSlider.value;
+					const value = scoreSlider.value;
+					if (Number(value) < 4)
+						{
+							scoreValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
+							scoreValue.classList.add('text-supernova-400');
+						}	
+						else if (Number(value) > 4 && Number(value) < 8)
+						{
+							scoreValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
+							scoreValue.classList.add('text-international-orange-400');
+						}
+						else
+						{	
+							scoreValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
+							scoreValue.classList.add('text-international-orange-600');
+						}
+						scoreValue.textContent = value;
+					});
 			}
 
 			// Dificultad
@@ -435,6 +471,7 @@ export class TournamentUI
 				}
 				const wrapper = document.createElement('div');
 				wrapper.className = 'tournament-bracket';
+				wrapper.classList.add('w-[90%]', 'lg:w-full');
 				wrapper.innerHTML = parsed;
 				appElement.appendChild(wrapper);
 				this.renderNextMatchInfo(appElement);
@@ -444,7 +481,7 @@ export class TournamentUI
 	async getFirstPlayer(): Promise<void> {
 		console.log("en getFirstPlayrer tournament:Gameplayers: " + JSON.stringify(this.tournament.getTournamentPlayers()));
 		try {
-			const response = await fetch("https://localhost:8443/back//verify_first_player", {
+			const response = await fetch("https://localhost:8443/back/verify_first_player", {
 				method: "POST",
 				credentials: 'include',
 			});
@@ -473,6 +510,9 @@ export class TournamentUI
 		}
 	}
 
+
+
+	
 	/**
 	 * Hay que darle el formato al componente para mostrar ya sea haciendo un pequeño componente con su html y sus clases, incluyendo más css aquí o con el archivo css**/
 	public renderRegisteredPlayers = (players: TournamentPlayer[]): void => {
@@ -492,8 +532,9 @@ export class TournamentUI
 				avatarImg.src = player.gameplayer.avatarPath || 'default-avatar.png'; // Use a default avatar if none is provided
 				avatarImg.alt = `Avatar of Player ${player.Index}`;
 				avatarImg.className = 'player-avatar';
-				avatarImg.style.maxWidth = '2rem';
-				avatarImg.style.height = 'auto';
+				avatarImg.classList.add('w-24', 'lg:w-32', 'h-auto');
+				// avatarImg.style.maxWidth = '2rem';
+				// avatarImg.style.height = 'auto';
 				playerItem.appendChild(avatarImg);
 				playerItem.className = 'player-item';
 				const playerTournamentName = document.createElement('span');	

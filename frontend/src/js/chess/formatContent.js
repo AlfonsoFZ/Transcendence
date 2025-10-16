@@ -140,3 +140,10 @@ export function handleNavigation(data) {
             notationContainer.scrollTop = 0;
     }
 }
+export function notificationSound(type) {
+    const audio = new Audio(`../../sounds/${type}.mp3`);
+    audio.volume = 0.5;
+    audio.play().catch(error => {
+        console.error("Error playing notification sound:", error);
+    });
+}
