@@ -266,7 +266,7 @@ export default class GameMatch extends Step
 		}
 		if (durationElement)
 		{
-			durationElement.textContent = formatTimeFromMilliseconds(gameData.duration);
+			durationElement.textContent = formatTimeFromMilliseconds(gameData.duration ?? 0);
 		}
 		const reasonElement = document.getElementById('end-reason');
 		if (reasonElement)

@@ -3,3 +3,4 @@ pino_readme.md
 *.db
 backend/node_modules/
 frontend/src/js/
+frontend/src/css/output.css
