@@ -21,6 +21,8 @@ all:
 	fi; \
 	docker compose -f ${YML} up -d \
 	'
+	@cd frontend/src/ts && npx tsc
+	@cd frontend/src && npx @tailwindcss/cli -i ./css/input.css -o ./css/output.css
 
 down:
 	@bash -c '\
