@@ -110,6 +110,8 @@ export class GameConnection
 								console.log("Game initialized:", data);
 								break ;
 							case 'GAME_STATE':
+								// Mark game as active to enable leave guards on reload/navigation
+								this.game.setGameLog({ readyState: true } as any);
 								this.game.getGameRender().renderGameState(data.state);
 								break ;
 							case 'GAME_START':
@@ -144,10 +146,18 @@ export class GameConnection
 							case 'GAME_PAUSED':
 								if (data.maxPauseDuration)	
 									this.game.pauseDuration = data.maxPauseDuration;
+								// Mark as active (paused still counts as active match)
+								this.game.setGameLog({ readyState: true } as any);
 								this.game.getGameMatch()?.showPauseModal(data.reason, data.userId);
 								break ;
 							case 'GAME_RESUMED':
+								// Ensure leave guards are active post-resume and controllers are ready
+								this.game.setGameLog({ readyState: true } as any);
 								this.game.getGameMatch()?.hidePauseModal();
+								try {
+									const spa2 = SPA.getInstance();
+									spa2.currentGame?.getGameMatch()?.controllers.setupControllers();
+								} catch {}
 								break ;
 							default:
 								console.log(`Received message with type: ${data.type}`);

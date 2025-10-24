@@ -183,7 +183,34 @@ export class SPA {
 			const module = await import(`./${routeConfig.module}`);
 			let stepInstance;
 			if (step === 'game-match')
-			{	
+			{
+				// Cold reload into game-match: if there is no currentGame, attempt reconnection
+				if (!this.currentGame) {
+					this.currentGame = new Game('app-container');
+					try {
+						await this.currentGame.getGameConnection().establishConnection();
+						const { sessions, userId } = await this.currentGame.getGameConnection().checkActiveGameSessions();
+						const userGame = sessions.find((session: any) =>
+							session.playerDetails.player1?.id === userId ||
+							session.playerDetails.player2?.id === userId
+						);
+						if (!userGame) {
+							showMessage('No active game session found. Redirecting to home...', 2000);
+							this.navigate('home');
+							return;
+						}
+						// Set host flag based on which player the user is
+						const isHost = userGame.playerDetails?.player1?.id === userId;
+						this.currentGame.setGameIsHost(!!isHost);
+						// Rejoin the existing room to trigger GAME_INIT from server
+						this.currentGame.getGameConnection().joinGame(userGame.id);
+					} catch (err) {
+						console.error('Failed to reconnect to active game:', err);
+						showMessage('Failed to reconnect to game. Redirecting to home...', 2000);
+						this.navigate('home');
+						return;
+					}
+				}
 				stepInstance = new module.default(this.currentGame, this.currentTournament);
 				if (this.currentGame && stepInstance)
 					this.currentGame.setGameMatch(stepInstance);

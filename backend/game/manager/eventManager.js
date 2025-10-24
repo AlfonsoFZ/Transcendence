@@ -142,7 +142,36 @@ export function	messageManager(client, connection)
 export function	handleGameDisconnect(client, connection)
 {
 	connection.on('close', () => {
-		handleLeaveGame(client);
+		// Graceful disconnect: pause the game and mark player inactive instead of removing immediately
+		try {
+			const { user } = client;
+			const clientData = clients.get(user.id);
+			if (!clientData) return;
+			const gameSession = gamesList.get(clientData.roomId);
+			if (!gameSession) return;
+			const player = gameSession.players.get(user.id);
+			if (player) {
+				player.active = false;
+				// If game is running, pause and start grace timer to either resume or end later
+				if (!gameSession.isPaused && gameSession.gameLoop) {
+					gameSession.pauseGame();
+					gameSession.pauseStartTime = Date.now();
+					if (gameSession.pauseTimer) clearTimeout(gameSession.pauseTimer);
+					gameSession.pauseTimer = setTimeout(() => {
+						gameSession.checkPlayersStatus(gamesList);
+					}, gameSession.maxPauseDuration);
+					gameSession.broadcastResponse('GAME_PAUSED', {
+						reason: `${user.username} disconnected`,
+						username: user.username,
+						userId: user.id,
+						maxPauseDuration: gameSession.maxPauseDuration,
+						pauseStartTime: Date.now()
+					});
+				}
+			}
+		} catch (e) {
+			console.error('Error handling graceful disconnect:', e);
+		}
 	});
 }
 
@@ -182,21 +211,47 @@ export function handleGameActivity(client, data)
 	const	player = gameSession.players.get(user.id);
 	if (player)
 		player.active = !!data.active; // true if on game-match, false otherwise
+
+	// If game is paused and all players are active again, auto resume with countdown
+	if (gameSession.isPaused) {
+		let totalPlayers = 0;
+		let activePlayers = 0;
+		gameSession.players.forEach((p) => {
+			totalPlayers++;
+			if (p.active) activePlayers++;
+		});
+		if (totalPlayers > 0 && activePlayers === totalPlayers) {
+			const COUNTDOWN_SECONDS = 3;
+			gameSession.broadcastResponse('GAME_COUNTDOWN', {
+				seconds: COUNTDOWN_SECONDS,
+				reason: 'All players returned'
+			});
+			setTimeout(() => {
+				gameSession.resumeGame(gamesList);
+				gameSession.broadcastResponse('GAME_RESUMED', {
+					reason: 'All players returned'
+				});
+			}, COUNTDOWN_SECONDS * 1000);
+		}
+	}
 }
 
 export async function	fetchGameSessionsInfo(client)
 {
-	// const	token = request.cookies.token;
-	// const	user = await extractUserFromToken(token);
 	const	games = [];
-	for (const gameSession of gamesList.values())
-	{
-		if (gameSession && gameSession.metadata)
+	for (const gameSession of gamesList.values()) {
+		if (!gameSession || !gameSession.metadata) continue;
+		// Only include sessions where the requesting user is a participant
+		const isParticipant = gameSession.players.has(client.user.id)
+			|| gameSession.metadata?.playerDetails?.player1?.id === client.user.id
+			|| gameSession.metadata?.playerDetails?.player2?.id === client.user.id;
+		if (isParticipant) {
 			games.push(gameSession.metadata);
+		}
 	}
 	client.connection.send(JSON.stringify({
 		type: 'GAMES_DETAILS',
 		games: games,
-		clientUserId: client.user.id
+		userId: client.user.id
 	}));
 }
