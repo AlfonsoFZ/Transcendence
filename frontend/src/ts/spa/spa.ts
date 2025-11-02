@@ -326,6 +326,11 @@ export class SPA {
 			this.currentGame.getGameConnection()?.killGameSession(this.currentGame.getGameLog().id);
 		return left;
 	}
+
+	public	setCurrentStep(step: string) { 
+		this.currentStep = step;
+	}
+
 }
 
 document.addEventListener('DOMContentLoaded', () => new SPA('content'));

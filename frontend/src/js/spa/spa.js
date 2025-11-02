@@ -321,5 +321,8 @@ export class SPA {
             return left;
         });
     }
+    setCurrentStep(step) {
+        this.currentStep = step;
+    }
 }
 document.addEventListener('DOMContentLoaded', () => new SPA('content'));
