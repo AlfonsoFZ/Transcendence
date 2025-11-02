@@ -78,6 +78,7 @@ export default class Tournament extends Step {
 			const appContainer = document.getElementById('app-container');
 			console.log("limpiamos appContainer");
 			history.pushState(null, "", "#tournament-lobby");
+			SPA.getInstance().setCurrentStep('tournament-lobby');
 			// TODO: Pedro esta llamada relanzaría la protección al volver de game-match
 			this.ui.enableTournamentHashGuard();
 			////////////////////////////////////////////////////////////////////////////
