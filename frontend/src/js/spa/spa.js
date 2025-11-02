@@ -59,7 +59,15 @@ export class SPA {
             if (this.currentTournament && typeof this.currentTournament.getTournamentId === 'function') {
                 const tournamentId = this.currentTournament.getTournamentId();
                 const warningFlag = this.currentTournament.LeaveWithoutWarningFLAG;
-                if (this.currentStep === 'tournament-lobby' && nextStep !== 'tournament-lobby' && typeof tournamentId !== 'undefined' && tournamentId !== null && tournamentId > -42 && warningFlag !== true) {
+                // Minimal fix: do not treat navigation into a match route as aborting the tournament
+                if (this.currentStep === 'tournament-lobby'
+                    && nextStep !== 'tournament-lobby'
+                    && nextStep !== 'game-match'
+                    && nextStep !== 'play-chess'
+                    && typeof tournamentId !== 'undefined'
+                    && tournamentId !== null
+                    && tournamentId > -42
+                    && warningFlag !== true) {
                     showMessage("Tournament in progress aborted", 5000);
                     const tournamentUI = (_d = (_c = this.currentTournament).getTournamentUI) === null || _d === void 0 ? void 0 : _d.call(_c);
                     if (tournamentUI && typeof tournamentUI.resetTournament === 'function') {
