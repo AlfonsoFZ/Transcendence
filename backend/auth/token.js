@@ -6,13 +6,19 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export function setTokenCookie(userId, reply) {
 
     // Set accessToken cookie with username
-    const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1h' });
+    // const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '60s' });
+    // const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1h' });
+
+    const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '4h' });
+
     reply.setCookie('token', token, {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
         path: '/',
-        maxAge: 3600,
+		maxAge: 4 * 60 * 60, 
+		// maxAge: 1 * 60,
+		// maxAge: 3600,
     });
 }
 

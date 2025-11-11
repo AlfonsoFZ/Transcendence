@@ -20,10 +20,15 @@ export async function getPongStats(appElement: HTMLElement): Promise<any> {
 				credentials: "include"
 			});
 
-			if (!getUserResponse.ok) {
-				throw new Error("Error retrieving stats");
-			}
+			// if (!getUserResponse.ok) {
+			// 	throw new Error("Error retrieving stats");
+			// }
+
 			const userStats = await getUserResponse.json();
+			
+			if (!getUserResponse.ok) {
+				throw new Error(userStats.error || "Error retrieving statsadasdasdasdas");
+			}
 			if (userStats) {
 				try{
 				const statsContainer = document.getElementById("pong-stats-content");
@@ -48,8 +53,16 @@ export async function getPongStats(appElement: HTMLElement): Promise<any> {
 				}
 			}
 		} catch (error) {
-			console.log("Error rendering Stats element:", error);
-			appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+			if(error instanceof Error) {
+				if(error.message.includes("jwt must be provided")) {
+					appElement.innerHTML ="";
+					window.location.href = "https://localhost:8443/#login";
+				}
+			}
+			else {
+				console.log("Error rendering Stats element:", error);
+				appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+			}
 		}
 }
 
@@ -61,10 +74,15 @@ export async function getPongTournamentStats(appElement: HTMLElement): Promise<a
 			method: "GET",
 			credentials: "include"
 		});
-		if (!getUserResponse.ok) {
-			throw new Error("Error retrieving stats");
-		}
-		const userStats = await getUserResponse.json();
+			// if (!getUserResponse.ok) {
+			// 	throw new Error("Error retrieving stats");
+			// }
+
+			const userStats = await getUserResponse.json();
+			
+			if (!getUserResponse.ok) {
+				throw new Error(userStats.error || "Error retrieving statsadasdasdasdas");
+			}
 
 		if (userStats) {
 			const userIDElement = userStats.shift(); // Remove the first element which contains only { userId: ... }
@@ -138,8 +156,16 @@ export async function getPongTournamentStats(appElement: HTMLElement): Promise<a
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			}
 		} catch (error) {
-			console.log("Error rendering Pong TournamentStats element:", error);
-			appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+			if(error instanceof Error) {
+				if(error.message.includes("jwt must be provided")) {
+					appElement.innerHTML ="";
+					window.location.href = "https://localhost:8443/#login";
+				}
+			}
+			else {
+				console.log("Error rendering Stats element:", error);
+				appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+			}
 	}
 }
 
@@ -150,10 +176,16 @@ export async function getChessStats(appElement: HTMLElement): Promise<any> {
 			method: "GET",
 			credentials: "include"
 		});
-		if (!getUserResponse.ok) {
-			throw new Error("Error retrieving stats");
-		}
-		const userStats = await getUserResponse.json();
+			// if (!getUserResponse.ok) {
+			// 	throw new Error("Error retrieving stats");
+			// }
+
+
+			const userStats = await getUserResponse.json();
+
+			if (!getUserResponse.ok) {
+				throw new Error(userStats.error || "Error retrieving statsadasdasdasdas");
+			}
 		if (userStats) {
 			try{
 			const statsContainer = document.getElementById("chess-stats-content");
@@ -177,7 +209,15 @@ export async function getChessStats(appElement: HTMLElement): Promise<any> {
 			}
 		}
 		} catch (error) {
-			console.log("Error rendering Stats element:", error);
-			appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+			if(error instanceof Error) {
+				if(error.message.includes("jwt must be provided")) {
+					appElement.innerHTML ="";
+					window.location.href = "https://localhost:8443/#login";
+				}
+			}
+			else {
+				console.log("Error rendering Stats element:", error);
+				appElement.innerHTML =  `<div id="pong-container">An error occurred while generating the content</div>`;
+			}
 		}
 }
