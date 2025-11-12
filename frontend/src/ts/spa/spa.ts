@@ -298,37 +298,38 @@ export class SPA {
 		}
 	
 		// RELOADING game-match - this is going to be resume online, reload will be much simpler
-		else if (currentStep === 'game-match' && nextStep === 'game-match')
-		{
-			if (this.currentGame.getGameMatch())
-				this.currentGame.getGameMatch()?.destroy();
-			try
-			{
-				const {sessions, userId} = await this.currentGame.getGameConnection().checkActiveGameSessions();
-				const userGame = sessions.find(
-					(session: any) =>
-						session.playerDetails.player1?.id === userId ||
-						session.playerDetails.player2?.id === userId
-				);
-				if (!userGame)
-				{
-					showMessage('No active game session found. Redirecting to home...', 2000);
-					this.navigate('home');
-					return ;
-				}
-				// else: resume game as needed
-				else
-				{
-					const module = await import(`./${routeConfig.module}`);
-					const stepInstance = new module.default(this.currentGame, this.currentTournament);
-					if (this.currentGame && stepInstance)
-						this.currentGame.setGameMatch(stepInstance);
-				}
-			} catch (e){
-				showMessage('Error checking game session. Redirecting to home...', 2000);
-				this.navigate('home');
-			}
-		}
+		// TODO Remove when finished if not needed
+		// else if (currentStep === 'game-match' && nextStep === 'game-match')
+		// {
+		// 	if (this.currentGame.getGameMatch())
+		// 		this.currentGame.getGameMatch()?.destroy();
+		// 	try
+		// 	{
+		// 		const {sessions, userId} = await this.currentGame.getGameConnection().checkActiveGameSessions();
+		// 		const userGame = sessions.find(
+		// 			(session: any) =>
+		// 				session.playerDetails.player1?.id === userId ||
+		// 				session.playerDetails.player2?.id === userId
+		// 		);
+		// 		if (!userGame)
+		// 		{
+		// 			showMessage('No active game session found. Redirecting to home...', 2000);
+		// 			this.navigate('home');
+		// 			return ;
+		// 		}
+		// 		// else: resume game as needed
+		// 		else
+		// 		{
+		// 			const module = await import(`./${routeConfig.module}`);
+		// 			const stepInstance = new module.default(this.currentGame, this.currentTournament);
+		// 			if (this.currentGame && stepInstance)
+		// 				this.currentGame.setGameMatch(stepInstance);
+		// 		}
+		// 	} catch (e){
+		// 		showMessage('Error checking game session. Redirecting to home...', 2000);
+		// 		this.navigate('home');
+		// 	}
+		// }
 	}
 
 	// Centralized confirmation logic for leaving game-match
