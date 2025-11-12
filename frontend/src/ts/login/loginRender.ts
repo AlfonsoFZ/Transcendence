@@ -17,8 +17,16 @@ export default class LoginRender extends Step {
 				if (this.container && htmlContent) {
 					this.container.innerHTML = htmlContent;
 		
+
 					// Esperar un breve tiempo antes de asignar eventos
 					requestAnimationFrame(async () => {
+						const forgotPasswordLink = this.container.querySelector("#forgotPassword");
+						if (forgotPasswordLink) {
+							forgotPasswordLink.addEventListener("click", (event) => {
+								event.preventDefault();
+								showMessage("“Well, maybe you should’ve written it down somewhere… Go ahead, make a new account and write it down this time!”", null);
+							});
+						}
 						const form = this.container.querySelector("form");
 						if (form) {
 							try {
