@@ -32,11 +32,44 @@ export class SPA {
     public constructor(containerId: string) {
         this.container = document.getElementById(containerId) as HTMLElement;
 		SPA.instance = this;
-        this.loadHEaderAndFooter();	
+		this.loadHEaderAndFooter();	
+
+		// Check if hard-reloaded on tournamnet-match: route to Home immediately
+		// TODO: display info message "you aborted tournament"
+		try {
+			const forceHome = sessionStorage.getItem('forceHome');
+			if (forceHome) {
+				sessionStorage.removeItem('forceHome');
+				if (location.hash !== '#home') {
+					window.location.hash = '#home';
+					showMessage("Tournament in progress aborted. You navigated away or reload page and got redirected home", 5000);
+				}
+			}
+		} catch {}
+
 		this.loadStep();
 
 		// Unified hash-based routing (single source of truth)
 		let revertingHash = false; // guard re-entrancy when we revert after a cancelled leave
+		// Handle browser reload/close: treat as a hard leave and route to Home on next boot - for tournament-match case
+		window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => {
+			const inActiveMatch = this.currentStep === 'game-match' && !!this.currentGame?.isGameActive?.();
+			const tournamentId = this.currentTournament?.getTournamentId?.();
+
+			if (tournamentId && tournamentId > -42) {
+				try {
+					// Ensure the next boot lands on Home and skips reconnection
+					sessionStorage.setItem('forceHome', '1');
+					// Best-effort notify server to end/pause the game
+					if (inActiveMatch) {
+						this.currentGame?.getGameConnection()?.killGameSession(this.currentGame.getGameLog().id);
+					}
+				} catch {}
+				// Trigger native confirmation on reload/close
+				e.preventDefault();
+				e.returnValue = '';
+			}
+		});
 		window.addEventListener('hashchange', async () => {
 			if (revertingHash) return; // ignore synthetic change caused by our own revert
 			const nextStep = location.hash.replace('#', '') || 'home';
@@ -81,9 +114,7 @@ export class SPA {
 			}
 			this.loadStep();
 		});
-
-			// Note: We no longer block reload/close with a native prompt; server pauses on disconnect
-		
+ 		
 		window.addEventListener("pageshow", (event) => {
 			if (event.persisted && location.hash === '#login') {
 				console.log("Recargando el step de login" );
@@ -171,7 +202,7 @@ export class SPA {
         } catch (e) {
             console.debug('SPA.leave-check error', e);
         }
-		console.log("this.currentStep: " , this.currentStep);
+		console.warn("this.currentStep: " , this.currentStep);
 		console.log("step: " , step);
 		// Handle leaving game-match step on active game
 		if (this.currentStep === 'game-match')
