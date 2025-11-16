@@ -622,7 +622,8 @@ export default class Tournament extends Step {
 				const appContainer = document.getElementById('app-container');
 				if (appContainer) {
 					appContainer.innerHTML = '';
-					this.navigate('tournament-lobby');
+					this.ui.resetTournament();
+					//this.navigate('tournament-lobby');
 					this.ui.disableTournamentHashGuard();
 				}
 				return;
