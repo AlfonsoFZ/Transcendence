@@ -1,6 +1,7 @@
 import { fetchUserData, fetchUserStats, fetchFriendEntries, sendFriendRequest, acceptFriendRequest } from "./userProfileFetchers.js";
 import { checkFriendStatus, rejectFriendRequest, deleteFriend, blockUser, unblockUser, canAcceptRequest} from "./userProfileActions.js";
 import { getFriendButton, getBlockUserButton } from "./userProfileButtons.js";
+import { handlePlayGame } from "./handleUserOptionsMenu.js";
 
 export async function showUserProfile(currentUserId: string, userId: string, username: string, event?: MouseEvent) {
 	const existingProfile = document.getElementById("user-profile-modal-backdrop");
@@ -85,10 +86,10 @@ const friendButton = !canAccept
 
 	window.history.pushState({ modalOpen: true }, "");
 
-	addProfileModalListeners(userId, backdrop);
+	addProfileModalListeners(currentUserId, userId, username, backdrop);
 }
 
-function addProfileModalListeners(userId: string, backdrop: HTMLDivElement) {
+function addProfileModalListeners(currentUserId: string, userId: string, username: string, backdrop: HTMLDivElement) {
 	const closeModal = () => {
 		backdrop.remove();
 		window.removeEventListener("popstate", onPopState);
@@ -111,7 +112,8 @@ function addProfileModalListeners(userId: string, backdrop: HTMLDivElement) {
 		backdrop.remove();
 	});
 	document.getElementById("play-btn")?.addEventListener("click", () => {
-		alert("Feature not implemented yet: Play Game with this user");
+		handlePlayGame(currentUserId, userId, username);
+
 		backdrop.remove();
 	});
 	document.getElementById("add-friend-btn")?.addEventListener("click", () => {
