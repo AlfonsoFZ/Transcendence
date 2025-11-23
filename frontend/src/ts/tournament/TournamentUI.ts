@@ -393,6 +393,7 @@ export class TournamentUI
 				.replace(new RegExp(`nextPlayer-2.avatar`, 'g'), player2.avatarPath);
 			const wrapper = document.createElement('div');
 			wrapper.className = 'next-match-bracket';
+			// wrapper.classList.add('w-[90%]', 'lg:w-full');
 			wrapper.innerHTML = parsed;
 			appElement.appendChild(wrapper);
 		});
@@ -471,7 +472,7 @@ export class TournamentUI
 				}
 				const wrapper = document.createElement('div');
 				wrapper.className = 'tournament-bracket';
-				wrapper.classList.add('w-[90%]', 'lg:w-full');
+				// wrapper.classList.add('w-[90%]', 'lg:w-full');  // comentado para resolver problema del ancho desigual de next match
 				wrapper.innerHTML = parsed;
 				appElement.appendChild(wrapper);
 				this.renderNextMatchInfo(appElement);

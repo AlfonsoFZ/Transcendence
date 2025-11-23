@@ -454,13 +454,16 @@ export default class Tournament extends Step {
 		      this.ui.showOnly('tournament-bracket-container');
 			}
 	}
+	
 	public getNextGameIndex(): number {
 		return this.nextGameIndex;
 	}
+
 	public setNextGameIndex(index: number): void {
 		this.nextGameIndex = index;
 		console.log("Next game index set to:", this.nextGameIndex);
 	}
+
 	displayCurrentMatch()
 	{
 		const panel = document.getElementById('current-match-panel');
@@ -509,8 +512,8 @@ export default class Tournament extends Step {
 			const	matchData : GameData = this.gameDataArray[this.nextGameIndex];
 			if( matchData.id.includes('Bye')) {
 				matchData.result = {
-						winner: matchData.playerDetails.player1?.id.toString() || '',
-						loser: "0",
+						winner: matchData.playerDetails.player1?.tournamentUsername.toString() || '',
+						loser: "Bye",
 						score: [5, 0],
 						endReason: 'Game ended' 
 					};
@@ -605,18 +608,19 @@ export default class Tournament extends Step {
 			body: JSON.stringify(payload),
 		});
 		  const data = await response.json();
-		  console.log("updateTournamentBracket: Response data:", data);
 		  if(response.ok) {
-			//todo: it is posible to improve the way we receive the array of GamePlayers
 			let winnerPlayer = null;
 			if (result.result && result.result.winner) {
 				winnerPlayer = this.bracket.find(player => player.username === result.result!.winner);
+				if(result.id.includes('bye')) 
+				{
+					winnerPlayer = result.playerDetails.player1 || null;
+				}
 				if (winnerPlayer) {
 					this.bracket.push(winnerPlayer);
 				}
 			}
 			this.gameDataArray = data.gamesData;
-			console.log("updateTournamentBracket: Updated gameDataArray:", this.gameDataArray);
 			if (result.id.includes('final')) {
 				// Todo: replace with the function to display the tournament winner if we want to improve it
 				showWinnerMessage(`${winnerPlayer ? winnerPlayer.tournamentUsername : 'Unknown'}`, null);
@@ -628,7 +632,7 @@ export default class Tournament extends Step {
 				}
 				return;
 			}
-	
+			
 			this.ui.updateRenderBracket(this.bracket);
 			// await new Promise(resolve => setTimeout(resolve, 5000));
 			while (true) {
