@@ -138,3 +138,26 @@ export class GameAI
 	}
 }
 ```
+
+# Game Duration Fix
+
+## Issue
+When a remote game was aborted before the actual game loop started (i.e., before `startTime` was set), the game over message displayed a strange time value (e.g., `4545451564:23:01`) because the duration was calculated as `Date.now() - 0`.
+
+## Fix
+Modified `endGameSession` in `frontend/src/ts/game/Game.ts` to check if `startTime` is 0. If so, the duration is set to 0.
+
+## Updated Code (`Game.ts`)
+
+```typescript
+public endGameSession(result: { winner: string, loser: string, score: [number, number], endReason: string }): void {
+	if (this.log.startTime === 0)
+		this.log.duration = 0;
+	else
+		this.log.duration = Date.now() - this.log.startTime;
+	this.log.result = result;
+	console.log("Game session ended:", this.log);
+	this.renderer.stopRenderLoop();
+	this.log.readyState = false;
+}
+```

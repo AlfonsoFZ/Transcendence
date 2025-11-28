@@ -69,7 +69,10 @@ export default class Game extends Step {
 	}
 
 	public endGameSession(result: { winner: string, loser: string, score: [number, number], endReason: string }): void {
-		this.log.duration = Date.now() - this.log.startTime;
+		if (this.log.startTime === 0)
+			this.log.duration = 0;
+		else
+			this.log.duration = Date.now() - this.log.startTime;
 		this.log.result = result;
 		console.log("Game session ended:", this.log);
 		this.renderer.stopRenderLoop();
