@@ -169,6 +169,8 @@ export class SPA {
 						}
 					} catch (e) { console.error("Error destroying match UI:", e); }
 				}
+			} else if (!this.currentGame?.isGameActive()){
+				// Safe to leave setup
 			} else {
 				// Unsafe transition - terminate
 				this.terminateSession();
