@@ -3,7 +3,7 @@ import { checkFriendStatus, rejectFriendRequest, deleteFriend, blockUser, unbloc
 import { getFriendButton, getBlockUserButton } from "./userProfileButtons.js";
 import { handlePlayGame } from "./handleUserOptionsMenu.js";
 
-export async function showUserProfile(currentUserId: string, userId: string, username: string, event?: MouseEvent) {
+export async function showUserProfile(currentUserId: string, userId: string, username: string, socket: WebSocket, event?: MouseEvent) {
 	const existingProfile = document.getElementById("user-profile-modal-backdrop");
 	if (existingProfile) existingProfile.remove();
 
@@ -86,10 +86,10 @@ const friendButton = !canAccept
 
 	window.history.pushState({ modalOpen: true }, "");
 
-	addProfileModalListeners(currentUserId, userId, username, backdrop);
+	addProfileModalListeners(currentUserId, userId, username, backdrop, socket);
 }
 
-function addProfileModalListeners(currentUserId: string, userId: string, username: string, backdrop: HTMLDivElement) {
+function addProfileModalListeners(currentUserId: string, userId: string, username: string, backdrop: HTMLDivElement, socket: WebSocket) {
 	const closeModal = () => {
 		backdrop.remove();
 		window.removeEventListener("popstate", onPopState);
@@ -112,7 +112,7 @@ function addProfileModalListeners(currentUserId: string, userId: string, usernam
 		backdrop.remove();
 	});
 	document.getElementById("play-btn")?.addEventListener("click", () => {
-		handlePlayGame(currentUserId, userId, username);
+		handlePlayGame(currentUserId, userId, username, socket);
 
 		backdrop.remove();
 	});

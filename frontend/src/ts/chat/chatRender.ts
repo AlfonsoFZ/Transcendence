@@ -1,4 +1,5 @@
 import { Step } from '../spa/stepRender.js';
+import { SPA } from '../spa/spa.js';
 import { verifySocket } from './verifySocket.js';
 import { filterSearchUsers } from './filterSearch.js';
 import { handleSocketEvents } from './handleSocketEvents.js';
@@ -51,6 +52,26 @@ export default class Chat extends Step {
 				const clickedUserId = await getUserId(clickedUsername!);
 				if (clickedUserId && clickedUserId !== userId) {
 					showUserOptionsMenu(userItem, event as MouseEvent, Step.chatSocket!, userId);
+				}
+			});
+
+			chatMessages.addEventListener('click', (e) => {
+				const target = e.target as HTMLElement;
+				const action = target.getAttribute('data-action');
+				if (action === 'accept-invite') {
+					const gameId = target.getAttribute('data-game-id');
+					if (gameId) {
+						const spa = SPA.getInstance();
+						if (spa.currentGame) {
+							spa.currentGame.isChatGame = true;
+							spa.currentGame.setGameMode('remote');
+							spa.currentGame.setGameIsHost(false);
+							spa.currentGame.getGameConnection().joinGame(gameId);
+						}
+					}
+				} else if (action === 'ignore-invite') {
+					const card = target.closest('.invite-card');
+					card?.remove();
 				}
 			});
 		}

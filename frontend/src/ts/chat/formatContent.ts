@@ -31,7 +31,21 @@ export async function formatMsgTemplate(data: any, userId: string): Promise<stri
 		htmlContent = await fetch("../../html/chat/msgTemplatePartner.html");
 	}
 	let htmlText = await htmlContent.text();
-	const message = formatTextToHtml(data.message.toString());
+	let message = formatTextToHtml(data.message.toString());
+
+	if (data.message.toString().startsWith("$$INVITE$$:")) {
+		const gameId = data.message.toString().split(":")[1];
+		message = `
+			<div class="invite-card p-2 bg-gray-800 rounded border border-gray-600">
+				<p class="text-white mb-2">Game Invitation</p>
+				<div class="flex gap-2">
+					<button class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" data-action="accept-invite" data-game-id="${gameId}">Accept</button>
+					<button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" data-action="ignore-invite">Ignore</button>
+				</div>
+			</div>
+		`;
+	}
+
 	const imagePath = `${data.imagePath}?t=${Date.now()}`;
 	htmlText = htmlText
 		.replace("{{ username }}", data.username.toString())

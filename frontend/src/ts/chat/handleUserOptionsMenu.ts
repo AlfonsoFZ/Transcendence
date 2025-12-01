@@ -2,6 +2,7 @@ import { handlePrivateMsg } from "./handleSenders.js";
 import { showUserProfile } from "./handleUserProfile.js";
 import { onlineSocket } from "../friends/onlineUsersSocket.js";
 import { showMessage } from "../modal/showMessage.js";
+import { SPA } from "../spa/spa.js";
 
 export function showUserOptionsMenu(userElement: HTMLDivElement, event: MouseEvent, socket: WebSocket, currentUserId: string) {
 	const username = userElement.querySelector("span.text-sm")?.textContent?.trim();
@@ -86,10 +87,10 @@ function addMenuOptionsListeners(menu: HTMLDivElement, userId: string, username:
 						handlePrivateMsg(event, socket);
 						break;
 					case "play-game":
-						handlePlayGame(currentUserId, userId, username);
+						handlePlayGame(currentUserId, userId, username, socket);
 						break;
 					case "show-more":
-						showUserProfile(currentUserId, userId, username, event);
+						showUserProfile(currentUserId, userId, username, socket, event);
 						break;
 				}
 			}
@@ -98,24 +99,29 @@ function addMenuOptionsListeners(menu: HTMLDivElement, userId: string, username:
 	});
 }
 
-export function handlePlayGame(currentUserId: string, targetUserId: string, username: string) {
-	if (!onlineSocket || onlineSocket.readyState !== WebSocket.OPEN) {
-		console.error("Online socket not open. ReadyState:", onlineSocket?.readyState);
+export function handlePlayGame(currentUserId: string, targetUserId: string, username: string, socket: WebSocket) {
+	const spa = SPA.getInstance();
+	if (!spa.currentGame) {
+		console.error("No active game instance found for chat game invitation.");
 		return;
 	}
 
-	const socketMessage = {
-		type: "challenge",
-		fromUserId: currentUserId,
-		toUserId: targetUserId,
-		timestamp: Date.now(),
-	};
+	spa.currentGame.isChatGame = true;
+	spa.currentGame.setGameMode('remote');
+	
+	const gameId = `${currentUserId}${targetUserId}chatGame`;
+	spa.currentGame.getGameConnection().joinGame(gameId);
 
-	try {
-		onlineSocket.send(JSON.stringify(socketMessage));
-		showMessage("Challenge sent to: " + username, 3000);
-	} catch (error) {
-		console.error("Error sending challenge:", error);
-	}
-	return;
+	// Construct room ID for private chat (min-max)
+	const id1 = parseInt(currentUserId);
+	const id2 = parseInt(targetUserId);
+	const roomId = id1 < id2 ? `${id1}-${id2}` : `${id2}-${id1}`;
+
+	const message = {
+		type: 'private',
+		roomId: roomId,
+		message: `$$INVITE$$:${gameId}`
+	};
+	socket.send(JSON.stringify(message));
+	showMessage("Invitation sent to: " + username, 3000);
 }

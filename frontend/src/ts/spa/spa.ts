@@ -227,6 +227,8 @@ export class SPA {
 			//await stepInstance.init();
 			if (step === 'chat') {
 				try { clearSearchFilter(); } catch (e) { /* ignore */ }
+				this.currentGame = new Game('app-container');
+				await this.currentGame.getGameConnection().establishConnection();
 			}
 			await stepInstance.init();
 		} else {
