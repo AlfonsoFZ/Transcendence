@@ -158,7 +158,7 @@ export default class GameMatch extends Step
 			this.startReadyStatePolling();
 	}
 	
-	public showPauseModal(reason?: string, pauserId?: string): void
+	public showPauseModal(reason?: string, pauserId?: string, pauseStartTime?: number): void
 	{
 		const	confirmModal = document.getElementById('confirm-dialog-overlay');
 		if(confirmModal && confirmModal.style.display != "none")
@@ -172,7 +172,9 @@ export default class GameMatch extends Step
 			pauseReason.textContent = reason || '';
 		if (this.log.mode === 'remote' && resumeBtn && pauserId)
 		{
-			resumeBtn.style.display = (this.game.getOnlineId() === pauserId) ? 'inline-block' : 'none';
+			console.warn("onlineId: ", this.game.getOnlineId());
+			console.warn("pauserId: ", pauserId);
+			resumeBtn.style.display = (this.game.getOnlineId() == pauserId) ? 'inline-block' : 'none';
 		}
 
 		const timerEl = document.getElementById('pause-timer');
@@ -186,7 +188,9 @@ export default class GameMatch extends Step
 			clearInterval(this.pauseInterval);
 			this.pauseInterval = null;
 		}
-		let	remaining = duration;
+		// If server provided pauseStartTime, adjust remaining to reflect elapsed time
+		const elapsed = pauseStartTime ? Math.max(0, Date.now() - pauseStartTime) : 0;
+		let	remaining = Math.max(0, duration - elapsed);
 		const render = () => {
 			if (remaining <= 0) {
 				timerEl.textContent = '00:00';
@@ -421,6 +425,25 @@ export default class GameMatch extends Step
 	public	getAiSide() : 'player1' | 'player2' | null
 	{
 		return (this.aiSide);
+	}
+
+	// Ensure AI is running after reload/resume (safe due to guard in GameAI.start)
+	public startAIIfNeeded(): void
+	{
+		// If we're in 1vAI but AI wasn't instantiated (e.g., cold reload), create it now
+		if (!this.ai && this.game.getGameLog().mode === '1vAI') {
+			// Determine AI side from current gamelog
+			this.setAiSide(this.game.getGameLog());
+			this.ai = new GameAI(this.game, this.aiSide);
+			// Rebuild controllers so human/AI sides map correctly
+			if (this.controllers) {
+				this.controllers.destroy();
+			}
+			this.controllers = new GameControllers(this.game, this.aiSide);
+			this.controllers.setupControllers();
+		}
+		if (this.ai)
+			this.ai.start();
 	}
 
 	public destroy() : void

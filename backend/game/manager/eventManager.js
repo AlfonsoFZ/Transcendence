@@ -12,13 +12,11 @@ export const clients = new Map();
  *	The user is authenticated (same flow as your chat system)
  *	The connection is stored in the clients Map for later reference
  */
-export async function	registerGameClient(request, connection)
-{
+export async function registerGameClient(request, connection) {
 	console.log("STEPPED INTO -> registerGameClient");
 	// First, extract user from cookies - as in chat logic (or as I understood it)
-	const	token = request.cookies.token;
-	if (!token)
-	{
+	const token = request.cookies.token;
+	if (!token) {
 		console.error("No auth token found");
 		connection.send(JSON.stringify({
 			type: 'ERROR',
@@ -26,9 +24,8 @@ export async function	registerGameClient(request, connection)
 		}));
 		return (null);
 	}
-	const	user = await extractUserFromToken(token);
-	if (user && user.id)
-	{	
+	const user = await extractUserFromToken(token);
+	if (user && user.id) {
 		console.log(`User authenticated: ${user.id}`);
 		// Register and track connection
 		clients.set(user.id, {
@@ -36,10 +33,9 @@ export async function	registerGameClient(request, connection)
 			roomId: null
 		})
 		//console.log("Connection socket object of registred user:\n", clients.get(user.id).connection);
-		return ({user, connection});
+		return ({ user, connection });
 	}
-	else
-	{
+	else {
 		console.error("Invalid user extracted from token");
 		connection.send(JSON.stringify({
 			type: 'ERROR',
@@ -55,55 +51,51 @@ export async function	registerGameClient(request, connection)
  * PLAYER_INPUT	Player moves paddle	{ input: { up: true, down: false } }
  * LEAVE_GAME	Player quits	(no additional data)
  */
-export function	messageManager(client, connection)
-{
-	try
-	{
-	setTimeout(() => {
-		console.log("Sending test message to client");
-		connection.send(JSON.stringify({
-			type: 'SERVER_TEST',
-			message: 'Testing connection'
-		}));
-	}, 1000);
+export function messageManager(client, connection) {
+	try {
+		setTimeout(() => {
+			console.log("Sending test message to client");
+			connection.send(JSON.stringify({
+				type: 'SERVER_TEST',
+				message: 'Testing connection'
+			}));
+		}, 1000);
 	} catch (error) {
 		console.error("Error sending test message:", error);
 	}
 
 	connection.on('message', (message) => {
-		try
-		{
+		try {
 			const data = JSON.parse(message.toString());
 			console.log("JSON message received FRONT->BACK:\n", data);
-			switch (data.type)
-			{
+			switch (data.type) {
 				case 'JOIN_GAME':
 					handleJoinGame(client, data);
-					break ;
+					break;
 				case 'CLIENT_READY':
 					handleClientReady(client, data);
-					break ;
+					break;
 				case 'PLAYER_INPUT':
 					handlePlayerInput(client, data);
-					break ;
+					break;
 				case 'LEAVE_GAME':
 					handleLeaveGame(client);
-					break ;
+					break;
 				case 'RESTART_GAME':
 					handleRestartGame(client, data);
-					break ;
+					break;
 				case 'PING':
 					connection.send(JSON.stringify({ type: 'PONG' }));
-					break ;
+					break;
 				case 'GET_USER':
 					handlePlayerInfo(client, data);
-					break ;
+					break;
 				case 'SHOW_GAMES':
 					handleGamesList(client);
-					break ;
+					break;
 				case 'GET_READY_STATE':
 					handleGetReadyState(client);
-					break ;
+					break;
 				case 'PAUSE_GAME':
 					handlePauseGame(client, data);
 					break;
@@ -114,8 +106,8 @@ export function	messageManager(client, connection)
 					handleGameActivity(client, data);
 					break;
 				case 'END_GAME':
-					const	gameSession = gamesList.get(data.gameId);
-					if (gameSession) 
+					const gameSession = gamesList.get(data.gameId);
+					if (gameSession)
 						gameSession.endGame(gamesList, false);
 					else
 						console.error(`END_GAME: No game session found for id ${data.gameId}`);
@@ -125,9 +117,9 @@ export function	messageManager(client, connection)
 					break;
 				default:
 					console.log(`Unknown message type: ${data.type}`);
-			}	
+			}
 		}
-		catch (error){
+		catch (error) {
 			console.error('Game message error:', error);
 		}
 		console.log("Updated connection event listeners:", Object.keys(connection._events));
@@ -139,10 +131,33 @@ export function	messageManager(client, connection)
  * It cleans up the game session and notifies other players
  * TO DO: check if this is needed, as it is also handled with LEAVE_GAME message
  */
-export function	handleGameDisconnect(client, connection)
-{
+export function handleGameDisconnect(client, connection) {
 	connection.on('close', () => {
-		handleLeaveGame(client);
+		try {
+			const { user } = client;
+			const clientData = clients.get(user.id);
+			if (!clientData) return;
+			const gameSession = gamesList.get(clientData.roomId);
+			if (!gameSession) return;
+
+			// If game is active and remote, handle as forfeit (disconnect)
+			if (gameSession.metadata.mode === 'remote' &&
+				gameSession.metadata.startTime &&
+				!gameSession.isFinished) {
+				console.log(`Player ${user.username} disconnected from active remote game. Forfeiting...`);
+				gameSession.handlePlayerDisconnect(user.id, gamesList);
+			}
+			else {
+				// Standard cleanup for other modes or inactive games
+				gameSession.removePlayer(user.id);
+				if (gameSession.isEmpty() || gameSession.isFinished || gameSession.shouldCleanup)
+					gamesList.delete(clientData.roomId);
+			}
+			// Remove client tracking
+			clients.delete(user.id);
+		} catch (e) {
+			console.error('Error handling disconnect:', e);
+		}
 	});
 }
 
@@ -150,20 +165,18 @@ export function	handleGameDisconnect(client, connection)
  * handler to be called wen connection reports an error, it sends an error message to
  * the client and handles the leave game logic if the error is critical
  */
-export function handleGameError(client, connection)
-{
+export function handleGameError(client, connection) {
 	connection.on('error', (error) => {
 		const { user } = client;
 
 		console.log(`Game error for user ${user.id}:`, error);
-		try
-		{
+		try {
 			connection.send(JSON.stringify({
 				type: 'ERROR',
 				message: 'An unexpected error occurred during gameplay'
 			}));
 		}
-		catch (sendError){
+		catch (sendError) {
 			console.error('Failed to send error message to client:', sendError);
 		}
 
@@ -172,31 +185,55 @@ export function handleGameError(client, connection)
 	});
 }
 
-export function handleGameActivity(client, data)
-{
-	const	{ user } = client;
-	const	clientData = clients.get(user.id);
-	const	gameSession = gamesList.get(clientData.roomId);
+export function handleGameActivity(client, data) {
+	const { user } = client;
+	const clientData = clients.get(user.id);
+	const gameSession = gamesList.get(clientData.roomId);
 	if (!gameSession)
-		return ;
-	const	player = gameSession.players.get(user.id);
+		return;
+	const player = gameSession.players.get(user.id);
 	if (player)
 		player.active = !!data.active; // true if on game-match, false otherwise
+
+	// If game is paused and all players are active again, auto resume with countdown
+	if (gameSession.isPaused && gameSession.metadata && gameSession.metadata.startTime) {
+		let totalPlayers = 0;
+		let activePlayers = 0;
+		gameSession.players.forEach((p) => {
+			totalPlayers++;
+			if (p.active) activePlayers++;
+		});
+		if (totalPlayers > 0 && activePlayers === totalPlayers) {
+			const COUNTDOWN_SECONDS = 3;
+			gameSession.broadcastResponse('GAME_COUNTDOWN', {
+				seconds: COUNTDOWN_SECONDS,
+				reason: 'All players returned'
+			});
+			setTimeout(() => {
+				gameSession.resumeGame(gamesList);
+				gameSession.broadcastResponse('GAME_RESUMED', {
+					reason: 'All players returned'
+				});
+			}, COUNTDOWN_SECONDS * 1000);
+		}
+	}
 }
 
-export async function	fetchGameSessionsInfo(client)
-{
-	// const	token = request.cookies.token;
-	// const	user = await extractUserFromToken(token);
-	const	games = [];
-	for (const gameSession of gamesList.values())
-	{
-		if (gameSession && gameSession.metadata)
+export async function fetchGameSessionsInfo(client) {
+	const games = [];
+	for (const gameSession of gamesList.values()) {
+		if (!gameSession || !gameSession.metadata) continue;
+		// Only include sessions where the requesting user is a participant
+		const isParticipant = gameSession.players.has(client.user.id)
+			|| gameSession.metadata?.playerDetails?.player1?.id === client.user.id
+			|| gameSession.metadata?.playerDetails?.player2?.id === client.user.id;
+		if (isParticipant) {
 			games.push(gameSession.metadata);
+		}
 	}
 	client.connection.send(JSON.stringify({
 		type: 'GAMES_DETAILS',
 		games: games,
-		clientUserId: client.user.id
+		userId: client.user.id
 	}));
 }

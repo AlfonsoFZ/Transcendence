@@ -7,8 +7,7 @@ export let onlineSocket: WebSocket | null = null;
 export function initOnlineSocket() {
 	if (!onlineSocket || onlineSocket.readyState === WebSocket.CLOSED) {
 		onlineSocket = new WebSocket("wss://localhost:8443/back/ws/online");
-		console.log("Online socket initialized");
-		
+
 		onlineSocket.onopen = () => {
 			console.log("Online socket connection established");
 		};
@@ -81,12 +80,10 @@ export function initOnlineSocket() {
 		};
 
 		onlineSocket.onclose = () => {
-			console.log("Online socket closed");
 			onlineSocket = null;
 		};
 
 		onlineSocket.onerror = (err) => {
-			console.error("Error en el WebSocket de usuarios online:", err);
 		};
 	}
 }
