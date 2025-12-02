@@ -51,7 +51,8 @@ export function initOnlineSocket() {
 						gc.socket.send(JSON.stringify({
 							type: 'JOIN_GAME',
 							roomId,
-							youAre
+							youAre,
+							mode: 'remote'
 						}));
 						showMessage('Uniéndose como jugador 1...', null);
                     } else if (youAre === 'player2') {

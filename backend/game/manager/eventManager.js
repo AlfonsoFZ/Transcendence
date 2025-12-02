@@ -188,6 +188,8 @@ export function handleGameError(client, connection) {
 export function handleGameActivity(client, data) {
 	const { user } = client;
 	const clientData = clients.get(user.id);
+	if (!clientData)
+		return;
 	const gameSession = gamesList.get(clientData.roomId);
 	if (!gameSession)
 		return;

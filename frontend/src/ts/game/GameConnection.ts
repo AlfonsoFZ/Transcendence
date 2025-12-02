@@ -215,7 +215,8 @@ export class GameConnection {
 			this.game.setGameMode('remote');
 			const joinMsg: any = {
 				type: 'JOIN_GAME',
-				roomId: gameId
+				roomId: gameId,
+				mode: 'remote'
 			};
 			this.socket.send(JSON.stringify(joinMsg));
 			return;
