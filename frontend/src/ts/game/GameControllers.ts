@@ -86,7 +86,7 @@ export class GameControllers
 			else
 			{
 				// Set player1 control ipunt - On regular game or Remote being HOST / GAME CREATOR
-				if (this.game.getGameIsHost())
+				if (this.game.getGameIsHost() || this.game.getGameLog().tournamentId)
 				{
 					this.game.getGameConnection().socket?.send(JSON.stringify({
 						type: 'PLAYER_INPUT',
