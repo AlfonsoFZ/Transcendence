@@ -71,6 +71,13 @@ export default class Chat extends Step {
 						}
 					}
 				} else if (action === 'ignore-invite') {
+					const gameId = target.getAttribute('data-game-id');
+					if (gameId && Step.chatSocket && Step.chatSocket.readyState === WebSocket.OPEN) {
+						Step.chatSocket.send(JSON.stringify({
+							type: 'DECLINE_GAME_INVITE',
+							gameId: gameId
+						}));
+					}
 					const card = target.closest('.invite-card');
 					card?.remove();
 				}

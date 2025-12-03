@@ -1,6 +1,7 @@
 import { parse } from 'cookie';
 import { crud } from '../../crud/crud.js'
 import { extractUserFromToken } from '../../auth/token.js';
+import { gamesList } from '../../game/manager/eventManager.js';
 
 let timerId = 0;
 const rooms = new Map();
@@ -179,6 +180,23 @@ async function handlePrivate(user, data) {
 	}
 }
 
+// Handle declining a game invite
+async function handleDeclineGameInvite(user, data) {
+	const gameId = data.gameId;
+	if (!gameId) return;
+
+	const gameSession = gamesList.get(gameId);
+	if (gameSession) {
+		// Set result metadata to avoid winner calculation and provide reason
+		gameSession.metadata.result.winner = "No Winner";
+		gameSession.metadata.result.endReason = "Invitation declined by opponent";
+		
+		// End game without saving to DB (false flag)
+		// This will broadcast GAME_END to the creator and will not save the game to the DB
+		gameSession.endGame(gamesList, false);
+	}
+}
+
 // Register a user when they connect to the WebSocket server
 export async function registerUser(request, socket) {
 
@@ -206,6 +224,9 @@ export async function handleIncomingSocketMessage(user, socket) {
 			}
 			else if (data.type === "private") {
 				handlePrivate(updatedUser, data)
+			}
+			else if (data.type === "DECLINE_GAME_INVITE") {
+				await handleDeclineGameInvite(updatedUser, data);
 			}
 		} catch (error) {
 			console.log("An error occured:", error);
