@@ -16,6 +16,13 @@ export function handleJoinGame(client, data) {
 	const secondPlayerInfo = data.player2 || null;
 	// 1. Find or create the game session
 	let gameSession = gamesList.get(roomId);
+	if (!gameSession && data.isJoining) {
+		connection.send(JSON.stringify({
+			type: 'ERROR',
+			message: 'Game session room is no longer available'
+		}));
+		return;
+	}
 	if (!gameSession) {
 		gameSession = new GameSession(roomId, gameMode);
 		gamesList.set(roomId, gameSession);

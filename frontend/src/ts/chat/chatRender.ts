@@ -64,6 +64,7 @@ export default class Chat extends Step {
 						const spa = SPA.getInstance();
 						if (spa.currentGame) {
 							spa.currentGame.isChatGame = true;
+							spa.currentGame.isJoining = true;
 							spa.currentGame.setGameMode('remote');
 							spa.currentGame.setGameIsHost(false);
 							spa.currentGame.getGameConnection().joinGame(gameId);

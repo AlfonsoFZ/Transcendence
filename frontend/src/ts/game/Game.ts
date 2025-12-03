@@ -29,6 +29,7 @@ export default class Game extends Step {
 	protected	onlineId: string | null = null;
 	public		pauseDuration: number;
 	public		isChatGame: boolean = false;
+	public		isJoining: boolean = false;
 
 	/***************************************/
 	/*********** CONSTRUCTOR ***************/

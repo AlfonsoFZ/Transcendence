@@ -4,6 +4,7 @@
 import { SPA } from '../spa/spa.js';
 import Game from './Game.js'
 import type { GameData } from './types.js';
+import { showMessage } from '../modal/showMessage.js';
 
 // This is a variable to store the first websocket connection
 // so we can use the same one during the whole browser lifecycle
@@ -189,6 +190,10 @@ export class GameConnection {
 									try { this.socket?.send(JSON.stringify({ type: 'GET_STATE' })); } catch { }
 								} catch { }
 								break;
+							case 'ERROR':
+								console.error("Game Error:", data.message);
+								showMessage(data.message, 5000);
+								break;
 							default:
 								console.log(`Received message with type: ${data.type}`);
 						}
@@ -216,7 +221,8 @@ export class GameConnection {
 			const joinMsg: any = {
 				type: 'JOIN_GAME',
 				roomId: gameId,
-				mode: 'remote'
+				mode: 'remote',
+				isJoining: this.game.isJoining
 			};
 			this.socket.send(JSON.stringify(joinMsg));
 			return;
