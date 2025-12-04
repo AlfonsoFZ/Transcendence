@@ -66,7 +66,7 @@ export default class GameMatch extends Step
 				throw new Error("Failed to load the game UI HTML file");
 			
 			//  	inicio trasteo						//////////////////////////////////////////////////////////
-			// get the username of both players
+			// get the username of both players		
 			let player1Name = this.log.playerDetails.player1?.username || "Player 1";
 			let player2Name = this.log.playerDetails.player2?.username || "Player 2";
 			// if tournament match, get tournament usernames
@@ -83,6 +83,11 @@ export default class GameMatch extends Step
 			const htmlContent = await response.text().then((text) => {
 				let replaced = text.replace("{{ Player 1 }}", player1Name);
 				replaced = replaced.replace("{{ Player 2 }}", player2Name);
+				// this hides the keys for player 1 if playing against AI
+				if (this.log && this.log.mode === '1vAI'){
+						replaced = replaced.replace(   'id="player2_keys" class="sm:mr-3',
+  														'id="player2_keys" class="hidden sm:mr-3')
+					}
 				return replaced;
 			});
 			appElement.innerHTML = htmlContent;
