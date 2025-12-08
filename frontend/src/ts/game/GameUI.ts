@@ -5,17 +5,14 @@
 import Game from './Game.js'
 import { GameData } from './types.js'
 
-export class GameUI
-{
-	private	game: Game;
+export class GameUI {
+	private game: Game;
 
-	constructor(game: Game)
-	{
+	constructor(game: Game) {
 		this.game = game;
 	}
 
-	showOnly(divId: string, displayStyle: string = "block") : void
-	{
+	showOnly(divId: string, displayStyle: string = "block"): void {
 		const divIndex = [
 			'initial-screen',
 			'config-panel',
@@ -25,34 +22,30 @@ export class GameUI
 			'countdown-overlay',
 			'pause-modal'
 		];
-		if (divId === "hide_all")
-		{
+		if (divId === "hide_all") {
 			divIndex.forEach(id => {
-			const	checkDiv = document.getElementById(id);
-			if (checkDiv)
-				checkDiv.style.display = "none";
-		});
-			return ;
+				const checkDiv = document.getElementById(id);
+				if (checkDiv)
+					checkDiv.style.display = "none";
+			});
+			return;
 		}
 		divIndex.forEach(id => {
-			const	checkDiv = document.getElementById(id);
+			const checkDiv = document.getElementById(id);
 			if (checkDiv)
 				checkDiv.style.display = (id === divId) ? displayStyle : "none";
 		});
 	}
 
-	async initializeUI(appElement: HTMLElement): Promise<void>
-	{
-		try
-		{
+	async initializeUI(appElement: HTMLElement): Promise<void> {
+		try {
 			const response = await fetch("../../html/game/gameUI.html");
 			if (!response.ok)
 				throw new Error("Failed to load the game UI HTML file");
 			const htmlContent = await response.text();
 			appElement.innerHTML = htmlContent;
 		}
-		catch (error)
-		{
+		catch (error) {
 			console.error("Error loading game UI:", error);
 			appElement.innerHTML = `<div class="error-container">Failed to load game interface. Please try again.</div>`;
 		}
@@ -61,8 +54,7 @@ export class GameUI
 	}
 
 	// Sets up event listeners for game mode buttons, which after will also set controllers
-	public setupEventListeners()
-	{
+	public setupEventListeners() {
 		// Game mode buttons
 		document.getElementById('play-1v1')?.addEventListener('click', async () => {
 			await this.game.setPlayerInfo('player1', null);
@@ -77,14 +69,14 @@ export class GameUI
 			this.showOnly('config-panel');
 		});
 		document.getElementById('play-online')?.addEventListener('click', async () => {
-			await this.game.setPlayerInfo('player1', null);	
+			await this.game.setPlayerInfo('player1', null);
 			this.game.setGameMode('remote');
 			this.showOnly('config-panel');
 		});
-		
+
 		// Configuration panel elements
 		this.setupConfigPanelListeners();
-		
+
 		// Start game button
 		document.getElementById('start-game')?.addEventListener('click', () => {
 			this.launchGame();
@@ -102,9 +94,8 @@ export class GameUI
 			this.requestGamesList();
 		});
 	}
-	
-	public	requestGamesList()
-	{
+
+	public requestGamesList() {
 		const connection = this.game.getGameConnection();
 		if (connection.socket && connection.connectionStat)
 			connection.socket.send(JSON.stringify({ type: 'SHOW_GAMES' }));
@@ -112,27 +103,22 @@ export class GameUI
 	/**
 	 * Set up listeners for the configuration panel elements
 	 */
-	private setupConfigPanelListeners(): void
-	{
+	private setupConfigPanelListeners(): void {
 		// Score limit slider
 		const scoreSlider = document.getElementById('score-limit') as HTMLInputElement;
 		const scoreValue = document.getElementById('score-value');
-		if (scoreSlider && scoreValue)
-		{
+		if (scoreSlider && scoreValue) {
 			scoreSlider.addEventListener('input', () => {
 				const value = scoreSlider.value;
-				if (Number(value) < 4) 
-				{
+				if (Number(value) < 4) {
 					scoreValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
 					scoreValue.classList.add('text-supernova-400');
-				}	
-				else if (Number(value) > 4 && Number(value) < 8)
-				{
+				}
+				else if (Number(value) > 4 && Number(value) < 8) {
 					scoreValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
 					scoreValue.classList.add('text-international-orange-400');
 				}
-				else
-				{	
+				else {
 					scoreValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
 					scoreValue.classList.add('text-international-orange-600');
 				}
@@ -140,27 +126,24 @@ export class GameUI
 				this.game.getGameConfig().scoreLimit = parseInt(value);
 			});
 		}
-		
+
 		// Difficulty slider
 		const difficultySlider = document.getElementById('difficulty') as HTMLInputElement;
 		const difficultyValue = document.getElementById('difficulty-value');
-		if (difficultySlider && difficultyValue)
-		{
+		if (difficultySlider && difficultyValue) {
 			difficultySlider.addEventListener('input', () => {
 				const value = parseInt(difficultySlider.value);
 				let difficultyText = 'Medium';
 				difficultyValue.classList.remove('text-supernova-400', 'text-international-orange-400', 'text-international-orange-600');
 				difficultyValue.classList.add('text-international-orange-400');
 				let difficultyLevel: 'easy' | 'medium' | 'hard' = 'medium';
-				if (value === 1)
-				{
+				if (value === 1) {
 					difficultyText = 'Easy';
 					difficultyLevel = 'easy';
 					difficultyValue.classList.remove('text-supernova-400', 'text-international-orange-600', 'text-international-orange-400');
 					difficultyValue.classList.add('text-supernova-400');
 				}
-				else if (value === 3)
-				{
+				else if (value === 3) {
 					difficultyText = 'Hard';
 					difficultyLevel = 'hard';
 					difficultyValue.classList.remove('text-supernova-400', 'text-international-orange-600', 'text-international-orange-400');
@@ -171,14 +154,13 @@ export class GameUI
 			});
 		}
 	}
-	
-	private setupPlayer2LoginPanel(): void
-	{
-		const	loginPanel = document.getElementById('player2-login-panel');
-		const	configPanel = document.getElementById('config-panel');
-		const	loginForm = document.getElementById('player2-login-form') as HTMLFormElement;
-		const	guestBtn = document.getElementById('player2-guest-btn');
-		const	errorMsg = document.getElementById('player2-login-error');
+
+	private setupPlayer2LoginPanel(): void {
+		const loginPanel = document.getElementById('player2-login-panel');
+		const configPanel = document.getElementById('config-panel');
+		const loginForm = document.getElementById('player2-login-form') as HTMLFormElement;
+		const guestBtn = document.getElementById('player2-guest-btn');
+		const errorMsg = document.getElementById('player2-login-error');
 
 		if (!loginPanel || !loginForm || !guestBtn || !configPanel)
 			return;
@@ -188,23 +170,27 @@ export class GameUI
 			e.preventDefault();
 			const email = (document.getElementById('player2-email') as HTMLInputElement).value;
 			const password = (document.getElementById('player2-password') as HTMLInputElement).value;
-			const success = await this.game.getGameConnection().checkPlayer({ email, password });
-			
-			if (!email || !password)
-			{
+			const result = await this.game.getGameConnection().checkPlayer({ email, password });
+
+			if (!email || !password) {
 				if (errorMsg)
 					errorMsg.textContent = 'Please enter both email and password';
 				return;
 			}
 
-			if (success)
-			{
+			if (result && result.success) {
 				this.game.setPlayerInfo('player2', { email, password });
 				this.showOnly('config-panel');
 				if (errorMsg) errorMsg.textContent = '';
 			}
-			else
-				if (errorMsg) errorMsg.textContent = 'Invalid email or password. Please try again';
+			else {
+				if (errorMsg) {
+					if (result && result.message === 'Payer two cannot be the same than player one')
+						errorMsg.textContent = 'You cannot play against yourself.';
+					else
+						errorMsg.textContent = 'Invalid email or password. Please try again';
+				}
+			}
 		};
 
 		// Handle guest
@@ -216,27 +202,23 @@ export class GameUI
 		};
 	}
 
-	public launchGame(): void 
-	{
-		if (!this.game.getGameConnection().socket || !this.game.getGameConnection().connectionStat)
-		{
+	public launchGame(): void {
+		if (!this.game.getGameConnection().socket || !this.game.getGameConnection().connectionStat) {
 			console.error("Cannot join game: connection not ready");
-			return ;
+			return;
 		}
 		this.game.setGameConfig(this.game.getGameConfig());
 		this.game.getGameConnection().joinGame();
 	}
 
-	public	updateLobby(games: GameData[]): void
-	{
+	public updateLobby(games: GameData[]): void {
 		const lobbyDiv = document.getElementById('lobby-games-list');
 		if (!lobbyDiv)
 			return;
 		lobbyDiv.innerHTML = '';
-		if (!games || games.length === 0)
-		{
+		if (!games || games.length === 0) {
 			lobbyDiv.innerHTML = '<div class="text-white text-center">No games available.</div>';
-			return ;
+			return;
 		}
 		// Per each game returned by backend, we create a new game card and append it to lobbyDiv
 		// TODO: we can add more elements to the card as "Ready, Full, In progress"...
@@ -261,8 +243,7 @@ export class GameUI
 		lobbyDiv.querySelectorAll('.join-game-btn').forEach(btn => {
 			btn.addEventListener('click', (e) => {
 				const gameId = (e.target as HTMLElement).getAttribute('data-gameid');
-				if (gameId)
-				{	
+				if (gameId) {
 					this.game.setGameIsHost(false);
 					this.game.isJoining = true;
 					this.game.getGameConnection().parseUserInfo(null);

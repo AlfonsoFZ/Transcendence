@@ -81,8 +81,15 @@ export class GameConnection {
 						switch (data.type) {
 							case 'USER_INFO':
 								const userId = data?.user?.id;
-								if (userId !== undefined && userId !== null)
-									this.game.setOnlineId(String(userId));
+								// Fix: On 1v1 mode, we fetch player2 info but we shouldn't overwrite the main session ID (player1)
+								// So we only update onlineId if we are not in 1v1 mode OR if we don't have an ID yet
+								const is1v1 = this.game.getGameLog().mode === '1v1';
+								const hasId = this.game.getOnlineId() !== null;
+
+								if (userId !== undefined && userId !== null) {
+									if (!is1v1 || !hasId)
+										this.game.setOnlineId(String(userId));
+								}
 								else
 									console.warn('USER_INFO received without user id');
 								if (this.pendingUserInfoResolve) {
@@ -250,7 +257,8 @@ export class GameConnection {
 		let mode = 'local';
 		if (data) {
 			try {
-				if (await this.checkPlayer(data))
+				const check = await this.checkPlayer(data);
+				if (check && check.success)
 					mode = 'external';
 			}
 			catch (error) {
@@ -289,13 +297,14 @@ export class GameConnection {
 			if (!response.ok) {
 				const result = await response.json();
 				console.log(`Error: ${result.message}`);
-				return (false);
+				return ({ success: false, message: result.message });
 			}
 			else
-				return (true);
+				return ({ success: true });
 		}
 		catch (error) {
 			console.error("Error while verifying:", error);
+			return ({ success: false, message: "Network error" });
 		}
 	};
 
