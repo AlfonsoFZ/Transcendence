@@ -77,34 +77,25 @@ export default class GameMatch extends Step
 			if (!response.ok)
 				throw new Error("Failed to load the game UI HTML file");
 			
-			//  	inicio trasteo						//////////////////////////////////////////////////////////
-			// get the username of both players
+			// Get the username of both players
 			let player1Name = this.log.playerDetails.player1?.username || "Player 1";
 			let player2Name = this.log.playerDetails.player2?.username || "Player 2";
-			// if tournament match, get tournament usernames
+			// If tournament match, get tournament usernames
 			if (this.tournament && this.tournament.getTournamentId() !== -42 
 								&& this.log.playerDetails.player1?.tournamentUsername 
 								&& this.log.playerDetails.player2?.tournamentUsername){
 						player1Name = this.log.playerDetails.player1?.tournamentUsername;
 						player2Name = this.log.playerDetails.player2?.tournamentUsername;
 				}
-			// make uppercase
 			player1Name = player1Name.toUpperCase();
 			player2Name = player2Name.toUpperCase();
-			//get the html content and replace the placeholders
+			// Get the html content and replace the placeholders
 			const htmlContent = await response.text().then((text) => {
 				let replaced = text.replace("{{ Player 1 }}", player1Name);
 				replaced = replaced.replace("{{ Player 2 }}", player2Name);
 				return replaced;
 			});
 			appElement.innerHTML = htmlContent;
-
-			//		fin de trasteo						//////////////////////////////////////////////////////////
-
-			//		original						//////////////////////////////////////////////////////////
-			// const htmlContent = await response.text();
-			// appElement.innerHTML = htmlContent;
-			//		fin original						//////////////////////////////////////////////////////////
 		}
 		catch (error)
 		{
@@ -153,8 +144,6 @@ export default class GameMatch extends Step
 		if (pauseModal && resumeBtn)
 		{
 			resumeBtn.onclick = () => {
-				console.warn("resume-btn-clicked");
-				//pauseModal.style.display = 'none';
 				this.connection.socket?.send(JSON.stringify({ type: 'RESUME_GAME' }));
 			};
 		}
@@ -170,19 +159,17 @@ export default class GameMatch extends Step
 		const waitingMsg = document.getElementById('waiting-msg');
 		const player1 = this.log.playerDetails.player1;
 		const player2 = this.log.playerDetails.player2;
-		/** search TournamentName  */
-		/** to revert this change just delete everything but the code into the else */
 		const players = { player1, player2 };
 		if (this.tournament && this.tournament.getTournamentId() !== -42 && player1 && player2) {
-		(document.getElementById('player1-name') as HTMLElement).innerHTML = this.showTournamentName(players, player1?.username) || "Waiting <br>player 1...";
-		(document.getElementById('player2-name') as HTMLElement).innerHTML = this.showTournamentName(players, player2?.username) || "Waiting <br>player 2...";
-		(document.getElementById('player1-avatar') as HTMLImageElement).src = player1?.avatarPath || "https://localhost:8443/back/images/7.png";
-		(document.getElementById('player2-avatar') as HTMLImageElement).src = player2?.avatarPath || "https://localhost:8443/back/images/7.png";
-		}else{
-		(document.getElementById('player1-name') as HTMLElement).innerHTML = player1?.username || "Waiting <br>player 1...";
-		(document.getElementById('player1-avatar') as HTMLImageElement).src = player1?.avatarPath || "https://localhost:8443/back/images/7.png";
-		(document.getElementById('player2-name') as HTMLElement).innerHTML = player2?.username || "Waiting <br>player 2...";
-		(document.getElementById('player2-avatar') as HTMLImageElement).src = player2?.avatarPath || "https://localhost:8443/back/images/7.png";
+			(document.getElementById('player1-name') as HTMLElement).innerHTML = this.showTournamentName(players, player1?.username) || "Waiting <br>player 1...";
+			(document.getElementById('player2-name') as HTMLElement).innerHTML = this.showTournamentName(players, player2?.username) || "Waiting <br>player 2...";
+			(document.getElementById('player1-avatar') as HTMLImageElement).src = player1?.avatarPath || "https://localhost:8443/back/images/7.png";
+			(document.getElementById('player2-avatar') as HTMLImageElement).src = player2?.avatarPath || "https://localhost:8443/back/images/7.png";
+		} else {
+			(document.getElementById('player1-name') as HTMLElement).innerHTML = player1?.username || "Waiting <br>player 1...";
+			(document.getElementById('player1-avatar') as HTMLImageElement).src = player1?.avatarPath || "https://localhost:8443/back/images/7.png";
+			(document.getElementById('player2-name') as HTMLElement).innerHTML = player2?.username || "Waiting <br>player 2...";
+			(document.getElementById('player2-avatar') as HTMLImageElement).src = player2?.avatarPath || "https://localhost:8443/back/images/7.png";
 		}
 		/*  end of search */
 		if (readyBtn && waitingMsg)

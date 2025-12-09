@@ -258,8 +258,8 @@ export class GameConnection {
 				console.error("Error while checking external player:", error);
 			}
 		}
-		/*Cuando se solicita información del usuario, se crea una nueva promesa 
-		y se asigna su función resolve a pendingUserInfoResolve.*/
+		/*User's information is requested, and a new promise is created:
+		its resolve function is assigned to pendingUserInfoResolve.*/
 		return new Promise((resolve) => {
 			this.pendingUserInfoResolve = resolve;
 			this.socket?.send(JSON.stringify({
