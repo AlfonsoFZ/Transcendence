@@ -39,6 +39,18 @@ export default class GameMatch extends Step
         }
     };
 
+	private handleResize = () => {
+		if (this.renderer.canvas) {
+			this.renderer.canvas.width = this.renderer.canvas.clientWidth;
+			this.renderer.canvas.height = this.renderer.canvas.clientHeight;
+			// Redraw to prevent flickering/blank screen during resize
+			if (this.renderer.gameState)
+				this.renderer.renderGameState(this.renderer.gameState);
+			else
+				this.renderer.drawInitialState();
+		}
+	};
+
 	constructor(game: Game, tournament?: Tournament | null)
 	{
 		super('game-container');
@@ -108,9 +120,14 @@ export default class GameMatch extends Step
 		if (canvas)
 		{
 			this.renderer.canvas = canvas;
+			// Initialize canvas resolution to match display size
+			this.renderer.canvas.width = this.renderer.canvas.clientWidth;
+			this.renderer.canvas.height = this.renderer.canvas.clientHeight;
+			
 			this.renderer.ctx = canvas.getContext('2d');
 			this.renderer.drawInitialState();
 		}
+		window.addEventListener('resize', this.handleResize);
 		this.showReadyModal();
 		const	pauseModal = document.getElementById('pause-modal');
 		const	pauseBtn = document.getElementById('pause-btn');
@@ -480,6 +497,7 @@ export default class GameMatch extends Step
 		this.updatePlayerActivity(false);
 		// Re-enable normal page behavior
 		window.removeEventListener('keydown', this.preventScrollOnArrow);
+		window.removeEventListener('resize', this.handleResize);
 		this.controllers.cleanup();
 		this.renderer.destroy();
 		if (this.ai)
