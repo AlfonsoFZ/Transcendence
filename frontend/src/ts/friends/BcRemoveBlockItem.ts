@@ -24,7 +24,7 @@ export class BcRemoveBlockItem extends BasicComponent {
 				friendId: userId
 			};
 			try {
-				const response = await fetch("https://localhost:8443/back/delete_friend", {
+				const response = await fetch(`https://${window.location.host}/back/delete_friend`, {
 					method: "POST",
 					credentials: 'include',
 					headers: {
@@ -57,7 +57,7 @@ export class BcRemoveBlockItem extends BasicComponent {
 				friendId: userId
 			};
 			try {
-				const response = await fetch("https://localhost:8443/back/block_user", {
+				const response = await fetch(`https://${window.location.host}/back/block_user`, {
 					method: "POST",
 					credentials: 'include',
 					headers: {

@@ -15,7 +15,7 @@ export function setAppContainer(appElement: HTMLElement) {
 
 export async function setUserId(username: string) {
 
-	const id = await fetch("https://localhost:8443/back/getIdByUsername", {
+	const id = await fetch(`https://${window.location.host}/back/getIdByUsername`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -33,7 +33,7 @@ export function setSocket() {
 
 	if (!Step.chessSocket || Step.chessSocket.readyState === WebSocket.CLOSED)
 	{
-		Step.chessSocket = new WebSocket("https://localhost:8443/back/ws/chess");
+		Step.chessSocket = new WebSocket(`https://${window.location.host}/back/ws/chess`);
 		socket = Step.chessSocket;
 	}
 	else

@@ -280,7 +280,7 @@ export class GameConnection {
 	 */
 	public async checkPlayer(data: { email: string, password: string }) {
 		try {
-			const response = await fetch("https://localhost:8443/back/verify_user", {
+			const response = await fetch(`https://${window.location.host}/back/verify_user`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

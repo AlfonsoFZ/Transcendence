@@ -267,7 +267,7 @@ export class TournamentUI {
 							username: `Guest00${i}`,
 							tournamentUsername: `Guest00${i}`,
 							email: '',
-							avatarPath: `https://localhost:8443/back/images/avatar-${i}.png`
+							avatarPath: `https://${window.location.host}/back/images/avatar-${i}.png`
 						};
 						tournamentPlayer.status = 'ready';
 					}
@@ -297,7 +297,7 @@ export class TournamentUI {
 						username: `Ai00${tournamentPlayer.Index}`,
 						tournamentUsername: `Ai00${tournamentPlayer.Index}`,
 						email: `ai${tournamentPlayer.Index}@transcendence.com`,
-						avatarPath: `https://localhost:8443/back/images/avatar_ai_${i - 1}.png`
+						avatarPath: `https://${window.location.host}/back/images/avatar_ai_${i - 1}.png`
 					};
 					tournamentPlayer.status = 'ready';
 				}
@@ -445,7 +445,7 @@ export class TournamentUI {
 
 	async getFirstPlayer(): Promise<void> {
 		try {
-			const response = await fetch("https://localhost:8443/back/verify_first_player", {
+			const response = await fetch(`https://${window.location.host}/back/verify_first_player`, {
 				method: "POST",
 				credentials: 'include',
 			});
@@ -524,7 +524,7 @@ export class TournamentUI {
 
 	async checkGuestPlayer(index: number, guestTournamentName: string): Promise<TournamentPlayer | null> {
 		if (!guestTournamentName || guestTournamentName.trim() === '') {
-			const AvatarPath = `https://localhost:8443/back/images/avatar-${index}.png`;
+			const AvatarPath = `https://${window.location.host}/back/images/avatar-${index}.png`;
 			return {
 				Index: '',
 				status: 'ready',
@@ -539,7 +539,7 @@ export class TournamentUI {
 		} else {
 			const guestData = { tournamentId: this.tournament.getTournamentId(), tournamentName: guestTournamentName };
 			try {
-				const response = await fetch("https://localhost:8443/back/verify_guest_tournamentName", {
+				const response = await fetch(`https://${window.location.host}/back/verify_guest_tournamentName`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -573,7 +573,7 @@ export class TournamentUI {
 	async checkPlayer(index: number, email: string | null, password: string | null): Promise<TournamentPlayer | null> {
 		const data = { email, password };
 		try {
-			const response = await fetch("https://localhost:8443/back/verify_tounament_user", {
+			const response = await fetch(`https://${window.location.host}/back/verify_tounament_user`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -807,7 +807,7 @@ export class TournamentUI {
 			this.boundPageHideHandler = () => {
 				const tournamentId = this.tournament.getTournamentId();
 				if (tournamentId !== null && tournamentId !== undefined) {
-					fetch('https://localhost:8443/back/delete_user_by_tournament_id', {
+					fetch(`https://${window.location.host}/back/delete_user_by_tournament_id`, {
 						method: 'DELETE',
 						headers: {
 							"Content-Type": "application/json",

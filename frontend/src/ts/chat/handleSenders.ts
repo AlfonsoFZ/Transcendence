@@ -2,7 +2,7 @@ import { removeNotificationAndUpdateHTML } from "./loadAndUpdateDOM.js";
 
 export async function getUserId(username: string): Promise<string> {
 
-	const id = await fetch("https://localhost:8443/back/getIdByUsername", {
+	const id = await fetch(`https://${window.location.host}/back/getIdByUsername`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

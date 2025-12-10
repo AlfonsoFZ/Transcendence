@@ -38,7 +38,7 @@ function changePassword(){
 		}
 
 		try {
-			const response = await fetch('https://localhost:8443/back/change_password', {
+			const response = await fetch(`https://${window.location.host}/back/change_password`, {
 			method: "POST",
 			credentials: 'include',
 			headers: {
@@ -133,7 +133,7 @@ async function saveInfo() {
 	const formData = new FormData(userForm as HTMLFormElement);
 	const data = Object.fromEntries(formData.entries());
 	try {
-		const response = await fetch('https://localhost:8443/back/update_user', {
+		const response = await fetch(`https://${window.location.host}/back/update_user`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -181,7 +181,7 @@ async function changeAvatar() {
 			const formData = new FormData();
 			formData.append("avatar", file);
 			try {
-				const response = await fetch("https://localhost:8443/back/upload_image", {
+				const response = await fetch(`https://${window.location.host}/back/upload_image`, {
 					method: "POST",
 					credentials: "include",
 					body: formData,
@@ -271,7 +271,7 @@ export async function handleProfile() {
 			// 		const formData = new FormData(userForm as HTMLFormElement);
 			// 		const data = Object.fromEntries(formData.entries());
 			// 		try {
-			// 			const response = await fetch('https://localhost:8443/back/update_user', {
+			// 			const response = await fetch(`https://${window.location.host}/back/update_user`, {
 			// 				method: "POST",
 			// 				headers: {
 			// 					"Content-Type": "application/json",
@@ -356,7 +356,7 @@ export async function handleProfile() {
 					const formData = new FormData(userForm as HTMLFormElement);
 					const data = Object.fromEntries(formData.entries());
 					try {
-						const response = await fetch('https://localhost:8443/back/update_user', {
+						const response = await fetch(`https://${window.location.host}/back/update_user`, {
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json",

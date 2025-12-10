@@ -16,7 +16,7 @@ export function formatTimeFromMilliseconds(milliseconds: number): string {
 
 async function fetchUsers(): Promise<any> {
 	try {
-		const response = await fetch('https://localhost:8443/back/get_users', {
+		const response = await fetch(`https://${window.location.host}/back/get_users`, {
 			method: "GET",
 		});
 		if (!response.ok) {
@@ -34,7 +34,7 @@ async function fetchUsers(): Promise<any> {
 
 export async function fetchGameLogs(): Promise<any> {
 	try {
-		const response = await fetch('https://localhost:8443/back/get_gamelogs', {
+		const response = await fetch(`https://${window.location.host}back/get_gamelogs`, {
 			method: "GET",
 			credentials: "include"
 		});
@@ -54,7 +54,7 @@ export async function fetchGameLogs(): Promise<any> {
 export async function fetchChessGameLogs(): Promise<any> {
 	try {
 
-		const url = `https://localhost:8443/back/get_chessgamelogs`;
+		const url = `https://${window.location.host}/back/get_chessgamelogs`;
 		const getUserResponse = await fetch(`${url}`, {
 			method: "GET",
 			credentials: "include"
@@ -65,7 +65,7 @@ export async function fetchChessGameLogs(): Promise<any> {
 		}
 		const userStats = await getUserResponse.json();
 		return await userStats;
-		// const response = await fetch('https://localhost:8443/back/get_user_chessgamelogs`', {			
+		// const response = await fetch(`https://${window.location.host}/back/get_user_chessgamelogs`, {			
 		// 	method: "GET",
 		
 		// 	credentials: "include"

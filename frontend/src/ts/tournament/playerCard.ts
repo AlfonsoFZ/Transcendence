@@ -133,7 +133,7 @@ export class PlayerCard {
 
 	// async checkGuestPlayer(guestTorunamentName: string) {
 	// 	if (!guestTorunamentName || guestTorunamentName.trim() === '') {
-	// 		const AvatarPath = `https://localhost:8443/back/images/avatar-${this.player_index}.png`; // Default avatar path
+	// 		const AvatarPath = `https://${window.location.host}/back/images/avatar-${this.player_index}.png`; // Default avatar path
 	// 		this.tournamentPlayer = {
 	// 				Index: '',
 	// 				status: 'ready', // Update status to ready
@@ -149,7 +149,7 @@ export class PlayerCard {
 	// 	else {
 	// 		const guestData =  { tournamentId:this.tournamentId, tournamentName: guestTorunamentName}
 	// 		try {
-	// 			const response = await fetch("https://localhost:8443/back/verify_guest_tournamentName", {
+	// 			const response = await fetch(`https://${window.location.host}/back/verify_guest_tournamentName`, {
 	// 				method: "POST",
 	// 				headers: {
 	// 					"Content-Type": "application/json",
@@ -190,7 +190,7 @@ export class PlayerCard {
 	// 		password: password
 	// 	}
 	// 	try {
-	// 		const response = await fetch("https://localhost:8443/back/verify_tounament_user", {
+	// 		const response = await fetch(`https://${window.location.host}/back/verify_tounament_user`, {
 	// 			method: "POST",
 	// 			headers: {
 	// 				"Content-Type": "application/json",

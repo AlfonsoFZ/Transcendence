@@ -71,7 +71,7 @@ export async function saveChessGame(data: any): Promise<void>  {
 			Chessgamelog.loserStr = null;
 		}
 		try {
-			const response = await fetch("https://localhost:8443/back/post_chessgamelog", {
+			const response = await fetch(`https://${window.location.host}/back/post_chessgamelog`, {
 				method: "POST",
 				credentials: 'include',
 				headers: {

@@ -14,7 +14,7 @@ export function formatTimeFromMilliseconds(milliseconds: number): string {
 
 export async function getPongStats(appElement: HTMLElement): Promise<any> {
 			try{
-			const url = `https://localhost:8443/back/get_user_gamelogs`;
+			const url = `https://${window.location.host}/back/get_user_gamelogs`;
 			const getUserResponse = await fetch(`${url}`, {
 				method: "GET",
 				credentials: "include"
@@ -55,7 +55,7 @@ export async function getPongStats(appElement: HTMLElement): Promise<any> {
 			if(error instanceof Error) {
 				if(error.message.includes("jwt must be provided")) {
 					appElement.innerHTML ="";
-					window.location.href = "https://localhost:8443/#login";
+					window.location.href = `https://${window.location.host}/#login`;
 				}
 			}
 			else {
@@ -67,7 +67,7 @@ export async function getPongStats(appElement: HTMLElement): Promise<any> {
 export async function getPongTournamentStats(appElement: HTMLElement): Promise<any> {
 	// alert("getPongTournamentStats called");
 		try{
-		const url = `https://localhost:8443/back/get_user_tournamentlogs`;
+		const url = `https://${window.location.host}/back/get_user_tournamentlogs`;
 		const getUserResponse = await fetch(`${url}`, {
 			method: "GET",
 			credentials: "include"
@@ -148,7 +148,7 @@ export async function getPongTournamentStats(appElement: HTMLElement): Promise<a
 			if(error instanceof Error) {
 				if(error.message.includes("jwt must be provided")) {
 					appElement.innerHTML ="";
-					window.location.href = "https://localhost:8443/#login";
+					window.location.href = `https://${window.location.host}/#login`;
 				}
 			}
 			else {
@@ -159,7 +159,7 @@ export async function getPongTournamentStats(appElement: HTMLElement): Promise<a
 
 export async function getChessStats(appElement: HTMLElement): Promise<any> {
 		try{
-		const url = `https://localhost:8443/back/get_user_chessgamelogs`;
+		const url = `https://${window.location.host}/back/get_user_chessgamelogs`;
 		const getUserResponse = await fetch(`${url}`, {
 			method: "GET",
 			credentials: "include"
@@ -199,7 +199,7 @@ export async function getChessStats(appElement: HTMLElement): Promise<any> {
 			if(error instanceof Error) {
 				if(error.message.includes("jwt must be provided")) {
 					appElement.innerHTML ="";
-					window.location.href = "https://localhost:8443/#login";
+					window.location.href = `https://${window.location.host}/#login`;
 				}
 			}
 			else {

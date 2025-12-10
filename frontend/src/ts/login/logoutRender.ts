@@ -5,7 +5,7 @@ export default class LoginRender extends Step {
 
 	async render(appElement: HTMLElement): Promise<void>  {
 		try {
-			const response = await fetch("https://localhost:8443/back/auth/logout", {
+			const response = await fetch(`https://${window.location.host}/back/auth/logout`, {
                 method: "POST",
                 credentials: "include",
             });

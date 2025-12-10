@@ -24,7 +24,7 @@ export class BcUnblockItem extends BasicComponent {
 			friendId: userId
 		};
       try {
-	        const response = await fetch("https://localhost:8443/back/unblock_user", {
+	        const response = await fetch(`https://${window.location.host}/back/unblock_user`, {
 	            method: "POST",
 	            credentials: 'include',	
 	            headers: {

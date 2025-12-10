@@ -29,7 +29,7 @@ export async function searchUsersFriends(origen: 'boton' | 'codigo', event?: Eve
 	const requestBody = { keyword: searchValue };
 
 	try {
-		const response = await fetch("https://localhost:8443/back/get_all_users_coincidences", {
+		const response = await fetch(`https://${window.location.host}/back/get_all_users_coincidences`, {
 			method: "POST",
 			credentials: "include",
 			headers: { "Content-Type": "application/json" },

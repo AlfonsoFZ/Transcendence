@@ -24,7 +24,7 @@ export class BcAcceptDeclineRequest extends BasicComponent {
 				friendId: userId
 			};
 			try {
-				const response = await fetch("https://localhost:8443/back/accept_friend_request", {
+				const response = await fetch(`https://${window.location.host}/back/accept_friend_request`, {
 					method: "POST",
 					credentials: 'include',
 					headers: {
@@ -57,7 +57,7 @@ export class BcAcceptDeclineRequest extends BasicComponent {
 				friendId: userId
 			};
 			try {
-				const response = await fetch("https://localhost:8443/back/reject_friend_request", {
+				const response = await fetch(`https://${window.location.host}/back/reject_friend_request`, {
 					method: "POST",
 					credentials: 'include',
 					headers: {

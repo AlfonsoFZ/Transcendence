@@ -6,7 +6,7 @@ export let onlineSocket: WebSocket | null = null;
 
 export function initOnlineSocket() {
 	if (!onlineSocket || onlineSocket.readyState === WebSocket.CLOSED) {
-		onlineSocket = new WebSocket("wss://localhost:8443/back/ws/online");
+		onlineSocket = new WebSocket(`wss://${window.location.host}/back/ws/online`);
 		
 		onlineSocket.onopen = () => {
 		};

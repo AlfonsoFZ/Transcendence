@@ -13,7 +13,7 @@ export default class Profile extends Step {
 			}
 			const usernameencode = this.username ? encodeURIComponent(this.username) : '';
 			// const user = this.username;
-			const url = `https://localhost:8443/back/get_user_by_username/?username=${this.username}`;
+			const url = `https://${window.location.host}/back/get_user_by_username/?username=${this.username}`;
 			const getUserResponse = await fetch(`${url}`, {
 				method: "GET",
 				credentials: "include"
@@ -46,8 +46,8 @@ export default class Profile extends Step {
 
 		if (statContainer) {
 			try{
-				const url = `https://localhost:8443/back/get_user_gamelogs`;
-				const chessurl = `https://localhost:8443/back/get_user_chessgamelogs`;
+				const url = `https://${window.location.host}/back/get_user_gamelogs`;
+				const chessurl = `https://${window.location.host}/back/get_user_chessgamelogs`;
 
 				const getUserResponse = await fetch(`${url}`, {
 					method: "GET",

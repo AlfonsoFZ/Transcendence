@@ -24,7 +24,7 @@ export class BcAddFriend extends BasicComponent {
 				friendId: userId
 			};
 			try {
-				const response = await fetch("https://localhost:8443/back/send_friend_request", {
+				const response = await fetch(`https://${window.location.host}/back/send_friend_request`, {
 					method: "POST",
 					credentials: 'include',
 					headers: {

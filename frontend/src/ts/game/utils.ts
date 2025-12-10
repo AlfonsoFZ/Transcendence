@@ -4,7 +4,7 @@
 
 export async function fetchRandomAvatarPath()
 {
-	const response = await fetch('https://localhost:8443/back/random_avatar');
+	const response = await fetch(`https://${window.location.host}/back/random_avatar`);
 	if (response.ok)
 	{
 		const data = await response.json();

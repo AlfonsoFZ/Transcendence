@@ -51,7 +51,7 @@ export default class Tournament extends Step {
 	public async findNextTournamentId(): Promise<number> {
 
 		try {
-			const response = await fetch("https://localhost:8443/back/get_next_tournamentlog", {
+			const response = await fetch(`https://${window.location.host}/back/get_next_tournamentlog`, {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
@@ -117,7 +117,7 @@ export default class Tournament extends Step {
 		};
 
 		try {
-			const response = await fetch("https://localhost:8443/back/update_tournamentlog", {
+			const response = await fetch(`https://${window.location.host}/back/update_tournamentlog`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -400,7 +400,7 @@ export default class Tournament extends Step {
 		this.ui.showOnly('tournament-container');
 
 		try {
-			const response = await fetch("https://localhost:8443/back/prepareBracket", {
+			const response = await fetch(`https://${window.location.host}/back/prepareBracket`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -559,7 +559,7 @@ export default class Tournament extends Step {
 			result: game.result ? { ...game.result } : undefined
 		}));
 		const payload = {result: result, gamesData: gamesData , playerscount: this.tournamentConfig.numberOfPlayers};
-		const response = await fetch("https://localhost:8443/back/updateBracket", {
+		const response = await fetch(`https://${window.location.host}/back/updateBracket`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -623,7 +623,7 @@ export default class Tournament extends Step {
 			return;
 		}
 		try {
-			const response = await fetch("https://localhost:8443/back/delete_user_by_tournament_id", {
+			const response = await fetch(`https://${window.location.host}/back/delete_user_by_tournament_id`, {
 				method: "DELETE",
 				headers: {
 					"Content-Type": "application/json",
@@ -640,7 +640,7 @@ export default class Tournament extends Step {
 			return;
 		}
 		try {
-			const response = await fetch("https://localhost:8443/back/delete_user_by_tournament_id", {
+			const response = await fetch(`https://${window.location.host}/back/delete_user_by_tournament_id`, {
 				method: "DELETE",
 				headers: {
 					"Content-Type": "application/json",

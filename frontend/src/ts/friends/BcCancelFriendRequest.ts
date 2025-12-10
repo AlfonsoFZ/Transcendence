@@ -24,7 +24,7 @@ export class BcCancelFriendRequest extends BasicComponent {
 				friendId: userId
 			};
 			try {
-				const response = await fetch("https://localhost:8443/back/delete_friend", {
+				const response = await fetch(`https://${window.location.host}/back/delete_friend`, {
 					method: "POST",
 					credentials: 'include',
 					headers: {

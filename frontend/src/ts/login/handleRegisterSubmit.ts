@@ -11,7 +11,7 @@ export async function handleRegisterSubmit(event: SubmitEvent) {
 		return;
 	}
     try {
-        const response = await fetch("https://localhost:8443/back/register_user", {
+        const response = await fetch(`https://${window.location.host}/back/register_user`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

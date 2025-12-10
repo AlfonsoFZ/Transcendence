@@ -36,7 +36,7 @@ export function canAcceptRequest(userId: string, friendsEntries: any[], currentU
 
 export async function rejectFriendRequest(userId: string): Promise<void> {
 	try {
-		const response = await fetch("https://localhost:8443/back/reject_friend_request", {
+		const response = await fetch(`https://${window.location.host}/back/reject_friend_request`, {
 			method: "POST",
 			credentials: 'include',
 			headers: {
@@ -57,7 +57,7 @@ export async function rejectFriendRequest(userId: string): Promise<void> {
 
 export async function deleteFriend(userId: string) {
 	try {
-		const response = await fetch(`https://localhost:8443/back/delete_friend`, {
+		const response = await fetch(`https://${window.location.host}/back/delete_friend`, {
 			method: "POST",
 			credentials: 'include',
 			headers: {
@@ -78,7 +78,7 @@ export async function deleteFriend(userId: string) {
 
 export async function blockUser(userId: string) {
 	try {
-		const response = await fetch(`https://localhost:8443/back/block_user`, {
+		const response = await fetch(`https://${window.location.host}/back/block_user`, {
 			method: "POST",
 			credentials: 'include',
 			headers: {
@@ -99,7 +99,7 @@ export async function blockUser(userId: string) {
 
 export async function unblockUser(userId: string) {
 	try {
-		const response = await fetch(`https://localhost:8443/back/unblock_user`, {
+		const response = await fetch(`https://${window.location.host}/back/unblock_user`, {
 			method: "POST",
 			credentials: 'include',
 			headers: {

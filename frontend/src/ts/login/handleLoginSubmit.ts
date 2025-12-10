@@ -9,7 +9,7 @@ export async function handleLoginSubmit(event: SubmitEvent) {
     const data = Object.fromEntries(formData.entries());
 
     try {
-        const response = await fetch("https://localhost:8443/back/auth/login", {
+        const response = await fetch(`https://${window.location.host}/back/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
