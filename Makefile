@@ -19,6 +19,13 @@ all:
 		fi; \
 		echo ".env file copied successfully."; \
 	fi; \
+	echo "Generating host.env..."; \
+	HOST_IP=$$(hostname -I | awk '{print $$1}'); \
+	if [ -z "$$HOST_IP" ]; then \
+		HOST_IP="127.0.0.1"; \
+	fi; \
+	echo "HOST_IP=\"$$HOST_IP:8443\"" > host.env; \
+	echo "host.env generated with IP: $$HOST_IP"; \
 	docker compose -f ${YML} up -d \
 	'
 	@cd frontend/src/ts && npx tsc

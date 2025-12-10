@@ -105,7 +105,7 @@ async function promptCredentials() {
 
 // Authenticate user and extract token from cookie
 async function loginAndGetToken(email, password) {
-	const res = await fetch('https://10.13.2.3:8443/back/auth/login', {
+	const res = await fetch(`https://${process.env.HOST_IP}/back/auth/login`, {
 		method: 'POST',
 		body: JSON.stringify({ email, password }),
 		headers: { 'Content-Type': 'application/json' },
@@ -323,7 +323,7 @@ function handleSocketMessages(socket) {
 		}
 	}
 
-	const socket = new WebSocket('wss://10.13.2.3:8443/back/ws/game', {
+	const socket = new WebSocket(`wss://${process.env.HOST_IP}/back/ws/game`, {
 		headers: { Cookie: `token=${token}` },
 		agent: new https.Agent({ rejectUnauthorized: false }),
 	});

@@ -4,3 +4,4 @@ pino_readme.md
 backend/node_modules/
 frontend/src/js/
 frontend/src/css/output.css
+host.env

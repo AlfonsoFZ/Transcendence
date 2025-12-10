@@ -1,7 +1,7 @@
 'use strict';
 const {	Model } = require('sequelize');
 
-const avatarUrls = Array.from({ length: 20 }, (_, i) => `https://10.13.2.3:8443/back/images/avatar-${i + 1}.png`);
+const avatarUrls = Array.from({ length: 20 }, (_, i) => `https://${process.env.HOST_IP}/back/images/avatar-${i + 1}.png`);
 
 module.exports = (sequelize, DataTypes) => {
 	class User extends Model {
