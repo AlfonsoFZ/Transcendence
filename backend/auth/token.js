@@ -14,7 +14,7 @@ export function setTokenCookie(userId, reply) {
     reply.setCookie('token', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
 		maxAge: 4 * 60 * 60, 
 		// maxAge: 1 * 60,
@@ -63,7 +63,7 @@ export function destroyTokenCookie(reply) {
     reply.clearCookie('token', {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
     });
 }
