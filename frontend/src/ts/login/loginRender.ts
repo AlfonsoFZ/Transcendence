@@ -38,6 +38,16 @@ export default class LoginRender extends Step {
 							} catch (err) {
 							}
 						}
+						const googleLoginBtn = this.container.querySelector("#google-login-btn") as HTMLElement;
+						if (googleLoginBtn) {
+							const hostname = window.location.hostname;
+							if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+								googleLoginBtn.onclick = (event) => {
+									event.preventDefault();
+									showMessage("Free users can only use this feature on local sever host machine", 3000);
+								};
+							}
+						}
 					});
 		
 					appElement.innerHTML =  htmlContent;
