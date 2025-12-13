@@ -20,7 +20,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a POST route to register a new user
-	fastify.post('/register_user', { preValidation: verifyToken }, async (request, reply) => {
+	fastify.post('/register_user', async (request, reply) => {
 		const { username, password, googleId, email, avatarPath } = request.body;
 		try {
 			const formatUsername = username.trim().replace(/\s+/g, '_');
