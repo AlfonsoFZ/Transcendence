@@ -8,7 +8,7 @@ import { extractUserFromToken } from '../auth/token.js';
 export function configureUserRoutes(fastify, sequelize) {
 
 	// Define a POST route to create a new user
-	fastify.post('/create_user', async (request, reply) => {
+	fastify.post('/create_user', { preValidation: verifyToken }, async (request, reply) => {
 		const { username, password, googleId, email, avatarPath } = request.body;
 		try {
 			const newUser = await crud.user.createUser(username, password, googleId, email, avatarPath);
@@ -20,7 +20,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a POST route to register a new user
-	fastify.post('/register_user', async (request, reply) => {
+	fastify.post('/register_user', { preValidation: verifyToken }, async (request, reply) => {
 		const { username, password, googleId, email, avatarPath } = request.body;
 		try {
 			const formatUsername = username.trim().replace(/\s+/g, '_');
@@ -40,7 +40,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a POST route to update a user by ID
-	fastify.post('/update_user_by_id', async (request, reply) => {
+	fastify.post('/update_user_by_id', { preValidation: verifyToken }, async (request, reply) => {
 		const { userId, username, tournamentUsername, password, googleId, email, avatarPath } = request.body;
 		try {
 			const updatedUser = await crud.user.updateUserbyId(userId, username, tournamentUsername, password, googleId, email, avatarPath);
@@ -53,7 +53,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a POST route to update a user by token
-	fastify.post('/update_user', async (request, reply) => {
+	fastify.post('/update_user', { preValidation: verifyToken }, async (request, reply) => {
 		const { username, tournamentUsername, password, googleId, email, avatarPath } = request.body;
 		try {
 				const token = request.cookies.token;
@@ -74,7 +74,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a GET route to retrieve all users
-	fastify.get('/get_users', async (request, reply) => {
+	fastify.get('/get_users', { preValidation: verifyToken }, async (request, reply) => {
 		try {
 			const users = await crud.user.getUsers();
 			/// To avoid sending sensitive information, map users to only include non-sensitive fields
@@ -91,7 +91,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a GET route to retrieve a user by ID
-	fastify.get('/get_user_by_id/', async (request, reply) => {
+	fastify.get('/get_user_by_id/', { preValidation: verifyToken }, async (request, reply) => {
 		const userId = request.query.id;
 		try {
 			const user = await crud.user.getUserById(userId);
@@ -117,7 +117,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a GET route to retrieve a user by email
-	fastify.get('/get_user_by_email/', async (request, reply) => {
+	fastify.get('/get_user_by_email/', { preValidation: verifyToken }, async (request, reply) => {
 		try {
 			const user = await crud.user.getUserByEmail(request.query.email);
 			reply.status(200).send(user);
@@ -139,7 +139,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a DELETE route to remove a user by ID
-	fastify.delete('/delete_user_by_id', async (request, reply) => {
+	fastify.delete('/delete_user_by_id', { preValidation: verifyToken }, async (request, reply) => {
 		const { userId } = request.body;
 		try {
 			const result = await crud.user.deleteUserById(userId);
@@ -151,7 +151,7 @@ export function configureUserRoutes(fastify, sequelize) {
 	});
 
 	// Define a DELETE route to remove all users
-	fastify.delete('/delete_all_users', async (request, reply) => {
+	fastify.delete('/delete_all_users', { preValidation: verifyToken }, async (request, reply) => {
 		try {
 			const result = await crud.user.deleteAllUsers();
 			reply.status(200).send(result);
@@ -206,7 +206,7 @@ export function configureUserRoutes(fastify, sequelize) {
 		}
 	});
 
-	fastify.post('/getIdByUsername', async (request, reply) => {
+	fastify.post('/getIdByUsername', { preValidation: verifyToken }, async (request, reply) => {
 		const { username } = request.body;
 		try {
 			const id = await crud.user.getIdByUsername(username);
