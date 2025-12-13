@@ -366,8 +366,12 @@ export class TournamentUI {
 			wrapper.className = 'next-match-bracket';
 			wrapper.innerHTML = parsed;
 			appElement.appendChild(wrapper);
+			const msg = this.tournamentNotifyMsg(this.tournament.getTournamentId(), player1.tournamentUsername, player2.tournamentUsername);
+			this.tournament.chatSocket?.send(JSON.stringify({
+							type: 'message',
+							message: msg,
+						}));
 		});
-
 	}
 
 	// todo: Pendiente de ver en actualizacones de torneo
@@ -834,6 +838,11 @@ export class TournamentUI {
 			window.removeEventListener("pagehide", this.boundPageHideHandler);
 			this.boundPageHideHandler = null;
 		}
+	}
+
+	public tournamentNotifyMsg(tournamentId: number | null, player1: string | null, player2: string | null){
+		let msg = "Tournament #" + tournamentId + " - Next match: " + player1 + " VS " + player2;
+		return msg;
 	}
 }
 

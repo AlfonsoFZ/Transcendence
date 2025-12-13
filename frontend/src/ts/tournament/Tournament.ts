@@ -5,6 +5,7 @@ import { Step } from '../spa/stepRender.js';
 import { TournamentUI } from '../tournament/TournamentUI.js';
 import { TournamentData, TournamentConfig, TournamentPlayer } from './types.js';
 import { GameData, GamePlayer } from '../game/types.js';
+import { verifySocket } from '../chat/verifySocket.js';
 // import { game } from '../game/Game.js';
 
 // Default container ID (I think i should match HTML file)
@@ -26,12 +27,15 @@ export default class Tournament extends Step {
 	protected log: any;
 	public LeaveWithoutWarningFLAG: boolean = false;
 	public readonly instanceId = Math.random().toString(36).substring(7);
+	public	chatSocket : WebSocket | null = null;
 
 
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID) {
 		super(containerId);
 		this.ui = new TournamentUI(this);
+		Step.chatSocket = verifySocket(Step.chatSocket);
+		this.chatSocket = Step.chatSocket;
 		// todo: check and complete. at thismoment is initialized as empty object and filled in saveTournament()
 		this.log = {};
 		this.game = new Game(DEFAULT_CONTAINER_ID, "tournament-game");
@@ -467,7 +471,7 @@ export default class Tournament extends Step {
 				<span class="font-medium text-white">${match.config?.difficulty}</span>
 			</div>
 		</div>
-	`;
+		`;
 	}
 
 	// "Recycle" game instance with current match data and launchGame, which will
