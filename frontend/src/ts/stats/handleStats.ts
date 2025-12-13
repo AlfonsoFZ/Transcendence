@@ -34,13 +34,17 @@ async function fetchUsers(): Promise<any> {
 
 export async function fetchGameLogs(): Promise<any> {
 	try {
-		const response = await fetch(`https://${window.location.host}back/get_gamelogs`, {
+
+		const url = `https://${window.location.host}/back/get_gamelogs`;
+
+		const response = await fetch(`${url}`, {
 			method: "GET",
 			credentials: "include"
 		});
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
+		console.log('hemos bajado');
 		return await response.json();
 	} catch (error) {
 		if (error instanceof Error) {
@@ -182,6 +186,7 @@ export async function handleStats(userStats: { userId: string; wins: number; los
 
 	// 🖱️ Doble click handler for game stats
 	canvas.addEventListener('dblclick', async function (event) {
+		console.log('aquí estoy en dobleclick');
 		const points = statsChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, false);
 		if (points.length) {
 			const index = points[0].index;
@@ -281,10 +286,10 @@ export async function handleStats(userStats: { userId: string; wins: number; los
 								tableRows += `
 								<tr class="hover:bg-pong-secondary ">
 									<td class="p-2 border-b border-gray-700">${date}</td>
-								<td class="p-2 border-b border-gray-700">${getUserNameById(record.winner)}</td>
-								<td class="p-2 border-b border-gray-700">${getUserNameById(record.loser)}</td>
-								<td class="p-2 border-b border-gray-700">${formatTimeFromMilliseconds(record.duration)}</td>
-								<td class="p-2 border-b border-gray-700">${tournamentInfo}</td>
+									<td class="p-2 border-b border-gray-700">${getUserNameById(record.winner)}</td>
+									<td class="p-2 border-b border-gray-700">${getUserNameById(record.loser)}</td>
+									<td class="p-2 border-b border-gray-700">${formatTimeFromMilliseconds(record.duration)}</td>
+									<td class="p-2 border-b border-gray-700">${tournamentInfo}</td>
 								</tr>
 							`;
 						}
