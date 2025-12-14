@@ -75,44 +75,57 @@ export class Step {
 	async renderMenu(menuElement: HTMLElement): Promise<void> {
 		const user = await this.checkAuth();
 		if (user) {
-			// Modificar el innerHTML de menuContainer si el usuario está autenticado
 			menuElement.innerHTML = `
 			<nav id="nav" class="bg-pong-secondary p-4 border-b-2 border-amber-300">
-				<ul class="flex space-x-4">
-					<li class="transition-colors">
-						<a href="#game-lobby" class="block px-3 py-2 text-[var(--pong-text-secondary)] hover:text-amber-300 hover:font-bold w-full h-full">
-							Play Game
-						</a>
-					</li>
+			  <ul class="
+			    flex
+			    flex-wrap
+			    justify-center
+			    gap-4
 
-					<li>
-						<a href="#play-chess" class="block px-3 py-2 text-[var(--color-)] hover:text-amber-300 hover:font-bold w-full h-full">
-						Chess
-						</a>
-					</li>
+			    md:flex-nowrap
+			    md:justify-center
 
-					<li class="transition-colors">
-						<a href="#tournament-lobby" class="block px-3 py-2 text-[var(--color-)] hover:text-amber-300 hover:font-bold w-full h-full">
-							Tournaments
-						</a>
-					</li>
-					<li class="transition-colors">
-						<a href="#friends" class="block px-3 py-2 text-[var(--pong-text-secondary)] hover:text-amber-300 hover:font-bold w-full h-full">
-							Friends
-						</a>
-					</li>
-					<li class="transition-colors">
-						<a href="#chat" class="block px-3 py-2 text-[var(--pong-text-secondary)] hover:text-amber-300 hover:font-bold w-full h-full">
-							Chat
-						</a>
-					</li>
-					<li class="transition-colors">
-						<a href="#stats" class="block px-3 py-2 text-[var(--pong-text-secondary)] hover:text-amber-300 hover:font-bold w-full h-full">
-							Stats
-						</a>
-					</li>
-				</ul>
+			    lg:justify-start
+			  ">
+			    <li class="basis-1/3 md:basis-auto text-center transition-colors">
+			      <a href="#game-lobby" class="block px-3 py-2 hover:text-amber-300 hover:font-bold">
+			        Play Game
+			      </a>
+			    </li>
+
+			    <li class="basis-1/3 md:basis-auto text-center transition-colors">
+			      <a href="#play-chess" class="block px-3 py-2 hover:text-amber-300 hover:font-bold">
+			        Chess
+			      </a>
+			    </li>
+
+			    <li class="basis-1/3 md:basis-auto text-center transition-colors">
+			      <a href="#tournament-lobby" class="block px-3 py-2 hover:text-amber-300 hover:font-bold">
+			        Tournaments
+			      </a>
+			    </li>
+
+			    <li class="basis-1/3 md:basis-auto text-center transition-colors">
+			      <a href="#friends" class="block px-3 py-2 hover:text-amber-300 hover:font-bold">
+			        Friends
+			      </a>
+			    </li>
+
+			    <li class="basis-1/3 md:basis-auto text-center transition-colors">
+			      <a href="#chat" class="block px-3 py-2 hover:text-amber-300 hover:font-bold">
+			        Chat
+			      </a>
+			    </li>
+
+			    <li class="basis-1/3 md:basis-auto text-center transition-colors">
+			      <a href="#stats" class="block px-3 py-2 hover:text-amber-300 hover:font-bold">
+			        Stats
+			      </a>
+			    </li>
+			  </ul>
 			</nav>
+
 			`;
 		} else {
 			menuElement.innerHTML = '';
