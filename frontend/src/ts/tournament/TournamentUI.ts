@@ -220,7 +220,6 @@ export class TournamentUI {
 		}else {
 			this.getNextPlayer();
 		}
-
 	}
 
 	getNextPlayer(): void {
@@ -279,12 +278,13 @@ export class TournamentUI {
 						}
 						const guestData = await this.checkGuestPlayer(i, guestTournamentName.value);
 						if (guestData) {
+							console.log('Guest data received:', guestData);
 							tournamentPlayer.gameplayer = guestData.gameplayer;
 							tournamentPlayer.gameplayer.id = -2;
 							tournamentPlayer.gameplayer.username = `Guest00${i}`,
 								tournamentPlayer.status = 'ready';
 						} else {
-							showMessage("Tournament name already exists", null);
+							showMessage("Tournament name already exists or includes invalid characters", null);
 							guestTournamentName.value = '';
 							return; // Exit if the guest is not valid
 						}
@@ -503,8 +503,6 @@ export class TournamentUI {
 					const playerTournamentName = document.createElement('span');
 					playerTournamentName.className = 'player-tournament-name';
 					playerItem.appendChild(playerTournamentName);
-					// Capitalize the first letter of the tournament username
-					// and make the rest lowercase
 					playerTournamentName.textContent = ` ${player.gameplayer.tournamentUsername}`;
 					PlayerRegisterHTMLContainer.appendChild(playerItem);
 				}
