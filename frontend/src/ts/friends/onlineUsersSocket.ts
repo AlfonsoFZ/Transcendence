@@ -173,7 +173,7 @@ export function showChallengeNotification(fromUsername: string, challengeId: str
     // Actualiza el texto
     const text = document.getElementById('challenge-text');
     if (text) {
-        text.textContent = `${fromUsername} te desafía a jugar. ¿Aceptar?`;
+        text.textContent = `${fromUsername} challenges you to a game. Accept?`;
     }
 
     // Maneja los botones
