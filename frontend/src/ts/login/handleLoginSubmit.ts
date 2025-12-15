@@ -21,7 +21,7 @@ export async function handleLoginSubmit(event: SubmitEvent) {
         if (!response.ok) {
             const errorResponse = await response.json();
             // showMessage(`Error: ${errorResponse.message}`, null); // Original line replace by the line below
-			showMessage(formatErrors(errorResponse.message), null);
+			showMessage(formatErrors(errorResponse.errors), null);
         } else {
             const result = await response.json();
             initOnlineSocket(); // Inicia el socket aquí
