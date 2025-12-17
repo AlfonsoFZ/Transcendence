@@ -1,0 +1,464 @@
+
+@baseUrl = https://localhost:8443
+@contentType = application/json
+# Replace with a valid token after logging in
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# ************************************************************************************************
+# *                                     SECURITY / XSS CHECKS                                    *
+# ************************************************************************************************
+
+### Login with XSS Payload
+POST {{baseUrl}}/back/auth/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "alfonso2@gmail.com<script>alert('hola')</script>",
+    "password": "A12345678!<script>alert('hola')</script>"
+}
+
+### Register with XSS Payload
+POST {{baseUrl}}/back/register_user HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "username": "User<script>alert('xss')</script>",
+    "password": "Password<script>alert('xss')</script>",
+    "email": "email<script>alert('xss')</script>@example.com"
+}
+
+
+# ************************************************************************************************
+# *                               AUTHENTICATION & USER MANAGEMENT                               *
+# ************************************************************************************************
+
+### Create User (Register via User Route - Admin/Internal)
+POST {{baseUrl}}/back/create_user HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "username": "test_user_1",
+    "password": "password123",
+    "email": "test1@example.com",
+    "avatarPath": "/back/images/default-avatar.png",
+    "googleId": null
+}
+
+### Register new User (Public)
+POST {{baseUrl}}/back/register_user HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "username": "public_user_1",
+    "password": "Password123!",
+    "email": "public1@example.com"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/back/auth/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "public1@example.com",
+    "password": "Password123!"
+}
+
+### Verify Token
+GET {{baseUrl}}/back/auth/verify-token HTTP/1.1
+Cookie: token={{authToken}}
+
+### Logout
+POST {{baseUrl}}/back/auth/logout HTTP/1.1
+Cookie: token={{authToken}}
+
+### Change Password
+POST {{baseUrl}}/back/change_password HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "currentPassword": "Password123!",
+    "newPassword": "NewPassword123!",
+    "confirmPassword": "NewPassword123!"
+}
+
+# ************************************************************************************************
+# *                                     USER DATA RETRIEVAL                                      *
+# ************************************************************************************************
+
+### Get All Users
+GET {{baseUrl}}/back/get_users HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User by ID
+GET {{baseUrl}}/back/get_user_by_id/?id=1 HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User by Username
+GET {{baseUrl}}/back/get_user_by_username/?username=public_user_1 HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User by Email
+GET {{baseUrl}}/back/get_user_by_email/?email=public1@example.com HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User by Google ID
+GET {{baseUrl}}/back/get_user_by_google_id/?googleId=someGoogleId HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get ID by Username
+POST {{baseUrl}}/back/getIdByUsername HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "username": "public_user_1"
+}
+
+# ************************************************************************************************
+# *                                        USER UPDATES                                          *
+# ************************************************************************************************
+
+### Update User by ID (Admin/Self)
+POST {{baseUrl}}/back/update_user_by_id HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "userId": 1,
+    "username": "updated_username",
+    "tournamentUsername": "updated_tourney_name",
+    "email": "updated@example.com"
+}
+
+### Update Own Profile
+POST {{baseUrl}}/back/update_user HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "username": "my_new_username",
+    "tournamentUsername": "my_new_tourney_name",
+    "email": "myemail@example.com"
+}
+
+### Verify User (Password Check for sensitive actions)
+POST {{baseUrl}}/back/verify_user HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "email": "public1@example.com",
+    "password": "NewPassword123!"
+}
+
+# ************************************************************************************************
+# *                                     FRIEND MANAGEMENT                                        *
+# ************************************************************************************************
+
+### Send Friend Request
+POST {{baseUrl}}/back/send_friend_request HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "friendId": "2"
+}
+
+### Accept Friend Request
+POST {{baseUrl}}/back/accept_friend_request HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "friendId": "2"
+}
+
+### Reject Friend Request
+POST {{baseUrl}}/back/reject_friend_request HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "friendId": "3"
+}
+
+### Block User
+POST {{baseUrl}}/back/block_user HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "friendId": "4"
+}
+
+### Unblock User
+POST {{baseUrl}}/back/unblock_user HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "friendId": "4"
+}
+
+### Delete Friend
+POST {{baseUrl}}/back/delete_friend HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "friendId": "2"
+}
+
+### Get All Friend Entries (Status check)
+POST {{baseUrl}}/back/get_all_friends_entries_from_an_id HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{}
+
+### Get Pending Requests
+POST {{baseUrl}}/back/get_all_pending_users_from_an_id HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{}
+
+### Get Accepted Friends
+POST {{baseUrl}}/back/get_all_accepted_users_from_an_id HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{}
+
+### Get Blocked Users
+POST {{baseUrl}}/back/get_all_blocked_users_from_an_id HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{}
+
+### Search Users (Coincidences)
+POST {{baseUrl}}/back/get_all_users_coincidences HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "keyword": "user"
+}
+
+# ************************************************************************************************
+# *                                     GAME LOGS (PONG)                                         *
+# ************************************************************************************************
+
+### Get All Gamelogs
+GET {{baseUrl}}/back/get_gamelogs HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User Gamelogs (by ID)
+GET {{baseUrl}}/back/get_user_gamelogs/1 HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User Gamelogs (Self)
+GET {{baseUrl}}/back/get_user_gamelogs HTTP/1.1
+Cookie: token={{authToken}}
+
+### Create Gamelog (Manual/Debug)
+POST {{baseUrl}}/back/post_gamelog HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "user1": 1,
+    "user2": 2,
+    "winner": 1,
+    "loser": 2,
+    "duration": 120,
+    "game_id": "game_123",
+    "tournament_id": null
+}
+
+# ************************************************************************************************
+# *                                     CHESS GAME LOGS                                          *
+# ************************************************************************************************
+
+### Get All Chess Gamelogs
+GET {{baseUrl}}/back/get_chessgamelogs HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User Chess Gamelogs (by ID)
+GET {{baseUrl}}/back/get_user_chessgamelogs/1 HTTP/1.1
+Cookie: token={{authToken}}
+
+### Get User Chess Gamelogs (Self)
+GET {{baseUrl}}/back/get_user_chessgamelogs HTTP/1.1
+Cookie: token={{authToken}}
+
+### Create Chess Gamelog
+POST {{baseUrl}}/back/post_chessgamelog HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "user1": 1,
+    "user2": 2,
+    "winner": 1,
+    "loser": 2,
+    "draw": false,
+    "endtype": "checkmate"
+}
+
+# ************************************************************************************************
+# *                                        TOURNAMENT                                            *
+# ************************************************************************************************
+
+### Verify First Player (for Local Tournament Auth)
+POST {{baseUrl}}/back/verify_first_player HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+### Verify Tournament User (Login for tournament)
+POST {{baseUrl}}/back/verify_tounament_user HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "player2@example.com",
+    "password": "Password123!"
+}
+
+### Verify Guest Username for Tournament
+POST {{baseUrl}}/back/verify_guest_tournamentName HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "tournamentId": -42,
+    "tournamentName": "GuestPlayer1"
+}
+
+### Prepare Bracket (Shuffle)
+POST {{baseUrl}}/back/prepareBracket HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "Tid": 123,
+    "Players": ["Player1", "Player2", "Player3", "Player4"],
+    "Tconfig": {}
+}
+
+### Update Bracket (and Tournament Log)
+POST {{baseUrl}}/back/updateBracket HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "result": {
+        "id": "match_1",
+        "winner": "Player1"
+    },
+    "gamesData": [
+        { "id": "match_1", "tournamentId": 123, "player1": "Player1", "player2": "Player2" }
+    ],
+    "playerscount": 4
+}
+
+### Get Next Tournament Log ID
+GET {{baseUrl}}/back/get_next_tournamentlog HTTP/1.1
+
+### Get All Tournament Logs
+GET {{baseUrl}}/back/get_tournamentlogs HTTP/1.1
+
+### Create Tournament Log
+POST {{baseUrl}}/back/create_tournamentlog HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "tournamentId": "123",
+    "playerscount": 4,
+    "config": { "difficulty": "medium" },
+    "users": [1, 2, 3, 4],
+    "gamesData": []
+}
+
+### Update Tournament Log
+POST {{baseUrl}}/back/update_tournamentlog HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "tournamentId": "123",
+    "playerscount": 4,
+    "config": { "difficulty": "medium" },
+    "users": [1, 2, 3, 4],
+    "gamesData": [],
+    "winner": 1
+}
+
+### Delete All Tournament Logs
+DELETE {{baseUrl}}/back/delete_tournamentlogs HTTP/1.1
+
+# ************************************************************************************************
+# *                                     TEMP USER MANAGEMENT                                     *
+# ************************************************************************************************
+
+### Create Temp User
+POST {{baseUrl}}/back/create_temp_user HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "tournamentId": "123",
+    "tournamentName": "TempGuest"
+}
+
+### Get Temp Users
+GET {{baseUrl}}/back/get_temp_users HTTP/1.1
+
+### Delete Temp User by Tournament ID
+DELETE {{baseUrl}}/back/delete_user_by_tournament_id HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "TournamentId": "123"
+}
+
+### Delete All Temp Users
+DELETE {{baseUrl}}/back/delete_all_temp_users HTTP/1.1
+
+# ************************************************************************************************
+# *                                     IMAGE & AVATAR                                           *
+# ************************************************************************************************
+
+### Get Random Avatar
+GET {{baseUrl}}/back/random_avatar HTTP/1.1
+
+### Delete Custom Image
+POST {{baseUrl}}/back/delete_image HTTP/1.1
+Cookie: token={{authToken}}
+
+### Upload Image (Note: Uses multipart/form-data, requires specific format in REST Client)
+# POST {{baseUrl}}/back/upload_image HTTP/1.1
+# Cookie: token={{authToken}}
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+#
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW
+# Content-Disposition: form-data; name="file"; filename="image.png"
+# Content-Type: image/png
+#
+# < ./path/to/image.png
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+# ************************************************************************************************
+# *                                         ADMIN                                                *
+# ************************************************************************************************
+
+### Delete User by ID
+DELETE {{baseUrl}}/back/delete_user_by_id HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: token={{authToken}}
+
+{
+    "userId": 2
+}
+
+### Delete All Users
+DELETE {{baseUrl}}/back/delete_all_users HTTP/1.1
+Cookie: token={{authToken}}
