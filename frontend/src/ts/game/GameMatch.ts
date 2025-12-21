@@ -61,6 +61,7 @@ export default class GameMatch extends Step
 		this.log = game.getGameLog();
 		this.ui = game.getGameUI();
 		this.connection = game.getGameConnection();
+		sessionStorage.setItem("current-view", "Game_Match");
 		if (this.log.mode === '1vAI')
 		{	
 			this.setAiSide(this.game.getGameLog());

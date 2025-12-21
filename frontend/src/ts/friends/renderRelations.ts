@@ -8,7 +8,6 @@ export async function renderRelations(relationsContainer: HTMLElement, userId: s
 			return;
 		}
 		const relations = await getRelationsForUserId(userId);
-		
  		if (!relations || relations.length === 0) {
 			relationsContainer.innerHTML = `
 				<div id="pong-container" class="flex flex-col items-center justify-center py-8 text-gray-500">
@@ -18,11 +17,19 @@ export async function renderRelations(relationsContainer: HTMLElement, userId: s
 						<circle cx="15" cy="10" r="1" fill="#888"/>
 						<path d="M9 16c1.333-1 4-1 6 0" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
 					</svg>
-					<div class="mt-2 text-gray-700  font-bold text-2xl">No relations yet</div>
+					<div class="mt-2 text-gray-700	font-bold text-2xl">No relations yet</div>
 				</div>
 			`;
 			return;
 		}
+		relationsContainer.innerHTML = `
+				<p class="text-candlelight-400 text-lg font-semibold mb-4">Friends</p>
+				<div id="friends-container"></div>
+				<p class="text-international-orange-400 text-lg font-semibold mb-4 mt-8">Pending Requests</p>
+				<div id="pending-container"></div>
+				<p class="text-chilean-fire-800 text-lg font-semibold mb-4 mt-8">Blocked Users</p>
+				<div id="blocked-container"></div>
+				</div>`;
 		const friendsContainer = document.getElementById("friends-container") as HTMLElement;
 		const pendingContainer = document.getElementById("pending-container") as HTMLElement;
 		const blockedContainer = document.getElementById("blocked-container") as HTMLElement;
@@ -45,32 +52,33 @@ export async function renderRelations(relationsContainer: HTMLElement, userId: s
 		relationsContainer.onclick = null; // Limpiar cualquier listener previo
 
 		// Lógica de botones (delegación de eventos)
-        relationsContainer.onclick = async (event) => {
-            const target = event.target as HTMLElement;
-            const button = target.closest("button");
-            if (!button) return;
+				relationsContainer.onclick = async (event) => {
+						const searchresult = document.getElementById("search_results");
+						const target = event.target as HTMLElement;
+						const button = target.closest("button");
+						if (!button) return;
 
-            const userItem = button.closest(".user-item");
-            const otherUserId = userItem?.getAttribute("data-user-id");
-            if (!otherUserId) return;
-
-            if (button.classList.contains("btnAcceptRequest")) {
-                await acceptFriendRequest(otherUserId);
-            } else if (button.classList.contains("btnCancelFriendRequest")) {
-                await rejectFriendRequest(otherUserId);
-            } else if (button.classList.contains("btnDeclineRequest")) {
-                await rejectFriendRequest(otherUserId);
-            } else if (button.classList.contains("btnRemoveFriend")) {
-                await deleteFriend(otherUserId);
-            } else if (button.classList.contains("btnUnblockItem")) {
-                await unblockUser(otherUserId);
-            } else if (button.classList.contains("btnBlockItem")) {
+						const userItem = button.closest(".user-item");
+						const otherUserId = userItem?.getAttribute("data-user-id");
+						if (!otherUserId) return;
+						if (searchresult) searchresult!.innerHTML = "";
+						if (button.classList.contains("btnAcceptRequest")) {
+								await acceptFriendRequest(otherUserId);
+						} else if (button.classList.contains("btnCancelFriendRequest")) {
+								await rejectFriendRequest(otherUserId);
+						} else if (button.classList.contains("btnDeclineRequest")) {
+								await rejectFriendRequest(otherUserId);
+						} else if (button.classList.contains("btnRemoveFriend")) {
+								await deleteFriend(otherUserId);
+						} else if (button.classList.contains("btnUnblockItem")) {
+								await unblockUser(otherUserId);
+						} else if (button.classList.contains("btnBlockItem")) {
 				await blockUser(otherUserId);
 			}
 
-            // Recargar relaciones tras la acción
-            //await renderRelations(relationsContainer, userId);
-        };
+						// Recargar relaciones tras la acción
+						//await renderRelations(relationsContainer, userId);
+				};
 	}
 
 
@@ -122,10 +130,10 @@ async function renderUserList(relations: any[], container: HTMLElement, relation
 		const otherId = relation.userId == userId ? relation.friendId : relation.userId;
 
 		// Evita duplicados: elimina cualquier nodo existente para ese userId antes de crear uno nuevo
-        const existing = container.querySelector(`.user-item[data-user-id="${otherId}"]`);
-        if (existing) {
-            existing.remove();
-        }
+				const existing = container.querySelector(`.user-item[data-user-id="${otherId}"]`);
+				if (existing) {
+						existing.remove();
+				}
 		
 		const user = await getUserById(otherId);
 		const userTemplate = await fetch("../../html/friends/userTemplate.html");

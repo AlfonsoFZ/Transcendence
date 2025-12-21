@@ -15,6 +15,7 @@ export default class Stats extends Step {
 
 	async render(appElement: HTMLElement): Promise<void>
 	{
+		sessionStorage.setItem("current-view", "Stats");
 		await this.ui.initializeUI(appElement);
 	}
 }

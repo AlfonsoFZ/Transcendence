@@ -31,6 +31,7 @@ async function handlePrivateChatMsg(chatMessages: HTMLDivElement, recentChats: H
 	if (userId === data.partnerId && (sessionStorage.getItem("current-room") !== data.roomId || sessionStorage.getItem("current-view") !== "Chat")) {
 		soundNotification();
 	}
+
 	if (userId === data.partnerId && sessionStorage.getItem("current-view") !== "Chat") {
 		const chatTab = document.querySelector('a[href="#chat"]');
 		chatTab?.classList.add('blink');	

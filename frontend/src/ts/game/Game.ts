@@ -34,6 +34,7 @@ export default class Game extends Step {
 	/***************************************/
 	/*********** CONSTRUCTOR ***************/
 	constructor(containerId: string = DEFAULT_CONTAINER_ID, id?: string) {
+		sessionStorage.setItem("current-view", "Game");
 		super(containerId);
 		if (id)
 			this.gameId = id;
