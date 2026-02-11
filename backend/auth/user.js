@@ -59,40 +59,44 @@ async function saveImageInDatabase(googleImagePath, user) {
 }
 
 export function authenticateUserWithGoogleStrategy() {
-
-	// Use Google Strategy to authenticate user
-	fastifyPassport.use(new GoogleStrategy({
-		clientID: process.env.GOOGLE_CLIENT_ID,
-		clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-		callbackURL: process.env.GOOGLE_CALLBACK_URL,
-		scope: ['profile', 'email']
-	}, async function (googleAccessToken, googleRefreshToken, profile, cb) {
-		try {
-			let user = await crud.user.getUserByGoogleId(profile.id);
-			if (user) {
-				await crud.user.updateLastLoginById(user.id);
-			}
-			if (!user) {
-				user = await crud.user.getUserByEmail(profile.emails[0].value);
+	// Check if GOOGLE_CLIENT_ID is defined
+	if(process.env.GOOGLE_CLIENT_ID) {
+		// Use Google Strategy to authenticate user
+		fastifyPassport.use(new GoogleStrategy({
+			clientID: process.env.GOOGLE_CLIENT_ID,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+			callbackURL: process.env.GOOGLE_CALLBACK_URL,
+			scope: ['profile', 'email']
+		}, async function (googleAccessToken, googleRefreshToken, profile, cb) {
+			try {
+				let user = await crud.user.getUserByGoogleId(profile.id);
 				if (user) {
 					await crud.user.updateLastLoginById(user.id);
-					user.googleId = profile.id;
 				}
-				else {
-					const googleDisplayName = profile.displayName.trim().replace(/\s+/g, '_');
-					const username = await checkUsernameAvailability(googleDisplayName);
-					user = await crud.user.createUser(username, null, profile.id, profile.emails?.[0]?.value || null, profile.photos?.[0]?.value || null);
-					if (profile.photos?.[0]?.value) {
-						saveImageInDatabase(profile.photos[0].value, user);
+				if (!user) {
+					user = await crud.user.getUserByEmail(profile.emails[0].value);
+					if (user) {
+						await crud.user.updateLastLoginById(user.id);
+						user.googleId = profile.id;
+					}
+					else {
+						const googleDisplayName = profile.displayName.trim().replace(/\s+/g, '_');
+						const username = await checkUsernameAvailability(googleDisplayName);
+						user = await crud.user.createUser(username, null, profile.id, profile.emails?.[0]?.value || null, profile.photos?.[0]?.value || null);
+						if (profile.photos?.[0]?.value) {
+							saveImageInDatabase(profile.photos[0].value, user);
+						}
 					}
 				}
+				cb(null, user);
 			}
-			cb(null, user);
-		}
-		catch (err) {
-			cb(err);
-		}
-	}));
+			catch (err) {
+				cb(err);
+			}
+		}));
+	} else {
+		console.warn('GOOGLE_CLIENT_ID is not defined. Google authentication will not work.');
+	}
 }
 
 export async function signOutUser(token, user, reply) {

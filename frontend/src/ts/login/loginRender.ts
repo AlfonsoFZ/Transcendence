@@ -46,6 +46,22 @@ export default class LoginRender extends Step {
 									event.preventDefault();
 									showMessage("Free users can only use this feature on local sever host machine", 3000);
 								};
+							} else {
+								// Verificar si Google Auth está disponible en el servidor
+								googleLoginBtn.onclick = async (event) => {
+									event.preventDefault();
+									try {
+										const response = await fetch('/back/auth/google/status');
+										const data = await response.json();
+										if (data.available) {
+											window.location.assign(`https://${window.location.host}/back/auth/google/login`);
+										} else {
+											showMessage(data.message || "Para habilitar esta función necesita editar el .env e incluir sus variables de Google", 5000);
+										}
+									} catch (err) {
+										showMessage("Error al verificar disponibilidad de Google Auth", 3000);
+									}
+								};
 							}
 						}
 					});

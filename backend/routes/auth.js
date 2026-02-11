@@ -34,8 +34,25 @@ export function configureAuthRoutes(fastify, sequelize) {
 		return authenticateUser(normalized, cleanPassword, reply);
 	});
 
+	// Endpoint para verificar si Google Auth está disponible
+	fastify.get('/auth/google/status', async (request, reply) => {
+		const available = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.SESSION_SECRET);
+		reply.send({ 
+			available,
+			message: available ? 'Google authentication is available' : 'Para habilitar esta función necesita editar el .env e incluir sus variables de Google (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET)'
+		});
+	});
+
 	fastify.get('/auth/google/login', {
-		preValidation: fastifyPassport.authenticate('google', { scope: ['profile', 'email'] })
+		preValidation: async (request, reply) => {
+			if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.SESSION_SECRET) {
+				return reply.status(503).send({ 
+					error: 'google_auth_unavailable',
+					message: 'Para habilitar esta función necesita editar el .env e incluir sus variables de Google (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET)'
+				});
+			}
+			return fastifyPassport.authenticate('google', { scope: ['profile', 'email'] })(request, reply);
+		}
 	},
 		async (request, reply) => {
 			setTokenCookie(request.user.id, reply);
